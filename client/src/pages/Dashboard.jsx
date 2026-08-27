@@ -131,17 +131,6 @@ export default function Dashboard() {
         <div className="relative px-6 pb-8 pt-2">
           <RotatingBadge className="absolute -top-2 right-6 z-10 hidden sm:flex" />
           <HeroIllustration className="w-full" />
-          {/* <Card className="absolute -bottom-2 left-0 hidden w-52 sm:block">
-            <Card.Content className="flex items-center gap-3 py-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-success-soft text-success-soft-foreground">
-                <LeafIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs text-muted">Renewable right now</p>
-                <p className="text-lg font-semibold">{communitySnapshot.renewablePct}%</p>
-              </div>
-            </Card.Content>
-          </Card> */}
         </div>
       </section>
 

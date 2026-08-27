@@ -27,6 +27,7 @@ export const communitySnapshot = {
   energyTradedTodayKwh: 14.6,
   co2AvoidedKgToday: 9.2,
   gridImportPriceRs: 6.10,
+  gridFlowKw: 0.7, // positive means exporting to the grid, matches the recent-activity export event
 }
 
 // Battery state of charge through the morning, ending at the current
