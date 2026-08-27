@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Card, Chip, ProgressBar, Typography } from '@heroui/react'
+import { Button, Card, Chip, ProgressBar, Typography } from '@heroui/react'
 import {
   batterySocTrend,
   communitySnapshot,
@@ -11,23 +12,47 @@ import {
   renewableTrend,
 } from '../data/mockCommunity.js'
 import { ArrowUpRightIcon, BatteryIcon, BoltIcon, CloudIcon, LeafIcon, ScaleIcon, SunIcon, SwapIcon, TagIcon } from '../components/icons.jsx'
+import { KIND_ICONS, KIND_TONES, TONE_CLASSES } from '../components/kindTaxonomy.js'
 import HeroIllustration from '../components/HeroIllustration.jsx'
 import RotatingBadge from '../components/RotatingBadge.jsx'
 import Sparkline from '../components/Sparkline.jsx'
+import SeeMoreModal from '../components/SeeMoreModal.jsx'
 
-const TONE_CLASSES = {
-  accent: 'bg-accent-soft text-accent-soft-foreground',
-  success: 'bg-success-soft text-success-soft-foreground',
-  danger: 'bg-danger-soft text-danger-soft-foreground',
-  default: 'bg-default-soft text-default-soft-foreground',
+const RECOMMENDATIONS_PREVIEW = 2
+const ACTIVITY_PREVIEW = 3
+
+function RecommendationItem({ rec }) {
+  const KindIcon = KIND_ICONS[rec.kind]
+  return (
+    <div className="flex gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0">
+      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${TONE_CLASSES[KIND_TONES[rec.kind]]}`}>
+        <KindIcon className="h-4 w-4" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-medium">{rec.title}</p>
+          <Chip size="sm" variant="soft" color={rec.confidence === 'High' ? 'success' : 'accent'}>
+            {rec.confidence} confidence
+          </Chip>
+        </div>
+        <p className="mt-1 text-sm text-muted">{rec.detail}</p>
+      </div>
+    </div>
+  )
 }
 
-// Shared taxonomy for what an engine event or recommendation *does* - trade
-// locally, charge the battery, or export to the grid - reused for both the
-// Recommendations and Recent activity cards so the same icon always means
-// the same thing across the page.
-const KIND_ICONS = { trade: SwapIcon, battery: BatteryIcon, export: ArrowUpRightIcon, alert: ScaleIcon }
-const KIND_TONES = { trade: 'accent', battery: 'success', export: 'default', alert: 'danger' }
+function ActivityItem({ activity }) {
+  const KindIcon = KIND_ICONS[activity.kind]
+  return (
+    <div className="flex gap-3 text-sm">
+      <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${TONE_CLASSES[KIND_TONES[activity.kind]]}`}>
+        <KindIcon className="h-3.5 w-3.5" />
+      </div>
+      <span className="w-16 shrink-0 pt-1 text-muted">{activity.time}</span>
+      <span className="pt-1">{activity.text}</span>
+    </div>
+  )
+}
 
 function StatCard({ icon: Icon, tone = 'accent', label, value, unit, hint, trend }) {
   return (
@@ -100,12 +125,15 @@ export default function Dashboard() {
 
   const maxAbsNetKw = Math.max(...households.map((h) => Math.abs(h.generationKw - h.consumptionKw)))
 
+  const [showAllRecs, setShowAllRecs] = useState(false)
+  const [showAllActivity, setShowAllActivity] = useState(false)
+
   return (
     <div className="space-y-16">
       <section className="grid items-center gap-10 pt-4 lg:grid-cols-2 lg:gap-16">
         <div className="space-y-6">
           <Chip color="warning" variant="soft">Simulated data</Chip>
-          <Typography.Heading level={1} className="font-serif text-4xl font-semibold leading-tight tracking-tight lg:text-5xl">
+          <Typography.Heading level={1} className="font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
             {isSurplus
               ? `Your community has ${Math.abs(net).toFixed(1)} kW to share right now.`
               : `Your community needs ${Math.abs(net).toFixed(1)} kW right now.`}
@@ -267,25 +295,14 @@ export default function Dashboard() {
             <Card.Description>What the community should do next, and why</Card.Description>
           </Card.Header>
           <Card.Content className="space-y-4">
-            {recommendations.map((rec) => {
-              const KindIcon = KIND_ICONS[rec.kind]
-              return (
-                <div key={rec.id} className="flex gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0">
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${TONE_CLASSES[KIND_TONES[rec.kind]]}`}>
-                    <KindIcon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium">{rec.title}</p>
-                      <Chip size="sm" variant="soft" color={rec.confidence === 'High' ? 'success' : 'accent'}>
-                        {rec.confidence} confidence
-                      </Chip>
-                    </div>
-                    <p className="mt-1 text-sm text-muted">{rec.detail}</p>
-                  </div>
-                </div>
-              )
-            })}
+            {recommendations.slice(0, RECOMMENDATIONS_PREVIEW).map((rec) => (
+              <RecommendationItem key={rec.id} rec={rec} />
+            ))}
+            {recommendations.length > RECOMMENDATIONS_PREVIEW && (
+              <Button variant="ghost" size="sm" onClick={() => setShowAllRecs(true)}>
+                See more
+              </Button>
+            )}
           </Card.Content>
         </Card>
 
@@ -295,22 +312,34 @@ export default function Dashboard() {
             <Card.Description>Latest simulated engine events</Card.Description>
           </Card.Header>
           <Card.Content className="space-y-4">
-            {recentActivity.map((activity) => {
-              const KindIcon = KIND_ICONS[activity.kind]
-              return (
-                <div key={activity.id} className="flex gap-3 text-sm">
-                  <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${TONE_CLASSES[KIND_TONES[activity.kind]]}`}>
-                    <KindIcon className="h-3.5 w-3.5" />
-                  </div>
-                  <span className="w-16 shrink-0 pt-1 text-muted">{activity.time}</span>
-                  <span className="pt-1">{activity.text}</span>
-                </div>
-              )
-            })}
+            {recentActivity.slice(0, ACTIVITY_PREVIEW).map((activity) => (
+              <ActivityItem key={activity.id} activity={activity} />
+            ))}
+            {recentActivity.length > ACTIVITY_PREVIEW && (
+              <Button variant="ghost" size="sm" onClick={() => setShowAllActivity(true)}>
+                See more
+              </Button>
+            )}
           </Card.Content>
         </Card>
       </div>
       </div>
+
+      <SeeMoreModal isOpen={showAllRecs} onOpenChange={setShowAllRecs} title="All recommendations">
+        <div className="space-y-4">
+          {recommendations.map((rec) => (
+            <RecommendationItem key={rec.id} rec={rec} />
+          ))}
+        </div>
+      </SeeMoreModal>
+
+      <SeeMoreModal isOpen={showAllActivity} onOpenChange={setShowAllActivity} title="All recent activity">
+        <div className="space-y-4">
+          {recentActivity.map((activity) => (
+            <ActivityItem key={activity.id} activity={activity} />
+          ))}
+        </div>
+      </SeeMoreModal>
     </div>
   )
 }

@@ -5,7 +5,7 @@
 
 export const households = [
   { id: 'house-07', label: 'House 07', type: 'Solar Prosumer', generationKw: 6.8, consumptionKw: 2.1, batterySoc: null },
-  { id: 'house-12', label: 'House 12', type: 'Solar + Battery Prosumer', generationKw: 4.3, consumptionKw: 2.8, batterySoc: 71 },
+  { id: 'house-12', label: 'House 12', type: 'Solar + Battery Prosumer', generationKw: 4.3, consumptionKw: 2.8, batterySoc: 71, batteryCapacityKwh: 5, batteryReservePct: 20 },
   { id: 'house-34', label: 'House 34', type: 'EV Household', generationKw: 1.2, consumptionKw: 4.0, batterySoc: null },
   { id: 'house-21', label: 'House 21', type: 'Non-Solar Consumer', generationKw: 0, consumptionKw: 2.6, batterySoc: null },
   { id: 'house-45', label: 'House 45', type: 'Low-Consumption Home', generationKw: 3.4, consumptionKw: 1.9, batterySoc: null },
@@ -70,6 +70,9 @@ export const renewableTrend = [
   { time: '12:30 PM', pct: 96 },
 ]
 
+// Each recommendation's `inputs` are the actual numbers behind the
+// decision, not decoration, so a recommendation can be checked against
+// the state that produced it rather than taken on faith.
 export const recommendations = [
   {
     id: 'rec-1',
@@ -77,6 +80,11 @@ export const recommendations = [
     title: 'Route surplus to House 34',
     detail: '2.8 kWh of community surplus can meet House 34\'s deficit directly instead of drawing from the grid at ₹6.10/kWh peak rate.',
     confidence: 'High',
+    inputs: [
+      { label: 'Community surplus', value: '4.7 kW', tone: 'success' },
+      { label: 'House 34 deficit', value: '−2.8 kW', tone: 'danger' },
+      { label: 'Grid price', value: '₹6.10/kWh', tone: 'default' },
+    ],
   },
   {
     id: 'rec-2',
@@ -84,6 +92,11 @@ export const recommendations = [
     title: 'Charge community battery',
     detail: 'Battery is at 58%. 1.2 kWh of remaining surplus can top it up before exporting anything to the grid.',
     confidence: 'High',
+    inputs: [
+      { label: 'Battery charge', value: '58%', tone: 'accent' },
+      { label: 'Remaining surplus', value: '1.2 kWh', tone: 'success' },
+      { label: 'Reserve threshold', value: '20%', tone: 'default' },
+    ],
   },
   {
     id: 'rec-3',
@@ -91,6 +104,11 @@ export const recommendations = [
     title: 'Export remainder to grid',
     detail: '0.7 kWh of surplus has no local demand or battery headroom left. Exporting it captures value instead of curtailing generation.',
     confidence: 'Medium',
+    inputs: [
+      { label: 'Unassigned surplus', value: '0.7 kWh', tone: 'success' },
+      { label: 'Local demand', value: 'None left', tone: 'default' },
+      { label: 'Grid export rate', value: '₹6.10/kWh', tone: 'default' },
+    ],
   },
 ]
 
@@ -99,4 +117,7 @@ export const recentActivity = [
   { id: 'act-2', time: '12:14 PM', text: 'Community battery reached 58% state of charge', kind: 'battery' },
   { id: 'act-3', time: '11:52 AM', text: 'House 12 listed 1.5 kWh surplus on the local marketplace', kind: 'trade' },
   { id: 'act-4', time: '11:30 AM', text: 'Grid export rate updated to ₹6.10/kWh (peak window)', kind: 'export' },
+  { id: 'act-5', time: '10:20 AM', text: 'Community battery reached 40% state of charge', kind: 'battery' },
+  { id: 'act-6', time: '9:15 AM', text: 'House 07 crossed into surplus as morning generation ramped up', kind: 'trade' },
+  { id: 'act-7', time: '8:05 AM', text: 'Community battery at 22% overnight, simulation day started', kind: 'battery' },
 ]
