@@ -15,7 +15,7 @@ export default function Marketplace() {
             P2P Marketplace
           </Typography.Heading>
           <Typography.Paragraph className="text-muted">
-            Conceptual local energy exchange — price set by local supply and demand. No real settlement occurs here.
+            Conceptual local energy exchange, price set by local supply and demand. No real settlement occurs here.
           </Typography.Paragraph>
         </div>
         <Chip color="warning" variant="soft">Simulated / conceptual</Chip>

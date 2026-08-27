@@ -10,7 +10,7 @@ const NAV_ITEMS = [
 ]
 
 function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme('dark')
+  const { resolvedTheme, setTheme } = useTheme('light')
   const isDark = resolvedTheme === 'dark'
 
   if (!resolvedTheme) return <div aria-hidden className="h-9 w-16" />

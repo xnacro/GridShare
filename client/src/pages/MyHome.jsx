@@ -20,7 +20,7 @@ export default function MyHome() {
             My Home
           </Typography.Heading>
           <Typography.Paragraph className="text-muted">
-            Private view — {MY_HOUSEHOLD.label}. Other households can't see this detail.
+            Private view: {MY_HOUSEHOLD.label}. Other households can't see this detail.
           </Typography.Paragraph>
         </div>
         <Chip color="warning" variant="soft">Simulated data</Chip>

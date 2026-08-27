@@ -1,4 +1,4 @@
-// SIMULATION DATA — static fixture standing in for the community energy
+// SIMULATION DATA: static fixture standing in for the community energy
 // engine (see the project roadmap: server/ simulation engine + ml/ forecasts
 // are not built yet). Shaped to match the normalized reading/forecast schema
 // so wiring real API data later is a drop-in replacement, not a rewrite.
@@ -19,31 +19,76 @@ export const communitySnapshot = {
   totalGenerationKw,
   totalConsumptionKw,
   netKw: totalGenerationKw - totalConsumptionKw,
-  renewablePct: 96, // illustrative — % of demand served by local renewables this instant
+  renewablePct: 96, // illustrative: % of demand served by local renewables this instant
   batteryCapacityKwh: 20,
   batterySocPct: 58,
+  batteryReservePct: 20, // minimum charge the engine won't discharge below, kept for outages
+  batteryChargeRateKw: 1.2, // current charge rate, matches the "Charge community battery" recommendation
   energyTradedTodayKwh: 14.6,
   co2AvoidedKgToday: 9.2,
   gridImportPriceRs: 6.10,
 }
 
+// Battery state of charge through the morning, ending at the current
+// communitySnapshot.batterySocPct value.
+export const batterySocTrend = [
+  { time: '8 AM', pct: 22 },
+  { time: '9 AM', pct: 31 },
+  { time: '10 AM', pct: 40 },
+  { time: '11 AM', pct: 48 },
+  { time: '12 PM', pct: 53 },
+  { time: '12:30 PM', pct: 58 },
+]
+
+// Same morning window for the three headline "Live snapshot" stats, each
+// trend ending at its matching communitySnapshot value.
+export const generationTrend = [
+  { time: '8 AM', pct: 3.5 },
+  { time: '9 AM', pct: 6.8 },
+  { time: '10 AM', pct: 10.2 },
+  { time: '11 AM', pct: 13.1 },
+  { time: '12 PM', pct: 15.0 },
+  { time: '12:30 PM', pct: 15.7 },
+]
+
+export const consumptionTrend = [
+  { time: '8 AM', pct: 9.8 },
+  { time: '9 AM', pct: 10.5 },
+  { time: '10 AM', pct: 11.6 },
+  { time: '11 AM', pct: 12.4 },
+  { time: '12 PM', pct: 13.0 },
+  { time: '12:30 PM', pct: 13.4 },
+]
+
+export const renewableTrend = [
+  { time: '8 AM', pct: 38 },
+  { time: '9 AM', pct: 55 },
+  { time: '10 AM', pct: 72 },
+  { time: '11 AM', pct: 85 },
+  { time: '12 PM', pct: 92 },
+  { time: '12:30 PM', pct: 96 },
+]
+
 export const recommendations = [
   {
     id: 'rec-1',
+    kind: 'trade',
     title: 'Route surplus to House 34',
     detail: '2.8 kWh of community surplus can meet House 34\'s deficit directly instead of drawing from the grid at ₹6.10/kWh peak rate.',
     confidence: 'High',
   },
   {
     id: 'rec-2',
+    kind: 'battery',
     title: 'Charge community battery',
-    detail: 'Battery is at 58% — 1.2 kWh of remaining surplus can top it up before exporting anything to the grid.',
+    detail: 'Battery is at 58%. 1.2 kWh of remaining surplus can top it up before exporting anything to the grid.',
     confidence: 'High',
   },
   {
     id: 'rec-3',
+    kind: 'export',
     title: 'Export remainder to grid',
-    detail: '0.7 kWh of surplus has no local demand or battery headroom left — exporting it captures value instead of curtailing generation.',
+    detail: '0.7 kWh of surplus has no local demand or battery headroom left. Exporting it captures value instead of curtailing generation.',
     confidence: 'Medium',
   },
 ]

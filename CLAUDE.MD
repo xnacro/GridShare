@@ -1,4 +1,4 @@
-# CLAUDE.md — GridShare Project Instructions
+# CLAUDE.md: GridShare Project Instructions
 
 ## 0. Non-Negotiable Rule: PLAN FIRST, CODE SECOND
 
@@ -25,6 +25,12 @@ Do not write code until the user explicitly approves the plan.
 Even for a small change, provide a short plan and wait for approval.
 
 Never interpret "build it", "implement it", or similar wording as permission to skip this planning gate.
+
+---
+
+## 0.1 Hard Rule: No Em Dashes
+
+Never use an em dash (—) anywhere in this project: code, comments, UI copy, commit messages, or documentation, including this file itself. Use a period, comma, colon, or parentheses instead.
 
 ---
 
@@ -65,10 +71,10 @@ The problem is centered around a **Peer-to-Peer Microgrid Dashboard** with:
 - marketplace-style interaction
 
 Judging priorities:
-1. Solution Innovation — 30%
-2. Technical Feasibility — 25%
-3. Scalability & Practicality — 25%
-4. Sustainability Impact — 20%
+1. Solution Innovation: 30%
+2. Technical Feasibility: 25%
+3. Scalability & Practicality: 25%
+4. Sustainability Impact: 20%
 
 The implementation should visibly demonstrate all four.
 
@@ -425,22 +431,22 @@ Good:
 
 Target aesthetic:
 
-**Premium energy-tech / infrastructure-tech, expressed through a deliberate green brand system — not a generic eco template.**
+**Premium energy-tech / infrastructure-tech, expressed through a deliberate green brand system, not a generic eco template.**
 
 ## Palette
 
-- Near-Black Green `#011207` — dark base / default background
-- Dark Forest Green `#012F13` — dark surface / card background
-- Apple Green `#8BC53D` — primary accent: CTAs, active nav, positive/surplus indicators, `success`
-- Soft Sage Mint `#E2F0CC` — light-mode background, high-contrast text on dark surfaces
+- Near-Black Green `#011207`: dark-mode background, light-mode text/foreground
+- Dark Forest Green `#012F13`: dark-mode surface / card background, light-mode primary accent
+- Apple Green `#8BC53D`: dark-mode primary accent, CTAs, active nav, positive/surplus indicators, `success`
+- Soft Sage Mint `#E2F0CC`: light-mode background (default), dark-mode text/foreground
 
-Theme is **dark-first** (Near-Black Green base) — 3 of the 4 brand colors are dark, and a dark data-dense dashboard reads as infrastructure-tech rather than light eco-SaaS. Light mode (Soft Sage Mint base) is available as a toggle, not the default.
+Theme is **light-first** (Soft Sage Mint base): this is the default theme. Dark mode (Near-Black Green base) is available as a toggle, not the default.
 
-`danger` and `warning` are **intentionally left at their standard red/amber values**, not mapped to the green scale — surplus and deficit must stay visually distinguishable (see §14), and a monochrome green palette can't encode both.
+`danger` and `warning` are **intentionally left at their standard red/amber values**, not mapped to the green scale. Surplus and deficit must stay visually distinguishable (see §14), and a monochrome green palette can't encode both.
 
-Layout/component craft — informed by an external reference (Veluno, a product landing page), applied to **craft only, not content**: generous whitespace, rounded cards, pill-style navigation, clean type hierarchy, floating badge/stat elements. Do not copy e-commerce page structure.
+Layout/component craft, informed by an external reference (Veluno, a product landing page), applied to **craft only, not content**: generous whitespace, rounded cards, pill-style navigation, clean type hierarchy, floating badge/stat elements. Do not copy e-commerce page structure.
 
-UI components are built exclusively from HeroUI's standard component set (`heroui.com`) — no bespoke component primitives.
+UI components are built exclusively from HeroUI's standard component set (`heroui.com`). No bespoke component primitives.
 
 Avoid:
 - light pastel eco-SaaS templates
@@ -669,16 +675,16 @@ A smaller polished working system is better than a large incomplete one.
 
 # 24. Production Roadmap
 
-### Stage 1 — Hackathon
+### Stage 1: Hackathon
 Digital twin + simulated community
 
-### Stage 2 — Pilot
+### Stage 2: Pilot
 Real smart-meter/inverter data
 
-### Stage 3 — Community
+### Stage 3: Community
 Solar + batteries + EVs + real participants
 
-### Stage 4 — Scale
+### Stage 4: Scale
 Multiple communities + utility integration + India Energy Stack-compatible infrastructure
 
 The architecture should make this progression plausible without pretending Stage 4 already exists.

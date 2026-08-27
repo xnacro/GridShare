@@ -10,7 +10,7 @@ export default function Recommendations() {
             Intelligence &amp; Recommendations
           </Typography.Heading>
           <Typography.Paragraph className="text-muted">
-            Grounded in the current simulator state — every suggestion explains the reasoning behind it.
+            Grounded in the current simulator state, every suggestion explains the reasoning behind it.
           </Typography.Paragraph>
         </div>
         <Chip color="warning" variant="soft">Simulated data</Chip>
@@ -44,7 +44,7 @@ export default function Recommendations() {
         <Card.Content>
           <p className="text-sm text-muted">
             Weather-aware solar forecasting and household demand forecasting are planned (see the project roadmap)
-            but not yet built — this page will show confidence-scored forecast bands once the{' '}
+            but not yet built. This page will show confidence-scored forecast bands once the{' '}
             <code className="rounded bg-surface-secondary px-1 py-0.5">ml/</code> service exists.
           </p>
         </Card.Content>
