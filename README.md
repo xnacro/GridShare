@@ -28,21 +28,21 @@ client/   React 19 + Vite + HeroUI v3 + Tailwind v4, 5-page dashboard, live via 
 server/   Express backend: deterministic simulation engine, rule-based decision engine,
           in-memory marketplace, REST + Server-Sent Events API
 ml/       Reserved for a future forecasting service, not built yet
-docs/     Architecture and build notes (see docs/frontend.md)
+docs/     Architecture and build notes (see docs/frontend.md, docs/backend.md)
 ```
 
 ## Status
 
 | Layer | State |
 |---|---|
-| Frontend (5 pages) | Built, live-wired to the backend |
+| Frontend (5 pages) | Built, live-wired to the backend via SSE |
 | Simulation engine | Built: household models, community + household batteries, rule-based allocation, 22 passing tests |
 | Marketplace | Live buy/sell against the real backend, ownership enforced server-side |
-| Real-time updates | Server-Sent Events, one shared connection, auto-reconnecting |
+| Real-time updates | Server-Sent Events (`/api/stream`), one shared connection, auto-reconnecting |
 | Forecasting (`ml/`) | Not started, explicitly out of scope for the current build |
 | Persistence | None yet, in-memory only, by design for this stage |
 
-See [`docs/frontend.md`](docs/frontend.md) for a full breakdown of the frontend, and `server/src/` for the simulation engine's source.
+See [`docs/frontend.md`](docs/frontend.md) and [`docs/backend.md`](docs/backend.md) for full breakdowns of each layer.
 
 ## Running it locally
 
@@ -65,7 +65,9 @@ npm install
 npm run dev         # http://localhost:5173
 ```
 
-The client reads the backend's address from `VITE_API_BASE_URL` (see `client/.env.example`), defaulting to `http://localhost:5000`. If the backend isn't reachable, the app shows a clear "can't reach the backend" state rather than failing silently.
+The client reads the backend's address from `VITE_API_BASE_URL` (see `client/.env.example`), defaulting to `http://localhost:5000`. Start the backend first: the frontend subscribes to `/api/stream` on load and shows a clear unreachable state if no snapshot arrives within 10 seconds.
+
+Optional sim controls (pause, reset, jump to the 12:30 PM demo) are available via `POST /api/sim/control`; see [`docs/backend.md`](docs/backend.md) for the full API.
 
 ## Tech stack
 
