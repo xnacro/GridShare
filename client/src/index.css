@@ -1,86 +1,30 @@
-@import "tailwindcss";
-@import "@heroui/styles";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/*
- * GridShare brand tokens, see CLAUDE.MD §13.
- * Only the 4 palette colors are used directly; --danger and --warning are
- * left at HeroUI's defaults so deficit/alert states stay visually distinct
- * from the all-green brand system (surplus vs. deficit must not collapse
- * into the same hue).
- */
-:root,
-.light,
-[data-theme="light"] {
-  --background: #e2f0cc; /* Soft Sage Mint */
-  --foreground: #011207; /* Near-Black Green */
-  --surface: color-mix(in oklab, var(--background) 20%, white);
-  --surface-foreground: var(--foreground);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  --accent: #012f13; /* Dark Forest Green: strong contrast on a light mint bg */
-  --accent-foreground: #e2f0cc;
-
-  /*
-   * HeroUI derives the soft/tinted accent tokens from --accent at low
-   * opacity. Dark Forest Green is nearly black, so a 15% tint of it reads
-   * as gray, not green. Base the soft tokens on Apple Green instead, they
-   * are decorative tints (badges, soft chips), not text-contrast surfaces,
-   * so they do not need --accent's darker, higher-contrast value.
-   */
-  --accent-soft: color-mix(in oklab, #8bc53d 22%, transparent);
-  --accent-soft-foreground: color-mix(in oklab, #8bc53d 65%, var(--foreground) 35%);
-  --accent-soft-hover: color-mix(in oklab, #8bc53d 28%, transparent);
-
-  /*
-   * Same problem as the soft tokens above, but for solid fills: decorative
-   * shapes (illustration details, sparkline highlights) want Apple Green,
-   * not Dark Forest Green. --accent stays dark on purpose for button/text
-   * contrast; --accent-vivid is for solid decorative fills that do not
-   * need that contrast pairing.
-   */
-  --accent-vivid: #8bc53d;
-
-  --focus: var(--accent);
+@layer base {
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
-.dark,
-[data-theme="dark"] {
-  --background: #011207; /* Near-Black Green */
-  --foreground: #e2f0cc; /* Soft Sage Mint */
-  --surface: #012f13; /* Dark Forest Green */
-  --surface-foreground: var(--foreground);
-
-  --accent: #8bc53d; /* Apple Green: pops against the near-black base */
-  --accent-foreground: #011207;
-  --accent-vivid: var(--accent); /* already vivid in dark mode */
-
-  --focus: var(--accent);
+/* Light Mode scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-
-@theme inline {
-  --color-accent-vivid: var(--accent-vivid);
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
 }
-
-body {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
 }
-
-/*
- * HeroUI's default Card ships with no border, only a background fill and a
- * near-invisible shadow. In light mode the page background and the card
- * fill are both pale, so cards disappear entirely. A real border fixes
- * that at the source instead of patching every call site.
- */
-.card--default {
-  border: 1px solid var(--border);
-}
-
-/*
- * HeroUI's default card title is text-sm/font-medium, the same weight as
- * ordinary body text, so section headers like "Households" or "Battery
- * reserve" don't read as headers. Bump it up once here rather than at
- * every call site.
- */
-.card__title {
-  font-size: 1rem;
-  font-weight: 700;
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

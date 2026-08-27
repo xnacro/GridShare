@@ -11,6 +11,22 @@ dist
 dist-ssr
 *.local
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.joblib
+
+# Database & Instances
+*.db
+*.sqlite3
+instance/
+
 # Environment variables
 .env
 .env.*
