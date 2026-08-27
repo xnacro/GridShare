@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, Card, Chip, Typography } from '@heroui/react'
-import { recommendations } from '../data/mockCommunity.js'
+import { useCommunity } from '../context/useCommunity.js'
 import { KIND_ICONS, KIND_TONES, TONE_CLASSES } from '../components/kindTaxonomy.js'
 import { BatteryIcon, ScaleIcon, SwapIcon } from '../components/icons.jsx'
 import SeeMoreModal from '../components/SeeMoreModal.jsx'
@@ -62,6 +62,8 @@ function RecommendationDetail({ rec }) {
 }
 
 export default function Recommendations() {
+  const { data } = useCommunity()
+  const { recommendations } = data
   const [showAll, setShowAll] = useState(false)
 
   return (

@@ -1,8 +1,11 @@
 import { Card, Chip, Typography } from '@heroui/react'
-import { communitySnapshot, households } from '../data/mockCommunity.js'
+import { useCommunity } from '../context/useCommunity.js'
 import EnergyFlowMap from '../components/EnergyFlowMap.jsx'
 
 export default function LiveMap() {
+  const { data } = useCommunity()
+  const { communitySnapshot, households } = data
+
   const net = communitySnapshot.netKw
   const isSurplus = net >= 0
   const exportingCount = households.filter((h) => h.generationKw - h.consumptionKw >= 0).length

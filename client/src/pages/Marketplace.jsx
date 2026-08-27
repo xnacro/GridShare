@@ -1,21 +1,11 @@
 import { useState } from 'react'
 import { Button, Card, Chip, NumberField, Typography } from '@heroui/react'
-import { households } from '../data/mockCommunity.js'
+import { useCommunity } from '../context/useCommunity.js'
+import { buyListing, listSurplus } from '../lib/api.js'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
 import SeeMoreModal from '../components/SeeMoreModal.jsx'
 
 const MY_HOUSEHOLD_LABEL = 'House 12' // the demo user, per MyHome.jsx
-const MY_HOUSEHOLD = households.find((h) => h.label === MY_HOUSEHOLD_LABEL)
-
-const INITIAL_LISTINGS = [
-  { id: 'l1', sellerLabel: 'House 07', kwh: 4.2, priceRs: 5.1 },
-  { id: 'l2', sellerLabel: 'House 12', kwh: 1.5, priceRs: 4.95 },
-  { id: 'l3', sellerLabel: 'House 45', kwh: 1.5, priceRs: 5.05 },
-]
-
-const INITIAL_TRADES = [
-  { id: 't1', time: '11:30 AM', sellerLabel: 'House 45', buyerLabel: MY_HOUSEHOLD_LABEL, kwh: 1.0, priceRs: 5.0 },
-]
 
 const LISTINGS_PREVIEW = 3
 const TRADES_PREVIEW = 2
@@ -58,8 +48,10 @@ function TradeRow({ trade }) {
 }
 
 export default function Marketplace() {
-  const [listings, setListings] = useState(INITIAL_LISTINGS)
-  const [trades, setTrades] = useState(INITIAL_TRADES)
+  const { data } = useCommunity()
+  const { households, market } = data
+  const { listings, trades } = market
+  const MY_HOUSEHOLD = households.find((h) => h.label === MY_HOUSEHOLD_LABEL)
 
   const mySurplusKwh = Math.max(Number(surplusOf(MY_HOUSEHOLD).toFixed(1)), 0)
   const canSell = mySurplusKwh > 0
@@ -71,33 +63,48 @@ export default function Marketplace() {
   const [showAllTrades, setShowAllTrades] = useState(false)
 
   // Pending actions wait here until the user confirms in the dialog, so
-  // nothing changes state on the first click.
+  // nothing changes state on the first click. The actual listings/trades
+  // update arrives back through the live SSE stream after a successful
+  // call, not from the POST response directly.
   const [pendingSell, setPendingSell] = useState(false)
   const [pendingBuy, setPendingBuy] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [actionError, setActionError] = useState(null)
 
-  function confirmList() {
-    setListings((prev) => [
-      { id: `l${Date.now()}`, sellerLabel: MY_HOUSEHOLD.label, kwh: amount, priceRs: price },
-      ...prev,
-    ])
-    setPendingSell(false)
+  async function confirmList() {
+    setIsSubmitting(true)
+    setActionError(null)
+    try {
+      await listSurplus({ sellerId: MY_HOUSEHOLD.id, kwh: amount, priceRs: price })
+      setPendingSell(false)
+    } catch (err) {
+      setActionError(err.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  function confirmBuy() {
-    const listing = pendingBuy
-    setListings((prev) => prev.filter((l) => l.id !== listing.id))
-    setTrades((prev) => [
-      {
-        id: `t${Date.now()}`,
-        time: 'Just now',
-        sellerLabel: listing.sellerLabel,
-        buyerLabel: MY_HOUSEHOLD_LABEL,
-        kwh: listing.kwh,
-        priceRs: listing.priceRs,
-      },
-      ...prev,
-    ])
+  function closeSellDialog() {
+    setPendingSell(false)
+    setActionError(null)
+  }
+
+  function closeBuyDialog() {
     setPendingBuy(null)
+    setActionError(null)
+  }
+
+  async function confirmBuy() {
+    setIsSubmitting(true)
+    setActionError(null)
+    try {
+      await buyListing({ listingId: pendingBuy.id, buyerId: MY_HOUSEHOLD.id })
+      setPendingBuy(null)
+    } catch (err) {
+      setActionError(err.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -224,23 +231,26 @@ export default function Marketplace() {
 
       <ConfirmDialog
         isOpen={pendingSell}
-        onOpenChange={(open) => !open && setPendingSell(false)}
+        onOpenChange={(open) => !open && closeSellDialog()}
         heading="Confirm listing"
         confirmLabel="List for sale"
-        onCancel={() => setPendingSell(false)}
+        isConfirming={isSubmitting}
+        onCancel={closeSellDialog}
         onConfirm={confirmList}
       >
         <p>
           List {amount.toFixed(1)} kWh from {MY_HOUSEHOLD.label} at ₹{price.toFixed(2)}/kWh, ₹{(amount * price).toFixed(2)} total if sold?
         </p>
+        {actionError && <p className="mt-2 text-sm text-danger">{actionError}</p>}
       </ConfirmDialog>
 
       <ConfirmDialog
         isOpen={!!pendingBuy}
-        onOpenChange={(open) => !open && setPendingBuy(null)}
+        onOpenChange={(open) => !open && closeBuyDialog()}
         heading="Confirm purchase"
         confirmLabel="Buy"
-        onCancel={() => setPendingBuy(null)}
+        isConfirming={isSubmitting}
+        onCancel={closeBuyDialog}
         onConfirm={confirmBuy}
       >
         {pendingBuy && (
@@ -248,6 +258,7 @@ export default function Marketplace() {
             Buy {pendingBuy.kwh.toFixed(1)} kWh from {pendingBuy.sellerLabel} for ₹{(pendingBuy.kwh * pendingBuy.priceRs).toFixed(2)}?
           </p>
         )}
+        {actionError && <p className="mt-2 text-sm text-danger">{actionError}</p>}
       </ConfirmDialog>
     </div>
   )

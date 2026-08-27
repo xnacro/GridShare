@@ -1,16 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Card, Chip, ProgressBar, Typography } from '@heroui/react'
-import {
-  batterySocTrend,
-  communitySnapshot,
-  consumptionTrend,
-  generationTrend,
-  households,
-  recentActivity,
-  recommendations,
-  renewableTrend,
-} from '../data/mockCommunity.js'
+import { useCommunity } from '../context/useCommunity.js'
 import { ArrowUpRightIcon, BatteryIcon, BoltIcon, CloudIcon, LeafIcon, ScaleIcon, SunIcon, SwapIcon, TagIcon } from '../components/icons.jsx'
 import { KIND_ICONS, KIND_TONES, TONE_CLASSES } from '../components/kindTaxonomy.js'
 import HeroIllustration from '../components/HeroIllustration.jsx'
@@ -116,6 +107,18 @@ function HouseholdRow({ household, maxAbsNetKw }) {
 }
 
 export default function Dashboard() {
+  const { data } = useCommunity()
+  const {
+    batterySocTrend,
+    communitySnapshot,
+    consumptionTrend,
+    generationTrend,
+    households,
+    recentActivity,
+    recommendations,
+    renewableTrend,
+  } = data
+
   const net = communitySnapshot.netKw
   const isSurplus = net >= 0
 
@@ -168,7 +171,7 @@ export default function Dashboard() {
           Live snapshot
         </Typography.Heading>
         <Typography.Paragraph className="text-muted">
-          12:30 PM community state
+          {communitySnapshot.timestamp} community state
         </Typography.Paragraph>
       </div>
 

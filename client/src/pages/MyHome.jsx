@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Button, Card, Chip, NumberField, ProgressBar, Switch, Typography } from '@heroui/react'
-import { households } from '../data/mockCommunity.js'
+import { useCommunity } from '../context/useCommunity.js'
 import { TONE_CLASSES } from '../components/kindTaxonomy.js'
 import { BoltIcon, ScaleIcon, SunIcon } from '../components/icons.jsx'
 import SeeMoreModal from '../components/SeeMoreModal.jsx'
 
-const MY_HOUSEHOLD = households.find((h) => h.id === 'house-12')
 const MY_EARNINGS_TODAY_RS = 62.4
 const MY_EARNINGS_WEEK_RS = 318.9
 const MY_TRADE_HISTORY = [
@@ -47,6 +46,9 @@ function TradeHistoryRow({ trade }) {
 }
 
 export default function MyHome() {
+  const { data } = useCommunity()
+  const MY_HOUSEHOLD = data.households.find((h) => h.id === 'house-12')
+
   const net = MY_HOUSEHOLD.generationKw - MY_HOUSEHOLD.consumptionKw
   const isSurplus = net >= 0
 

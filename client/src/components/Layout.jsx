@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Button, Drawer, useTheme } from '@heroui/react'
+import { useState } from 'react'
+import { NavLink, Outlet } from 'react-router-dom'
+import { Button, Card, Chip, Drawer, useTheme } from '@heroui/react'
 import PageSkeleton from './PageSkeleton.jsx'
 import { MenuIcon } from './icons.jsx'
+import { useCommunity } from '../context/useCommunity.js'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
@@ -12,24 +13,17 @@ const NAV_ITEMS = [
   { to: '/home', label: 'My Home' },
 ]
 
-const ROUTE_LOADING_DELAY_MS = 500
-
-function RouteLoader({ children }) {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), ROUTE_LOADING_DELAY_MS)
-    return () => clearTimeout(timer)
-  }, [])
-
-  return isLoading ? <PageSkeleton /> : children
-}
-
-// Keying on pathname remounts RouteLoader fresh on every navigation, so
-// isLoading resets to true naturally instead of syncing it from an effect.
-function RouteTransition({ children }) {
-  const { pathname } = useLocation()
-  return <RouteLoader key={pathname}>{children}</RouteLoader>
+function BackendUnreachable() {
+  return (
+    <Card>
+      <Card.Content className="space-y-2 py-10 text-center">
+        <p className="font-medium">Can&apos;t reach the backend</p>
+        <p className="text-sm text-muted">
+          The simulation server isn&apos;t responding. Start it with <code className="rounded bg-surface-secondary px-1 py-0.5">node server/app.js</code> and this page will connect automatically.
+        </p>
+      </Card.Content>
+    </Card>
+  )
 }
 
 function ThemeToggle({ fullWidth = false }) {
@@ -116,6 +110,7 @@ function NavDrawer({ isOpen, onOpenChange }) {
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { status } = useCommunity()
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -127,28 +122,32 @@ export default function Layout() {
 
           <NavPills />
 
-          <div className="hidden lg:block">
-            <ThemeToggle />
+          <div className="flex items-center gap-3">
+            {status === 'reconnecting' && (
+              <Chip color="warning" variant="soft" size="sm">Reconnecting…</Chip>
+            )}
+            <div className="hidden lg:block">
+              <ThemeToggle />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <MenuIcon className="h-5 w-5" />
+            </Button>
           </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="lg:hidden"
-            onClick={() => setIsMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <MenuIcon className="h-5 w-5" />
-          </Button>
         </div>
       </header>
 
       <NavDrawer isOpen={isMenuOpen} onOpenChange={setIsMenuOpen} />
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-        <RouteTransition>
-          <Outlet />
-        </RouteTransition>
+        {status === 'connecting' && <PageSkeleton />}
+        {status === 'failed' && <BackendUnreachable />}
+        {(status === 'open' || status === 'reconnecting') && <Outlet />}
       </main>
     </div>
   )

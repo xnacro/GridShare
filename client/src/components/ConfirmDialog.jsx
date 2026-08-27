@@ -12,6 +12,7 @@ export default function ConfirmDialog({
   cancelLabel = 'Cancel',
   onConfirm,
   onCancel,
+  isConfirming = false,
 }) {
   return (
     <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -23,8 +24,10 @@ export default function ConfirmDialog({
             </AlertDialog.Header>
             <AlertDialog.Body>{children}</AlertDialog.Body>
             <AlertDialog.Footer>
-              <Button variant="outline" onClick={onCancel}>{cancelLabel}</Button>
-              <Button variant="primary" onClick={onConfirm}>{confirmLabel}</Button>
+              <Button variant="outline" onClick={onCancel} isDisabled={isConfirming}>{cancelLabel}</Button>
+              <Button variant="primary" onClick={onConfirm} isDisabled={isConfirming}>
+                {isConfirming ? 'Please wait…' : confirmLabel}
+              </Button>
             </AlertDialog.Footer>
           </AlertDialog.Dialog>
         </AlertDialog.Container>
