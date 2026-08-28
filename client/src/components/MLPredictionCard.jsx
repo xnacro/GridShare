@@ -32,7 +32,9 @@ export default function MLPredictionCard({ predictions = [], onRunPredictions, i
             <div key={pred.id || i} className="rounded-xl border border-gray-800/80 bg-gray-800/40 p-3">
               <div className="flex items-center justify-between text-xs text-gray-400">
                 <span>{timeLabel}</span>
-                <span className="font-mono text-[10px] text-purple-400 font-semibold">{((pred.confidence || 0.94) * 100).toFixed(0)}% conf</span>
+                <span className="font-mono text-[10px] text-emerald-400 font-semibold">
+                  {pred.uncertainty_value ? `±${pred.uncertainty_value.toFixed(2)} kW` : 'Validated'}
+                </span>
               </div>
               <div className="mt-2 flex items-baseline justify-between">
                 <div>
@@ -41,7 +43,7 @@ export default function MLPredictionCard({ predictions = [], onRunPredictions, i
                   <span className="text-xs text-blue-400">{pred.predicted_demand_kw?.toFixed(1)}kW</span>
                 </div>
                 <span className={`text-xs font-bold ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {net >= 0 ? `+${net.toFixed(1)}` : net.toFixed(1)}
+                  {net >= 0 ? `+${net.toFixed(1)}` : net.toFixed(1)} kW
                 </span>
               </div>
             </div>

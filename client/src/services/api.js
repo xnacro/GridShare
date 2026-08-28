@@ -40,7 +40,9 @@ export const api = {
   evaluateStorageDecision: (data) => apiClient.post('/optimization/storage-decision', data),
   runBatteryFairnessDemo: () => apiClient.post('/demo/battery-fairness-demo'),
 
-  // AI Prediction & Optimizer
+  // AI Prediction, Optimizer & Copilot
+  getCopilotInsights: (params) => apiClient.get('/copilot/insights', { params }),
+  simulateCopilotShock: (data) => apiClient.post('/copilot/simulate-shock', data),
   getPredictions: (params) => apiClient.get('/predictions', { params }),
   getLatestPredictions: (params) => apiClient.get('/predictions', { params }),
   runPredictionPipeline: () => apiClient.post('/predictions/run'),
