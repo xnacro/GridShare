@@ -91,6 +91,9 @@ export default function AiForecastView() {
     setTimeout(() => setActionNotice(null), 6000);
   };
 
+  const [viewMode, setViewMode] = useState('SIMPLE'); // 'SIMPLE', 'ADVANCED'
+  const [showGuide, setShowGuide] = useState(true);
+
   const current = copilotData?.current_state || {};
   const forecast = copilotData?.forecast || {};
   const decision = copilotData?.decision || {};
@@ -100,7 +103,7 @@ export default function AiForecastView() {
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
       
-      {/* 🌟 Top Header: Title & Context Switchers */}
+      {/* 🌟 Top Header: Title, Mode Toggle & Context Switchers */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
@@ -108,31 +111,111 @@ export default function AiForecastView() {
               Hornet AI
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#12251D] text-white">
-              Autonomous Energy Orchestration
+              Autonomous Energy Advisor
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-            Hornet AI multi-horizon intelligence engine (demand_v1 + solar_v1 + deterministic dispatch).
+            Real-time solar & load forecasting that automatically calculates the most profitable energy action.
           </p>
         </div>
 
-        {/* Filters: Household Selector */}
-        <div className="flex items-center space-x-2">
-          <label className="text-xs font-bold text-slate-500">Scope:</label>
-          <select
-            value={selectedHousehold}
-            onChange={(e) => setSelectedHousehold(e.target.value)}
-            className="rounded-xl border border-[#DDE4DF] bg-white px-3 py-1.5 text-xs font-bold text-[#142019] shadow-subtle focus:outline-none focus:ring-2 focus:ring-[#1C9A67]/20"
-          >
-            <option value="COMMUNITY">Entire Community Microgrid</option>
-            {households.map((h) => (
-              <option key={h.id} value={h.id}>
-                {h.name} ({h.household_type})
-              </option>
-            ))}
-          </select>
+        {/* Filters & Mode Switcher */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Simple vs Advanced Toggle */}
+          <div className="flex items-center bg-[#F5F6F2] p-1 rounded-xl border border-[#DDE4DF] text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setViewMode('SIMPLE')}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                viewMode === 'SIMPLE'
+                  ? 'bg-white text-[#142019] shadow-subtle'
+                  : 'text-slate-500 hover:text-[#142019]'
+              }`}
+            >
+              🌱 Simple View
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('ADVANCED')}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                viewMode === 'ADVANCED'
+                  ? 'bg-white text-[#142019] shadow-subtle'
+                  : 'text-slate-500 hover:text-[#142019]'
+              }`}
+            >
+              🔬 Technical ML View
+            </button>
+          </div>
+
+          {/* Household Selector */}
+          <div className="flex items-center space-x-1.5">
+            <select
+              value={selectedHousehold}
+              onChange={(e) => setSelectedHousehold(e.target.value)}
+              className="rounded-xl border border-[#DDE4DF] bg-white px-3 py-2 text-xs font-bold text-[#142019] shadow-subtle focus:outline-none focus:ring-2 focus:ring-[#1C9A67]/20"
+            >
+              <option value="COMMUNITY">Entire Community</option>
+              {households.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.name} ({h.household_type})
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
+
+      {/* 💡 Quick-Start 3-Step Guide Banner (Collapsible) */}
+      {showGuide && (
+        <div className="rounded-2xl border border-[#1C9A67]/30 bg-gradient-to-r from-[#E7F5EE]/80 via-white to-[#E7F5EE]/50 p-4 sm:p-5 shadow-subtle relative">
+          <button
+            type="button"
+            onClick={() => setShowGuide(false)}
+            className="absolute top-3 right-3 text-xs font-bold text-slate-400 hover:text-slate-700"
+          >
+            ✕ Hide Guide
+          </button>
+          
+          <div className="flex items-center space-x-2 mb-3">
+            <span className="text-base">🐝</span>
+            <h3 className="text-sm font-extrabold text-[#142019]">
+              How Hornet AI Works (in 3 Simple Steps)
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-white border border-[#DDE4DF] shadow-2xs space-y-1">
+              <div className="flex items-center space-x-1.5 font-bold text-[#142019]">
+                <span className="h-5 w-5 rounded-full bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center text-xs">1</span>
+                <span>Observe & Predict</span>
+              </div>
+              <p className="text-slate-500 leading-relaxed text-[11px]">
+                Hornet AI monitors real-time solar irradiance and household load, forecasting whether you will have <strong>surplus power</strong> or <strong>power deficit</strong> in the next 15 minutes.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white border border-[#DDE4DF] shadow-2xs space-y-1">
+              <div className="flex items-center space-x-1.5 font-bold text-[#142019]">
+                <span className="h-5 w-5 rounded-full bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center text-xs">2</span>
+                <span>Optimize & Protect</span>
+              </div>
+              <p className="text-slate-500 leading-relaxed text-[11px]">
+                It calculates the most profitable action (Trade locally at ₹4.50 vs Grid ₹6.10), while keeping your <strong>battery reserve safe (≥20%)</strong>.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white border border-[#DDE4DF] shadow-2xs space-y-1">
+              <div className="flex items-center space-x-1.5 font-bold text-[#142019]">
+                <span className="h-5 w-5 rounded-full bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center text-xs">3</span>
+                <span>Review & Approve</span>
+              </div>
+              <p className="text-slate-500 leading-relaxed text-[11px]">
+                Click <strong>"Review & Confirm"</strong> to approve the proposed energy action. Hornet AI never trades without your review.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 🚀 Action Feedback Toast */}
       {actionNotice && (
