@@ -7,7 +7,6 @@ import {
   computeHouseholdStates,
 } from '../services/marketEngine';
 import {
-  generate24HourProfile,
   calculateMicrogridFlows,
 } from '../services/dashboardSimulationEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
@@ -211,10 +210,10 @@ export default function DashboardView({ onOpenDemoModal }) {
       {/* 🌟 2. METRIC CARDS STRIP (Glassmorphism Card with 12px Radius) */}
       <div className="glass-card rounded-xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-center">
         
-        {/* Col 1: NET COMMUNITY BALANCE */}
+        {/* Col 1: Net Community Balance */}
         <div>
-          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
-            NET COMMUNITY BALANCE
+          <div className="text-xs font-bold text-[#5E6963]">
+            Net Community Balance
           </div>
           <div className="font-changa text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
             +{netCommunity.toFixed(1)} kW
@@ -224,10 +223,10 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* Col 2: TOTAL GENERATION */}
+        {/* Col 2: Total Generation */}
         <div>
-          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
-            TOTAL GENERATION
+          <div className="text-xs font-bold text-[#5E6963]">
+            Total Generation
           </div>
           <div className="font-changa text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
             {totalGen.toFixed(1)} kW
@@ -238,10 +237,10 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* Col 3: TOTAL DEMAND */}
+        {/* Col 3: Total Demand */}
         <div>
-          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
-            TOTAL DEMAND
+          <div className="text-xs font-bold text-[#5E6963]">
+            Total Demand
           </div>
           <div className="font-changa text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
             {totalCon.toFixed(1)} kW
@@ -252,10 +251,10 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* Col 4: BATTERY STATE */}
+        {/* Col 4: Battery State */}
         <div>
-          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
-            BATTERY STATE
+          <div className="text-xs font-bold text-[#5E6963]">
+            Battery State
           </div>
           <div className="font-changa text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
             {battery.soc.toFixed(0)}%
@@ -316,7 +315,7 @@ export default function DashboardView({ onOpenDemoModal }) {
       {/* 🌟 3. EXPANDED TWO-PANEL CORE WORKSPACE (65% 3D Simulation | 35% Hornet AI with 12px Radius) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Left Expanded Panel: LIVE MICROGRID FLOW (8 cols ~ 65% width, 12px Radius) */}
+        {/* Left Expanded Panel: Live Microgrid Flow (8 cols ~ 65% width, 12px Radius) */}
         <div className="lg:col-span-8 glass-card rounded-xl relative overflow-hidden h-[460px] sm:h-[500px] lg:h-[530px] flex flex-col justify-between select-none">
           
           {/* Full-Bleed 3D Microgrid Viewport */}
@@ -337,7 +336,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#1E9B68] animate-pulse" />
-                <h3 className="font-changa text-sm sm:text-base font-normal uppercase tracking-wider text-[#17221D]">
+                <h3 className="font-changa text-sm sm:text-base font-normal text-[#17221D]">
                   Live Microgrid Flow
                 </h3>
               </div>
@@ -386,13 +385,13 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* Right Panel: HORNET AI — NEXT 15 MINUTES (4 cols ~ 35% width, 12px Radius) */}
+        {/* Right Panel: Hornet AI — Next 15 Minutes (4 cols ~ 35% width, 12px Radius) */}
         <div className="lg:col-span-4 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4 h-[460px] sm:h-[500px] lg:h-[530px]">
           <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="h-2 w-2 rounded-full bg-[#7358C7]" />
-                <h3 className="font-changa text-base font-normal uppercase tracking-wider text-[#17221D]">
+                <h3 className="font-changa text-base font-normal text-[#17221D]">
                   Hornet AI — Next 15 Minutes
                 </h3>
               </div>
@@ -409,9 +408,9 @@ export default function DashboardView({ onOpenDemoModal }) {
           {/* 3 Mini Forecast Boxes (12px radius) */}
           <div className="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-[#F6F7F4]/80 border border-[rgba(23,34,29,0.06)]">
             <div className="space-y-0.5">
-              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#5E6963]">
                 <FaIcon name="solar" className="text-[#DDA12A]" />
-                <span>SOLAR</span>
+                <span>Solar</span>
               </div>
               <div className="font-changa text-sm sm:text-base font-normal text-[#DDA12A]">
                 {aiForecast.solar_kw?.toFixed(2) || '5.84'} kW
@@ -419,9 +418,9 @@ export default function DashboardView({ onOpenDemoModal }) {
             </div>
 
             <div className="space-y-0.5 border-x border-[rgba(23,34,29,0.08)]">
-              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#17221D]">
                 <FaIcon name="home" className="text-[#17221D]" />
-                <span>DEMAND</span>
+                <span>Demand</span>
               </div>
               <div className="font-changa text-sm sm:text-base font-normal text-[#17221D]">
                 {aiForecast.demand_kw?.toFixed(2) || '4.21'} kW
@@ -429,9 +428,9 @@ export default function DashboardView({ onOpenDemoModal }) {
             </div>
 
             <div className="space-y-0.5">
-              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#1E9B68]">
                 <FaIcon name="network" className="text-[#1E9B68]" />
-                <span>BALANCE</span>
+                <span>Balance</span>
               </div>
               <div className="font-changa text-sm sm:text-base font-normal text-[#1E9B68]">
                 +{aiForecast.balance_kw?.toFixed(2) || '1.63'} kW
@@ -455,8 +454,8 @@ export default function DashboardView({ onOpenDemoModal }) {
           {/* Recommended Action Box (12px radius) */}
           <div className="p-3.5 rounded-xl bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="font-changa text-xs font-normal uppercase tracking-wider text-[#1E9B68]">
-                RECOMMENDED ACTION
+              <span className="text-xs font-bold text-[#1E9B68]">
+                Recommended Action
               </span>
               <span className="font-changa text-xs font-normal text-[#1E9B68] bg-white px-2 py-0.5 rounded-lg border border-[#1E9B68]/20">
                 ₹4.50 / kWh
@@ -492,13 +491,13 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       </div>
 
-      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION (12px Radius Glassmorphism Cards) */}
+      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Left Expanded Card: TODAY'S COMMUNITY IMPACT (6 cols ~ 50%, 12px Radius) */}
+        {/* Left Expanded Card: Today's Community Impact */}
         <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
           <div>
-            <h3 className="font-changa text-base font-normal uppercase tracking-wider text-[#17221D]">
+            <h3 className="font-changa text-base font-normal text-[#17221D]">
               Today's Community Impact
             </h3>
             <p className="text-xs text-[#5E6963] mt-1">
@@ -541,11 +540,11 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* Right Expanded Card: RECENT COMMUNITY ACTIVITY (6 cols ~ 50%, 12px Radius) */}
+        {/* Right Expanded Card: Recent Community Activity */}
         <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-changa text-base font-normal uppercase tracking-wider text-[#17221D]">
+              <h3 className="font-changa text-base font-normal text-[#17221D]">
                 Recent Community Activity
               </h3>
               <p className="text-xs text-[#5E6963] mt-1">
