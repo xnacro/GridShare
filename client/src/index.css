@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,38 +6,93 @@
 
 @layer base {
   :root {
+    --canvas: #F5F7F3;
+    --canvas-soft: #EEF1EB;
+    --surface: #FFFFFF;
+    --surface-elevated: #FBFCFA;
+    --text-primary: #15211B;
+    --text-brand: #17382B;
+    --text-secondary: #5E6A63;
+    --text-muted: #87918B;
+    --border-soft: #DCE4DE;
+    --border-strong: #C7D2CB;
+    
+    --brand-forest: #12392B;
+    --brand-emerald: #209B67;
+    --brand-bright: #41C98A;
+    --brand-soft-emerald: #E7F6EE;
+    
+    --solar-gold: #E7AA31;
+    --solar-soft: #FFF3D7;
+    --battery-amber: #D79A27;
+    --grid-blue: #397BD2;
+    --grid-soft: #EAF2FC;
+    --deficit-coral: #D85D5D;
+    --deficit-soft: #FDECEC;
+    --ai-violet: #7359C8;
+    --ai-soft: #F1EDFF;
+    
     --nav-height: 48px;
     --nav-radius: 9999px;
-    --nav-border: #DDE4DF;
-    --nav-active-bg: #E7F5EE;
-    --nav-active-text: #12372A;
-    --nav-active-icon: #1C9A67;
   }
 
   body {
-    background-color: #F5F6F2;
-    color: #142019;
+    background-color: var(--canvas);
+    color: var(--text-primary);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Premium Sustainable scrollbars */
+@layer utilities {
+  /* Subtle, restrained glassmorphism */
+  .glass-pill {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(220, 228, 222, 0.75);
+  }
+
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(220, 228, 222, 0.65);
+  }
+
+  /* Micro-animation transitions */
+  .animate-fadeIn {
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Premium Climate-Tech Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F6F2;
+  background: var(--canvas);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #DDE4DF;
-  border-radius: 4px;
+  background: var(--border-soft);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #C9D2CC;
+  background: var(--border-strong);
 }

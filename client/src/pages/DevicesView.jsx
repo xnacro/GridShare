@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FaIcon from '../components/icons/FaIcon';
 import Badge, { StatusIndicator } from '../components/ui/Badge';
-import Button, { IconButton } from '../components/ui/Button';
+import Button from '../components/ui/Button';
 import MetricCard from '../components/ui/MetricCard';
 import { LoadingState, ErrorState } from '../components/ui/FeedbackStates';
 import { api } from '../services/api';
@@ -11,7 +11,6 @@ export default function DevicesView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [ingestionMode, setIngestionMode] = useState('SIMULATED');
-  const [modeChanging, setModeChanging] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(null);
 
@@ -37,29 +36,16 @@ export default function DevicesView() {
 
   useEffect(() => {
     fetchDevices();
-    const interval = setInterval(fetchDevices, 5000);
+    const interval = setInterval(fetchDevices, 6000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleModeChange = async (newMode) => {
-    try {
-      setModeChanging(true);
-      await api.setDeviceMode(newMode);
-      setIngestionMode(newMode);
-      await fetchDevices();
-    } catch (err) {
-      console.error('Failed to update ingestion mode:', err);
-    } finally {
-      setModeChanging(false);
-    }
-  };
-
   if (loading && !devicesData) {
-    return <LoadingState title="Connecting to Simulated Gateway..." message="Polling virtual smart meter circuits and edge controllers." />;
+    return <LoadingState message="Polling virtual smart meter circuits and edge controllers..." />;
   }
 
   if (error && !devicesData) {
-    return <ErrorState title="Device Gateway Offline" message={error} onRetry={fetchDevices} />;
+    return <ErrorState message={error} onRetry={fetchDevices} />;
   }
 
   const devices = devicesData?.devices || [
@@ -73,36 +59,36 @@ export default function DevicesView() {
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
       
-      {/* Top Header & Mode Controller */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl border border-[#DDE5E0] p-5 shadow-card">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl border border-[#DCE4DE] p-5 sm:p-6 shadow-card">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#163A2B] text-white flex items-center justify-center text-xl shadow-sm flex-shrink-0">
-            <FaIcon name="microchip" className="text-[#34B978]" />
+          <div className="w-11 h-11 rounded-2xl bg-[#12392B] text-white flex items-center justify-center text-xl shadow-sm flex-shrink-0">
+            <FaIcon name="devices" className="text-[#41C98A]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-[#102019] tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#15211B] tracking-tight">
                 Simulated Edge Nodes & Devices
               </h1>
               <Badge variant="warning" size="xs">
                 SIMULATED TELEMETRY
               </Badge>
             </div>
-            <p className="text-xs sm:text-sm text-[#5D6B64] font-medium mt-0.5">
+            <p className="text-xs sm:text-sm text-[#5E6A63] font-medium mt-0.5">
               Virtual smart meters, bidirectional inverter controllers, and future edge hardware boundaries.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={fetchDevices}
             isLoading={refreshing}
-            icon={<FaIcon name="refresh" className={refreshing ? 'animate-spin' : ''} />}
+            icon={<FaIcon name="rotate" />}
           >
-            Poll Nodes
+            Poll Telemetry
           </Button>
         </div>
       </div>
@@ -110,17 +96,17 @@ export default function DevicesView() {
       {/* Primary Device Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <MetricCard
-          title="Active Simulation Nodes"
+          title="Active Edge Nodes"
           value={devices.length}
-          subtitle="Smart meters & controllers"
-          iconName="microchip"
+          subtitle="Smart meters & BMS"
+          iconName="devices"
           variant="default"
           delta="100% Online"
           deltaType="positive"
         />
 
         <MetricCard
-          title="Telemetry Data Source"
+          title="Telemetry Source"
           value="Simulated"
           subtitle="Physics-based diurnal engine"
           iconName="sliders"
@@ -131,10 +117,10 @@ export default function DevicesView() {
         <MetricCard
           title="Connection Health"
           value="100%"
-          subtitle="Zero packet loss across mesh"
-          iconName="wifi"
+          subtitle="Zero packet drop across mesh"
+          iconName="network"
           variant="surplus"
-          delta="Stable 5s polling cycle"
+          delta="Stable 6s polling cycle"
           deltaType="positive"
         />
 
@@ -142,123 +128,61 @@ export default function DevicesView() {
           title="Aggregate Edge Load"
           value={`${devices.reduce((sum, d) => sum + (d.powerKw || 0), 0).toFixed(1)} kW`}
           subtitle="Total telemetry throughput"
-          iconName="energy"
+          iconName="solar"
           variant="solar"
         />
       </div>
 
-      {/* Node List & Inspector Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
-        {/* Devices List Table (8 cols) */}
-        <div className="lg:col-span-8 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
-            <div>
-              <h3 className="text-base font-bold text-[#102019]">
-                Configured Edge Telemetry Nodes
-              </h3>
-              <p className="text-xs text-[#5D6B64]">
-                Click any device to inspect firmware parameters and circuit state
-              </p>
-            </div>
-            <Badge variant="default" size="xs">
-              {devices.length} Nodes
-            </Badge>
-          </div>
-
-          <div className="space-y-2.5">
-            {devices.map((d) => {
-              const isSelected = selectedDevice?.id === d.id;
-              return (
-                <div
-                  key={d.id}
-                  onClick={() => setSelectedDevice(d)}
-                  className={`p-4 rounded-xl border transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                    isSelected
-                      ? 'bg-[#E7F5EE] border-[#168A5A] shadow-xs'
-                      : 'bg-[#FBFCFB] border-[#DDE5E0] hover:bg-white hover:border-[#CBD5CF]'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm ${
-                      isSelected ? 'bg-[#168A5A] text-white' : 'bg-[#F5F7F6] text-[#5D6B64]'
-                    }`}>
-                      <FaIcon name="microchip" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-[#102019]">{d.name}</div>
-                      <div className="text-xs text-[#83908A]">{d.id} • {d.firmware || 'v1.0.4'}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4 text-xs font-mono">
-                    <div>
-                      <span className="text-[#83908A] text-[10px] block">Active Draw:</span>
-                      <span className="font-bold text-[#102019]">{d.powerKw || 0} kW</span>
-                    </div>
-                    <div>
-                      <span className="text-[#83908A] text-[10px] block">Voltage:</span>
-                      <span className="font-bold text-[#102019]">{d.voltage || 230} V</span>
-                    </div>
-                    <Badge variant="surplus" size="xs">
-                      ONLINE
-                    </Badge>
-                  </div>
+      {/* Device Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {devices.map((device) => (
+          <div
+            key={device.id}
+            onClick={() => setSelectedDevice(device)}
+            className={`rounded-2xl border bg-white p-5 shadow-card transition-all cursor-pointer ${
+              selectedDevice?.id === device.id
+                ? 'border-[#209B67] ring-2 ring-[#209B67]/20'
+                : 'border-[#DCE4DE] hover:border-[#C7D2CB]'
+            }`}
+          >
+            <div className="flex items-start justify-between pb-3 border-b border-[#DCE4DE]">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-sm">
+                  <FaIcon name="devices" />
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Device Detail Panel (4 cols) */}
-        <div className="lg:col-span-4 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
-            <div>
-              <h3 className="text-base font-bold text-[#102019]">
-                Device Inspector
-              </h3>
-              <p className="text-xs text-[#5D6B64]">
-                Hardware telemetry configuration
-              </p>
-            </div>
-            <Badge variant="warning" size="xs">
-              SIMULATED
-            </Badge>
-          </div>
-
-          {selectedDevice ? (
-            <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-[#FBFCFB] border border-[#DDE5E0] space-y-1">
-                <span className="text-[10px] uppercase font-bold text-[#83908A]">Device Identification</span>
-                <div className="text-sm font-bold text-[#102019]">{selectedDevice.name}</div>
-                <div className="text-xs font-mono text-[#5D6B64]">UUID: {selectedDevice.id}</div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-3 rounded-xl bg-[#FBFCFB] border border-[#DDE5E0]">
-                  <span className="text-[10px] text-[#83908A]">Telemetry Source</span>
-                  <div className="font-bold text-[#102019] mt-0.5">Physics Model</div>
-                </div>
-                <div className="p-3 rounded-xl bg-[#FBFCFB] border border-[#DDE5E0]">
-                  <span className="text-[10px] text-[#83908A]">Polling Interval</span>
-                  <div className="font-bold text-[#102019] mt-0.5">5.0 Seconds</div>
+                <div>
+                  <h3 className="text-sm font-bold text-[#15211B]">{device.name}</h3>
+                  <span className="text-[11px] font-mono text-[#87918B]">{device.id}</span>
                 </div>
               </div>
+              <Badge variant="surplus" size="xs">
+                <StatusIndicator status="online" pulse />
+                <span>ONLINE</span>
+              </Badge>
+            </div>
 
-              <div className="p-3.5 rounded-xl bg-[#E7F5EE] border border-[#DDE5E0] space-y-1">
-                <span className="font-bold text-[#168A5A] block">Hardware Integration Ready</span>
-                <p className="text-[#5D6B64] text-[11.5px] leading-relaxed">
-                  This device boundary exposes standardized JSON ingestion schemas ready to bind to physical ESP32 or MQTT telemetry in future hardware phases.
-                </p>
+            <div className="mt-3 space-y-2 text-xs">
+              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
+                <span className="text-[#5E6A63]">Device Role:</span>
+                <span className="font-semibold text-[#15211B]">{device.type}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
+                <span className="text-[#5E6A63]">Telemetry Power:</span>
+                <span className="font-mono font-bold text-[#209B67]">{device.powerKw?.toFixed(2)} kW</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
+                <span className="text-[#5E6A63]">Bus Voltage:</span>
+                <span className="font-mono font-bold text-[#15211B]">{device.voltage} V AC</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
+                <span className="text-[#5E6A63]">Firmware Build:</span>
+                <span className="font-mono text-[#87918B]">{device.firmware}</span>
               </div>
             </div>
-          ) : (
-            <div className="text-center py-8 text-xs text-[#83908A]">
-              Select a device from the list to view telemetry parameters.
-            </div>
-          )}
-        </div>
+          </div>
+        ))}
       </div>
+
     </div>
   );
 }

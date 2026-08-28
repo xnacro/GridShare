@@ -8,30 +8,55 @@ export default {
     extend: {
       colors: {
         gs: {
-          canvas: '#F5F6F2',
+          canvas: '#F5F7F3',
+          canvasSoft: '#EEF1EB',
           surface: '#FFFFFF',
-          dark: '#12251D',
-          deepForest: '#173C2B',
-          emerald: '#1C9A67',
-          brightEnergy: '#39C985',
-          softEmerald: '#E7F5EE',
-          aiViolet: '#7357C8',
-          softAi: '#F0ECFF',
-          solarAmber: '#E7A82D',
+          surfaceElevated: '#FBFCFA',
+          
+          // Typography
+          graphite: '#15211B',
+          forestInk: '#17382B',
+          secondary: '#5E6A63',
+          muted: '#87918B',
+          
+          // Borders
+          border: '#DCE4DE',
+          borderSoft: '#DCE4DE',
+          borderStrong: '#C7D2CB',
+          
+          // Brand & Energy Accents
+          deepForest: '#12392B',
+          forest: '#17513B',
+          emerald: '#209B67',
+          brightEnergy: '#41C98A',
+          softEmerald: '#E7F6EE',
+          
+          // Solar
+          solarGold: '#E7AA31',
           softSolar: '#FFF3D7',
-          gridBlue: '#3A78D1',
-          softGrid: '#EAF1FD',
-          text: '#142019',
-          secondary: '#5C6962',
-          border: '#DDE4DF',
+          
+          // Battery
+          batteryAmber: '#D79A27',
+          
+          // Grid
+          gridBlue: '#397BD2',
+          softGrid: '#EAF2FC',
+          
+          // Deficit / Alert
+          deficitCoral: '#D85D5D',
+          softCoral: '#FDECEC',
+          
+          // AI Intelligence Layer (Secondary Accent)
+          aiViolet: '#7359C8',
+          softAi: '#F1EDFF',
         },
         brand: {
-          50: '#E7F5EE',
-          100: '#d1fae5',
-          500: '#39C985',
-          600: '#1C9A67',
-          700: '#173C2B',
-          800: '#12251D',
+          50: '#E7F6EE',
+          100: '#C7EDD9',
+          500: '#41C98A',
+          600: '#209B67',
+          700: '#17513B',
+          800: '#12392B',
         },
       },
       fontFamily: {
@@ -40,16 +65,18 @@ export default {
       },
       borderRadius: {
         'pill': '9999px',
-        'xl': '14px',
-        '2xl': '18px',
-        '3xl': '24px',
+        'sm': '10px',
+        'md': '12px',
+        'xl': '16px',
+        '2xl': '20px',
+        '3xl': '26px',
       },
       boxShadow: {
-        'subtle': '0 1px 2px 0 rgba(20, 32, 25, 0.03)',
-        'card': '0 1px 3px 0 rgba(20, 32, 25, 0.04), 0 1px 2px -1px rgba(20, 32, 25, 0.04)',
-        'elevated': '0 4px 12px -2px rgba(20, 32, 25, 0.06), 0 2px 6px -1px rgba(20, 32, 25, 0.03)',
-        'modal': '0 20px 25px -5px rgba(20, 32, 25, 0.08), 0 8px 10px -6px rgba(20, 32, 25, 0.04)',
-      }
+        'subtle': '0 1px 2px 0 rgba(21, 33, 27, 0.03)',
+        'card': '0 1px 3px 0 rgba(21, 33, 27, 0.04), 0 1px 2px -1px rgba(21, 33, 27, 0.03)',
+        'elevated': '0 4px 16px -2px rgba(21, 33, 27, 0.06), 0 2px 6px -1px rgba(21, 33, 27, 0.03)',
+        'modal': '0 20px 30px -6px rgba(21, 33, 27, 0.10), 0 10px 12px -5px rgba(21, 33, 27, 0.04)',
+      },
     },
   },
   plugins: [],

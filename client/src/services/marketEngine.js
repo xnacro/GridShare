@@ -113,6 +113,7 @@ export function computeHouseholdStates(households, sellOrders = [], buyOrders = 
     return {
       ...h,
       netEnergy: net,
+      netBalance: net,
       status: isSurplus ? 'SURPLUS' : isDeficit ? 'DEFICIT' : 'BALANCED',
       surplusKw: baseSurplus,
       deficitKw: baseDeficit,

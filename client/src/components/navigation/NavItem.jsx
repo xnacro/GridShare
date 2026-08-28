@@ -24,11 +24,11 @@ export default function NavItem({
       } ${
         isActive
           ? isAi
-            ? 'bg-[#F0ECFF] text-[#7357C8] shadow-subtle'
-            : 'bg-[#E7F5EE] text-[#12372A] shadow-subtle'
+            ? 'bg-[#F1EDFF] text-[#7359C8] shadow-subtle'
+            : 'bg-[#E7F6EE] text-[#12392B] shadow-subtle'
           : isAi
-          ? 'text-[#7357C8] hover:text-[#5B41AF] hover:bg-[#F0ECFF]/60'
-          : 'text-[#5C6962] hover:text-[#142019] hover:bg-[#F5F6F2]'
+          ? 'text-[#7359C8] hover:text-[#5E44B2] hover:bg-[#F1EDFF]/60'
+          : 'text-[#5E6A63] hover:text-[#15211B] hover:bg-[#F5F7F3]'
       }`}
     >
       {/* Icon */}
@@ -37,11 +37,11 @@ export default function NavItem({
         className={`text-sm flex-shrink-0 transition-colors ${
           isActive
             ? isAi
-              ? 'text-[#7357C8]'
-              : 'text-[#1C9A67]'
+              ? 'text-[#7359C8]'
+              : 'text-[#209B67]'
             : isAi
-            ? 'text-[#7357C8]'
-            : 'text-[#7C8781] group-hover:text-[#142019]'
+            ? 'text-[#7359C8]'
+            : 'text-[#87918B] group-hover:text-[#15211B]'
         }`}
       />
 
@@ -54,7 +54,7 @@ export default function NavItem({
 
       {/* Floating Tooltip in collapsed mode */}
       {isCollapsed && (
-        <div className="absolute top-full mt-2.5 px-2.5 py-1 bg-[#12251D] text-white text-[11px] font-semibold rounded-lg shadow-modal opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-150 -translate-y-1 group-hover:translate-y-0 z-50 whitespace-nowrap">
+        <div className="absolute top-full mt-2.5 px-2.5 py-1 bg-[#12392B] text-white text-[11px] font-semibold rounded-lg shadow-modal opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-150 -translate-y-1 group-hover:translate-y-0 z-50 whitespace-nowrap">
           {name}
         </div>
       )}

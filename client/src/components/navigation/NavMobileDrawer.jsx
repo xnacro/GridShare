@@ -37,6 +37,7 @@ export default function NavMobileDrawer({
       items: [
         { name: 'Devices & Meters', path: '/devices', iconName: 'devices' },
         { name: 'Transaction Ledger', path: '/transactions', iconName: 'transactions' },
+        { name: 'Optimization', path: '/optimize', iconName: 'sliders' },
       ],
     },
   ];
@@ -45,7 +46,7 @@ export default function NavMobileDrawer({
     <div className="fixed inset-0 z-50 flex lg:hidden">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-[#142019]/50 backdrop-blur-sm animate-in fade-in duration-200"
+        className="fixed inset-0 bg-[#15211B]/50 backdrop-blur-sm animate-in fade-in duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -54,20 +55,20 @@ export default function NavMobileDrawer({
       <div className="relative ml-auto flex h-full w-4/5 max-w-sm flex-col bg-white p-6 shadow-modal animate-in slide-in-from-right duration-200 z-10">
         
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#DDE4DF]">
+        <div className="flex items-center justify-between pb-4 border-b border-[#DCE4DE]">
           <div className="flex items-center space-x-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#12251D] text-white shadow-sm">
-              <FaIcon name="energy" className="text-sm text-[#39C985]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#12392B] text-white shadow-sm">
+              <FaIcon name="energy" className="text-sm text-[#41C98A]" />
             </div>
-            <span className="text-base font-extrabold tracking-tight text-[#142019]">
-              GRID<span className="text-[#1C9A67]">SHARE</span>
+            <span className="text-base font-extrabold tracking-tight text-[#15211B]">
+              GRID<span className="text-[#209B67]">SHARE</span>
             </span>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-[#7C8781] hover:bg-[#F5F6F2] hover:text-[#142019]"
+            className="rounded-full p-2 text-[#87918B] hover:bg-[#F5F7F3] hover:text-[#15211B]"
             aria-label="Close navigation"
           >
             <FaIcon name="close" className="text-sm" />
@@ -78,7 +79,7 @@ export default function NavMobileDrawer({
         <div className="flex-1 overflow-y-auto py-4 space-y-6">
           {navGroups.map((group, idx) => (
             <div key={idx} className="space-y-1.5">
-              <div className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-[#7C8781]">
+              <div className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-[#87918B]">
                 {group.title}
               </div>
               {group.items.map((item) => {
@@ -91,14 +92,14 @@ export default function NavMobileDrawer({
                     className={`flex items-center space-x-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition ${
                       active
                         ? item.isAi
-                          ? 'bg-[#F0ECFF] text-[#7357C8]'
-                          : 'bg-[#E7F5EE] text-[#12372A]'
-                        : 'text-[#5C6962] hover:bg-[#F5F6F2] hover:text-[#142019]'
+                          ? 'bg-[#F1EDFF] text-[#7359C8]'
+                          : 'bg-[#E7F6EE] text-[#12392B]'
+                        : 'text-[#5E6A63] hover:bg-[#F5F7F3] hover:text-[#15211B]'
                     }`}
                   >
                     <FaIcon
                       name={item.iconName}
-                      className={active ? (item.isAi ? 'text-[#7357C8]' : 'text-[#1C9A67]') : 'text-[#7C8781]'}
+                      className={active ? (item.isAi ? 'text-[#7359C8]' : 'text-[#209B67]') : 'text-[#87918B]'}
                     />
                     <span>{item.name}</span>
                   </NavLink>
@@ -109,7 +110,7 @@ export default function NavMobileDrawer({
         </div>
 
         {/* Bottom Actions */}
-        <div className="pt-4 border-t border-[#DDE4DF] space-y-2">
+        <div className="pt-4 border-t border-[#DCE4DE] space-y-2">
           {onOpenDemoModal && (
             <button
               type="button"
@@ -117,9 +118,9 @@ export default function NavMobileDrawer({
                 onClose();
                 onOpenDemoModal();
               }}
-              className="w-full flex items-center space-x-2.5 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#142019] bg-[#FFF3D7] hover:bg-[#FDE7B4] transition"
+              className="w-full flex items-center space-x-2.5 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#15211B] bg-[#FFF3D7] hover:bg-[#FDE7B4] transition"
             >
-              <FaIcon name="scenarios" className="text-[#E7A82D]" />
+              <FaIcon name="scenarios" className="text-[#E7AA31]" />
               <span>Guided Scenarios</span>
             </button>
           )}
@@ -131,9 +132,9 @@ export default function NavMobileDrawer({
                 onClose();
                 onOpenHealthModal();
               }}
-              className="w-full flex items-center space-x-2.5 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#5C6962] hover:bg-[#F5F6F2] hover:text-[#142019] transition"
+              className="w-full flex items-center space-x-2.5 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#5E6A63] hover:bg-[#F5F7F3] hover:text-[#15211B] transition"
             >
-              <FaIcon name="health" className="text-[#1C9A67]" />
+              <FaIcon name="health" className="text-[#209B67]" />
               <span>System Health</span>
             </button>
           )}

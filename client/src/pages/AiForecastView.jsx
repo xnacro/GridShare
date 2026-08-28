@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import FaIcon from '../components/icons/FaIcon';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
-import MetricCard from '../components/ui/MetricCard';
 import AiDecisionPipeline from '../components/copilot/AiDecisionPipeline';
 import ForecastRangeChart from '../components/copilot/ForecastRangeChart';
 import WeatherShockSimulator from '../components/copilot/WeatherShockSimulator';
@@ -20,6 +19,8 @@ export default function AiForecastView() {
   const [selectedHousehold, setSelectedHousehold] = useState('COMMUNITY');
   const [households, setHouseholds] = useState([]);
   const [actionNotice, setActionNotice] = useState(null);
+  const [viewMode, setViewMode] = useState('SIMPLE'); // 'SIMPLE', 'ADVANCED'
+  const [showGuide, setShowGuide] = useState(true);
 
   // Map string horizon to minutes
   const horizonMinutesMap = {
@@ -87,18 +88,11 @@ export default function AiForecastView() {
 
   // Handle Dispatch Approved
   const handleSelectAction = (decision) => {
-    setActionNotice(`Dispatch Plan Approved: ${decision.action_label}. Grid routing prepared.`);
+    setActionNotice(`Dispatch Plan Approved: ${decision.action_label || 'Optimal Route'}. Microgrid dispatch executed.`);
     setTimeout(() => setActionNotice(null), 6000);
   };
 
-  const [viewMode, setViewMode] = useState('SIMPLE'); // 'SIMPLE', 'ADVANCED'
-  const [showGuide, setShowGuide] = useState(true);
-
-  const current = copilotData?.current_state || {};
   const forecast = copilotData?.forecast || {};
-  const decision = copilotData?.decision || {};
-  const risk = copilotData?.risk_check || {};
-  const impact = copilotData?.impact || {};
 
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
@@ -106,30 +100,30 @@ export default function AiForecastView() {
       {/* 🌟 Top Header: Title, Mode Toggle & Context Switchers */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#142019]">
-              Hornet AI
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#15211B]">
+              Hornet AI Operating Hub
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#12251D] text-white">
-              Autonomous Energy Advisor
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#12392B] text-white">
+              Autonomous Intelligence
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-            Real-time solar & load forecasting that automatically calculates the most profitable energy action.
+          <p className="text-xs sm:text-sm text-[#5E6A63] font-medium mt-1">
+            Real-time solar irradiance & load forecasting feeding a risk-aware priority dispatch engine.
           </p>
         </div>
 
         {/* Filters & Mode Switcher */}
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Simple vs Advanced Toggle */}
-          <div className="flex items-center bg-[#F5F6F2] p-1 rounded-xl border border-[#DDE4DF] text-xs font-bold">
+          {/* Simple vs Technical ML Toggle */}
+          <div className="flex items-center bg-[#F5F7F3] p-1 rounded-xl border border-[#DCE4DE] text-xs font-bold">
             <button
               type="button"
               onClick={() => setViewMode('SIMPLE')}
               className={`px-3 py-1.5 rounded-lg transition ${
                 viewMode === 'SIMPLE'
-                  ? 'bg-white text-[#142019] shadow-subtle'
-                  : 'text-slate-500 hover:text-[#142019]'
+                  ? 'bg-white text-[#15211B] shadow-subtle'
+                  : 'text-[#5E6A63] hover:text-[#15211B]'
               }`}
             >
               🌱 Simple View
@@ -139,8 +133,8 @@ export default function AiForecastView() {
               onClick={() => setViewMode('ADVANCED')}
               className={`px-3 py-1.5 rounded-lg transition ${
                 viewMode === 'ADVANCED'
-                  ? 'bg-white text-[#142019] shadow-subtle'
-                  : 'text-slate-500 hover:text-[#142019]'
+                  ? 'bg-white text-[#15211B] shadow-subtle'
+                  : 'text-[#5E6A63] hover:text-[#15211B]'
               }`}
             >
               🔬 Technical ML View
@@ -152,7 +146,7 @@ export default function AiForecastView() {
             <select
               value={selectedHousehold}
               onChange={(e) => setSelectedHousehold(e.target.value)}
-              className="rounded-xl border border-[#DDE4DF] bg-white px-3 py-2 text-xs font-bold text-[#142019] shadow-subtle focus:outline-none focus:ring-2 focus:ring-[#1C9A67]/20"
+              className="rounded-xl border border-[#DCE4DE] bg-white px-3 py-2 text-xs font-bold text-[#15211B] shadow-subtle focus:outline-none focus:ring-2 focus:ring-[#209B67]/20"
             >
               <option value="COMMUNITY">Entire Community</option>
               {households.map((h) => (
@@ -167,50 +161,54 @@ export default function AiForecastView() {
 
       {/* 💡 Quick-Start 3-Step Guide Banner (Collapsible) */}
       {showGuide && (
-        <div className="rounded-2xl border border-[#1C9A67]/30 bg-gradient-to-r from-[#E7F5EE]/80 via-white to-[#E7F5EE]/50 p-4 sm:p-5 shadow-subtle relative">
+        <div className="rounded-2xl border border-[#DCE4DE] bg-white p-5 shadow-card relative overflow-hidden">
+          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-[#E7F6EE]/60 blur-2xl pointer-events-none" />
+          
           <button
             type="button"
             onClick={() => setShowGuide(false)}
-            className="absolute top-3 right-3 text-xs font-bold text-slate-400 hover:text-slate-700"
+            className="absolute top-4 right-4 text-xs font-bold text-[#87918B] hover:text-[#15211B]"
           >
             ✕ Hide Guide
           </button>
           
           <div className="flex items-center space-x-2 mb-3">
-            <span className="text-base">🐝</span>
-            <h3 className="text-sm font-extrabold text-[#142019]">
+            <div className="w-6 h-6 rounded-lg bg-[#F1EDFF] text-[#7359C8] flex items-center justify-center text-xs">
+              <FaIcon name="ai" />
+            </div>
+            <h3 className="text-sm font-extrabold text-[#15211B]">
               How Hornet AI Works (in 3 Simple Steps)
             </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-3 rounded-xl bg-white border border-[#DDE4DF] shadow-2xs space-y-1">
-              <div className="flex items-center space-x-1.5 font-bold text-[#142019]">
-                <span className="h-5 w-5 rounded-full bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center text-xs">1</span>
+            <div className="p-3.5 rounded-xl bg-[#F5F7F3]/70 border border-[#DCE4DE] space-y-1">
+              <div className="flex items-center space-x-1.5 font-bold text-[#15211B]">
+                <span className="h-5 w-5 rounded-full bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-xs">1</span>
                 <span>Observe & Predict</span>
               </div>
-              <p className="text-slate-500 leading-relaxed text-[11px]">
-                Hornet AI monitors real-time solar irradiance and household load, forecasting whether you will have <strong>surplus power</strong> or <strong>power deficit</strong> in the next 15 minutes.
+              <p className="text-[#5E6A63] leading-relaxed text-[11.5px]">
+                Hornet AI runs two distinct models (<code className="text-[#209B67]">demand_v1</code> and <code className="text-[#E7AA31]">solar_v1</code>) to predict 15m load and solar irradiance.
               </p>
             </div>
 
-            <div className="p-3 rounded-xl bg-white border border-[#DDE4DF] shadow-2xs space-y-1">
-              <div className="flex items-center space-x-1.5 font-bold text-[#142019]">
-                <span className="h-5 w-5 rounded-full bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center text-xs">2</span>
+            <div className="p-3.5 rounded-xl bg-[#F5F7F3]/70 border border-[#DCE4DE] space-y-1">
+              <div className="flex items-center space-x-1.5 font-bold text-[#15211B]">
+                <span className="h-5 w-5 rounded-full bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-xs">2</span>
                 <span>Optimize & Protect</span>
               </div>
-              <p className="text-slate-500 leading-relaxed text-[11px]">
-                It calculates the most profitable action (Trade locally at ₹4.50 vs Grid ₹6.10), while keeping your <strong>battery reserve safe (≥20%)</strong>.
+              <p className="text-[#5E6A63] leading-relaxed text-[11.5px]">
+                Our deterministic optimizer routes surplus to peers (₹4.50 vs ₹6.10 grid) while strictly protecting the <strong>20% battery floor</strong>.
               </p>
             </div>
 
-            <div className="p-3 rounded-xl bg-white border border-[#DDE4DF] shadow-2xs space-y-1">
-              <div className="flex items-center space-x-1.5 font-bold text-[#142019]">
-                <span className="h-5 w-5 rounded-full bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center text-xs">3</span>
+            <div className="p-3.5 rounded-xl bg-[#F5F7F3]/70 border border-[#DCE4DE] space-y-1">
+              <div className="flex items-center space-x-1.5 font-bold text-[#15211B]">
+                <span className="h-5 w-5 rounded-full bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-xs">3</span>
                 <span>Review & Approve</span>
               </div>
-              <p className="text-slate-500 leading-relaxed text-[11px]">
-                Click <strong>"Review & Confirm"</strong> to approve the proposed energy action. Hornet AI never trades without your review.
+              <p className="text-[#5E6A63] leading-relaxed text-[11.5px]">
+                Click <strong>"Review & Confirm"</strong> to approve the proposed action. Human governance is enforced at all times.
               </p>
             </div>
           </div>
@@ -219,7 +217,7 @@ export default function AiForecastView() {
 
       {/* 🚀 Action Feedback Toast */}
       {actionNotice && (
-        <div className="p-3.5 rounded-xl bg-[#E7F5EE] border border-[#1C9A67]/30 text-xs font-bold text-[#1C9A67] flex items-center justify-between animate-fadeIn shadow-subtle">
+        <div className="p-3.5 rounded-xl bg-[#E7F6EE] border border-[#209B67]/30 text-xs font-bold text-[#209B67] flex items-center justify-between animate-fadeIn shadow-subtle">
           <div className="flex items-center space-x-2">
             <FaIcon name="check" className="text-sm" />
             <span>{actionNotice}</span>
@@ -236,7 +234,7 @@ export default function AiForecastView() {
 
       {/* 🚨 Error Banner if any */}
       {error && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-[#FDECEC] border border-[#D85D5D]/30 text-xs text-[#D85D5D] flex items-center justify-between">
           <span>{error}</span>
           <Button size="sm" variant="secondary" onClick={fetchInsights}>
             Retry
@@ -250,6 +248,7 @@ export default function AiForecastView() {
         isLoading={isLoading}
         onRefresh={fetchInsights}
         onSelectAction={handleSelectAction}
+        viewMode={viewMode}
       />
 
       {/* 📈 2. Multi-Horizon Forecast Corridor Chart */}
@@ -263,53 +262,55 @@ export default function AiForecastView() {
       <WeatherShockSimulator onShockApplied={handleShockApplied} />
 
       {/* 🧭 4. Model Architecture & Provenance Metadata */}
-      <div className="rounded-2xl border border-[#DDE4DF] bg-white p-5 shadow-card space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-[#EEF2EF]">
-          <div className="flex items-center space-x-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#12251D] text-white">
-              <FaIcon name="shield" className="text-xs text-[#39C985]" />
+      {viewMode === 'ADVANCED' && (
+        <div className="rounded-2xl border border-[#DCE4DE] bg-white p-5 shadow-card space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-[#DCE4DE]">
+            <div className="flex items-center space-x-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#12392B] text-white">
+                <FaIcon name="shield" className="text-xs text-[#41C98A]" />
+              </div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#15211B]">
+                ML Models & Dispatch Engine Provenance
+              </h3>
             </div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#142019]">
-              ML Models & Dispatch Engine Provenance
-            </h3>
+            <span className="text-[11px] font-mono text-[#87918B]">
+              Validated Zero-Leakage Architecture
+            </span>
           </div>
-          <span className="text-[11px] font-mono text-slate-400">
-            Validated Zero-Leakage Architecture
-          </span>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#F5F7F3] border border-[#DCE4DE] space-y-1">
+              <div className="flex items-center justify-between font-bold">
+                <span className="text-[#15211B]">Demand Model</span>
+                <span className="font-mono text-[#209B67]">demand_v1</span>
+              </div>
+              <p className="text-[#5E6A63] text-[11px]">
+                150-Tree Random Forest trained on 2M+ records. Holdout Test MAE: 0.235 kW, R²: 0.758.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-[#F5F7F3] border border-[#DCE4DE] space-y-1">
+              <div className="flex items-center justify-between font-bold">
+                <span className="text-[#15211B]">Solar Resource Model</span>
+                <span className="font-mono text-[#E7AA31]">solar_v1</span>
+              </div>
+              <p className="text-[#5E6A63] text-[11px]">
+                Guwahati NSRDB satellite model (35k intervals). Daytime RMSE: 50.19 W/m², R²: 0.979.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-[#F5F7F3] border border-[#DCE4DE] space-y-1">
+              <div className="flex items-center justify-between font-bold">
+                <span className="text-[#15211B]">Routing Optimizer</span>
+                <span className="font-mono text-[#397BD2]">Rule Engine v1.0</span>
+              </div>
+              <p className="text-[#5E6A63] text-[11px]">
+                Deterministic priority: Local P2P Match → Battery Store → Grid Export / Discharge.
+              </p>
+            </div>
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div className="p-3 rounded-xl bg-[#FAFBF9] border border-[#EEF2EF] space-y-1">
-            <div className="flex items-center justify-between font-bold">
-              <span className="text-[#142019]">Demand Model</span>
-              <span className="font-mono text-[#1C9A67]">demand_v1</span>
-            </div>
-            <p className="text-slate-500 text-[11px]">
-              150-Tree Random Forest trained on 2M+ records. Test MAE: 0.235 kW, R²: 0.758.
-            </p>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#FAFBF9] border border-[#EEF2EF] space-y-1">
-            <div className="flex items-center justify-between font-bold">
-              <span className="text-[#142019]">Solar Resource Model</span>
-              <span className="font-mono text-[#D97706]">solar_v1</span>
-            </div>
-            <p className="text-slate-500 text-[11px]">
-              Guwahati NSRDB satellite model (35k intervals). Daytime RMSE: 50.19 W/m², R²: 0.979.
-            </p>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#FAFBF9] border border-[#EEF2EF] space-y-1">
-            <div className="flex items-center justify-between font-bold">
-              <span className="text-[#142019]">Routing Optimizer</span>
-              <span className="font-mono text-blue-600">Rule Engine v1.0</span>
-            </div>
-            <p className="text-slate-500 text-[11px]">
-              Deterministic priority: Local P2P Match → Battery Store → Grid Export / Discharge.
-            </p>
-          </div>
-        </div>
-      </div>
+      )}
 
     </div>
   );

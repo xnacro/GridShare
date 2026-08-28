@@ -9,10 +9,10 @@ export default function SystemHealthModal({ isOpen, onClose }) {
     backend: 'healthy',
     database: 'healthy',
     realtime: 'connected',
-    simulation: 'running',
-    mode: 'Simulation / IoT Smart Grid',
-    dbHost: 'aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres',
-    version: '1.0.0',
+    demandModel: 'available',
+    solarModel: 'available',
+    mode: 'Guwahati Microgrid Cluster',
+    version: '2.0.0',
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -25,8 +25,8 @@ export default function SystemHealthModal({ isOpen, onClose }) {
           ...prev,
           backend: res.data.status === 'healthy' ? 'healthy' : 'degraded',
           database: res.data.database || 'healthy',
-          mode: res.data.mode || 'Simulation / IoT Smart Grid',
-          version: res.data.version || '1.0.0',
+          mode: res.data.mode || 'Guwahati Microgrid Cluster',
+          version: res.data.version || '2.0.0',
         }));
       }
     } catch (e) {
@@ -45,26 +45,26 @@ export default function SystemHealthModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#102019]/50 p-4 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-lg rounded-2xl border border-[#DDE5E0] bg-white p-6 shadow-modal animate-in zoom-in-95 duration-150">
-        <div className="flex items-start justify-between pb-4 border-b border-[#DDE5E0]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#15211B]/50 p-4 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="w-full max-w-lg rounded-3xl border border-[#DCE4DE] bg-white p-6 shadow-modal animate-in zoom-in-95 duration-150">
+        <div className="flex items-start justify-between pb-4 border-b border-[#DCE4DE]">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-[#E7F5EE] text-[#168A5A] flex items-center justify-center text-lg flex-shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-lg flex-shrink-0">
               <FaIcon name="health" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#102019]">
+              <h3 className="text-lg font-bold text-[#15211B]">
                 System Infrastructure & Health
               </h3>
-              <p className="text-xs text-[#5D6B64]">
-                Telemetry pipes, database connectivity, and simulation engine
+              <p className="text-xs text-[#5E6A63]">
+                Telemetry pipelines, cloud database, and ML models
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#83908A] hover:text-[#102019] text-sm font-bold p-1 rounded-lg hover:bg-[#F5F7F6]"
+            className="text-[#87918B] hover:text-[#15211B] text-sm font-bold p-1 rounded-lg hover:bg-[#F5F7F3]"
           >
             ✕
           </button>
@@ -72,12 +72,12 @@ export default function SystemHealthModal({ isOpen, onClose }) {
 
         <div className="mt-5 space-y-3">
           {/* Backend Service */}
-          <div className="flex items-center justify-between p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#DCE4DE] bg-[#FBFCFA]">
             <div className="flex items-center space-x-3">
-              <FaIcon name="server" className="text-[#5D6B64]" />
+              <FaIcon name="server" className="text-[#5E6A63]" />
               <div>
-                <div className="text-sm font-bold text-[#102019]">Backend REST API</div>
-                <div className="text-xs text-[#83908A]">Flask Python Engine v{healthData.version}</div>
+                <div className="text-sm font-bold text-[#15211B]">Backend REST API</div>
+                <div className="text-xs text-[#87918B]">Flask Python Engine v{healthData.version}</div>
               </div>
             </div>
             <Badge variant={healthData.backend === 'healthy' ? 'surplus' : 'deficit'} size="sm">
@@ -87,12 +87,12 @@ export default function SystemHealthModal({ isOpen, onClose }) {
           </div>
 
           {/* Database */}
-          <div className="flex items-center justify-between p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#DCE4DE] bg-[#FBFCFA]">
             <div className="flex items-center space-x-3">
-              <FaIcon name="grid" className="text-[#3678D4]" />
+              <FaIcon name="grid" className="text-[#397BD2]" />
               <div>
-                <div className="text-sm font-bold text-[#102019]">Primary Database</div>
-                <div className="text-xs text-[#83908A]">Supabase PostgreSQL (Authoritative)</div>
+                <div className="text-sm font-bold text-[#15211B]">Primary Database</div>
+                <div className="text-xs text-[#87918B]">PostgreSQL Ledger (Authoritative)</div>
               </div>
             </div>
             <Badge variant={healthData.database === 'healthy' ? 'surplus' : 'deficit'} size="sm">
@@ -101,43 +101,43 @@ export default function SystemHealthModal({ isOpen, onClose }) {
             </Badge>
           </div>
 
-          {/* Realtime Telemetry */}
-          <div className="flex items-center justify-between p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+          {/* ML Models */}
+          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#DCE4DE] bg-[#FBFCFA]">
             <div className="flex items-center space-x-3">
-              <FaIcon name="wifi" className="text-[#168A5A]" />
+              <FaIcon name="ai" className="text-[#7359C8]" />
               <div>
-                <div className="text-sm font-bold text-[#102019]">Realtime WebSocket & SSE</div>
-                <div className="text-xs text-[#83908A]">Active bi-directional stream mesh</div>
+                <div className="text-sm font-bold text-[#15211B]">Hornet AI Models</div>
+                <div className="text-xs text-[#87918B]">demand_v1 & solar_v1 (150 trees)</div>
               </div>
             </div>
-            <Badge variant="surplus" size="sm">
+            <Badge variant="ai" size="sm">
               <StatusIndicator status="online" pulse />
-              <span>Connected</span>
+              <span>Available</span>
             </Badge>
           </div>
 
-          {/* Simulation Engine */}
-          <div className="flex items-center justify-between p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+          {/* Operating Cluster */}
+          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#DCE4DE] bg-[#FBFCFA]">
             <div className="flex items-center space-x-3">
-              <FaIcon name="sliders" className="text-[#E8A72B]" />
+              <FaIcon name="solar" className="text-[#E7AA31]" />
               <div>
-                <div className="text-sm font-bold text-[#102019]">Microgrid Simulation</div>
-                <div className="text-xs text-[#83908A]">{healthData.mode}</div>
+                <div className="text-sm font-bold text-[#15211B]">Operating Scope</div>
+                <div className="text-xs text-[#87918B]">{healthData.mode}</div>
               </div>
             </div>
             <Badge variant="warning" size="sm">
-              <span>Running</span>
+              <span>Active</span>
             </Badge>
           </div>
         </div>
 
-        <div className="mt-6 pt-4 border-t border-[#DDE5E0] flex items-center justify-between">
+        <div className="mt-6 pt-4 border-t border-[#DCE4DE] flex items-center justify-between">
           <Button
             variant="outline"
             size="sm"
             onClick={fetchHealth}
             isLoading={isRefreshing}
-            icon={<FaIcon name="refresh" className={isRefreshing ? 'animate-spin' : ''} />}
+            icon={<FaIcon name="rotate" />}
           >
             Check Status
           </Button>

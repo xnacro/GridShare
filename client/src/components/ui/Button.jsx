@@ -17,24 +17,24 @@ export default function Button({
 }) {
   const variantClasses = {
     primary:
-      'bg-[#163A2B] text-white hover:bg-[#12251D] active:bg-[#0B1611] border-[#163A2B] shadow-sm focus:ring-[#168A5A]/30',
+      'bg-[#12392B] text-white hover:bg-[#17513B] active:bg-[#0B241B] border-[#12392B] shadow-sm focus:ring-[#209B67]/30',
     emerald:
-      'bg-[#168A5A] text-white hover:bg-[#126e48] active:bg-[#0e5739] border-[#168A5A] shadow-sm focus:ring-[#168A5A]/30',
+      'bg-[#209B67] text-white hover:bg-[#187A50] active:bg-[#125D3D] border-[#209B67] shadow-sm focus:ring-[#209B67]/30',
     secondary:
-      'bg-white text-[#102019] hover:bg-[#F5F7F6] active:bg-[#EBF0ED] border-[#DDE5E0] shadow-card focus:ring-slate-300',
+      'bg-white text-[#15211B] hover:bg-[#F5F7F3] active:bg-[#EEF1EB] border-[#DCE4DE] shadow-card focus:ring-slate-300',
     outline:
-      'bg-transparent text-[#102019] hover:bg-white active:bg-[#F5F7F6] border-[#DDE5E0] focus:ring-slate-300',
+      'bg-transparent text-[#15211B] hover:bg-white active:bg-[#F5F7F3] border-[#DCE4DE] focus:ring-slate-300',
     ai:
-      'bg-[#F0EBFF] text-[#7657D8] hover:bg-[#E2D9F8] active:bg-[#D4C4F4] border-[#E2D9F8] shadow-subtle focus:ring-[#7657D8]/30 font-bold',
+      'bg-[#F1EDFF] text-[#7359C8] hover:bg-[#E4DAF8] active:bg-[#D7C7F4] border-[#E2D9F8] shadow-subtle focus:ring-[#7359C8]/30 font-bold',
     'ai-solid':
-      'bg-[#7657D8] text-white hover:bg-[#6344C2] active:bg-[#5234A8] border-[#7657D8] shadow-sm focus:ring-[#7657D8]/30',
+      'bg-[#7359C8] text-white hover:bg-[#6044B8] active:bg-[#4E34A0] border-[#7359C8] shadow-sm focus:ring-[#7359C8]/30',
     danger:
-      'bg-[#FDECEC] text-[#D95C5C] hover:bg-[#F8CFCF] active:bg-[#F3B3B3] border-[#F8CFCF] shadow-subtle focus:ring-[#D95C5C]/30 font-bold',
+      'bg-[#FDECEC] text-[#D85D5D] hover:bg-[#F8CFCF] active:bg-[#F3B3B3] border-[#F8CFCF] shadow-subtle focus:ring-[#D85D5D]/30 font-bold',
     warning:
-      'bg-[#FFF4D8] text-[#E8A72B] hover:bg-[#F7E7BE] active:bg-[#EFD598] border-[#F7E7BE] shadow-subtle focus:ring-[#E8A72B]/30 font-bold',
+      'bg-[#FFF3D7] text-[#E7AA31] hover:bg-[#F7E7BE] active:bg-[#EFD598] border-[#F7E7BE] shadow-subtle focus:ring-[#E7AA31]/30 font-bold',
     ghost:
-      'bg-transparent text-[#5D6B64] hover:bg-white hover:text-[#102019] active:bg-[#F5F7F6] border-transparent shadow-none',
-  }[variant] || 'bg-[#163A2B] text-white hover:bg-[#12251D]';
+      'bg-transparent text-[#5E6A63] hover:bg-white hover:text-[#15211B] active:bg-[#F5F7F3] border-transparent shadow-none',
+  }[variant] || 'bg-[#12392B] text-white hover:bg-[#17513B]';
 
   const sizeClasses = {
     xs: 'text-xs px-2.5 py-1 rounded-lg gap-1.5 font-semibold',
@@ -83,13 +83,13 @@ export function IconButton({
   }[size] || 'w-9 h-9 text-sm rounded-xl';
 
   const variantClasses = {
-    secondary: 'bg-white text-[#5D6B64] hover:text-[#102019] hover:bg-[#F5F7F6] border-[#DDE5E0] shadow-card',
-    primary: 'bg-[#163A2B] text-white hover:bg-[#12251D] border-[#163A2B] shadow-sm',
-    emerald: 'bg-[#168A5A] text-white hover:bg-[#126e48] border-[#168A5A] shadow-sm',
-    outline: 'bg-transparent text-[#5D6B64] hover:text-[#102019] hover:bg-white border-[#DDE5E0]',
-    ghost: 'bg-transparent text-[#5D6B64] hover:text-[#102019] hover:bg-white border-transparent',
-    ai: 'bg-[#F0EBFF] text-[#7657D8] hover:bg-[#E2D9F8] border-[#E2D9F8]',
-  }[variant] || 'bg-white text-[#5D6B64] border-[#DDE5E0]';
+    secondary: 'bg-white text-[#5E6A63] hover:text-[#15211B] hover:bg-[#F5F7F3] border-[#DCE4DE] shadow-card',
+    primary: 'bg-[#12392B] text-white hover:bg-[#17513B] border-[#12392B] shadow-sm',
+    emerald: 'bg-[#209B67] text-white hover:bg-[#187A50] border-[#209B67] shadow-sm',
+    outline: 'bg-transparent text-[#5E6A63] hover:text-[#15211B] hover:bg-white border-[#DCE4DE]',
+    ghost: 'bg-transparent text-[#5E6A63] hover:text-[#15211B] hover:bg-white border-transparent',
+    ai: 'bg-[#F1EDFF] text-[#7359C8] hover:bg-[#E4DAF8] border-[#E2D9F8]',
+  }[variant] || 'bg-white text-[#5E6A63] border-[#DCE4DE]';
 
   return (
     <button
@@ -98,7 +98,7 @@ export function IconButton({
       onClick={onClick}
       title={title || ariaLabel}
       aria-label={ariaLabel || title}
-      className={`inline-flex items-center justify-center border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#168A5A]/30 disabled:opacity-50 disabled:cursor-not-allowed select-none ${variantClasses} ${sizeClasses} ${className}`}
+      className={`inline-flex items-center justify-center border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#209B67]/30 disabled:opacity-50 disabled:cursor-not-allowed select-none ${variantClasses} ${sizeClasses} ${className}`}
       {...props}
     >
       {icon || <FaIcon name={name} />}

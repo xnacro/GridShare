@@ -41,6 +41,12 @@ import {
   faChargingStation,
   faPlug,
   faLightbulb,
+  faIndianRupeeSign,
+  faLeaf,
+  faShieldHalved,
+  faTv,
+  faFan,
+  faCar,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const ICON_REGISTRY = {
@@ -72,6 +78,15 @@ export const ICON_REGISTRY = {
   charging: faChargingStation,
   plug: faPlug,
   lightbulb: faLightbulb,
+  rupee: faIndianRupeeSign,
+  leaf: faLeaf,
+  shield: faShieldHalved,
+  tv: faTv,
+  fan: faFan,
+  ev: faCar,
+  car: faCar,
+  trade: faStore,
+  camera: faGaugeHigh,
   
   // Controls & Actions
   chevronLeft: faChevronLeft,

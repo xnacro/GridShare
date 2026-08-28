@@ -6,10 +6,9 @@ import LedgerFilterBar from '../components/ledger/LedgerFilterBar';
 import LedgerTransactionTable from '../components/ledger/LedgerTransactionTable';
 import TransactionDetailModal from '../components/ledger/TransactionDetailModal';
 import LedgerTraderSummaries from '../components/ledger/LedgerTraderSummaries';
-import LedgerNetworkGraph from '../components/ledger/LedgerNetworkGraph';
 import { LoadingState, ErrorState } from '../components/ui/FeedbackStates';
 import FaIcon from '../components/icons/FaIcon';
-import Badge, { StatusIndicator } from '../components/ui/Badge';
+import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 
 export default function TransactionsView() {
@@ -94,12 +93,13 @@ export default function TransactionsView() {
       setError('Unable to load transaction records from ledger service.');
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
   useEffect(() => {
     fetchLedgerData();
-    const interval = setInterval(fetchLedgerData, 6000);
+    const interval = setInterval(fetchLedgerData, 8000);
     return () => clearInterval(interval);
   }, []);
 
@@ -107,7 +107,6 @@ export default function TransactionsView() {
   const filteredTransactions = useMemo(() => {
     let list = [...transactions];
 
-    // 1. Search Query Filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter((t) => {
@@ -119,24 +118,20 @@ export default function TransactionsView() {
       });
     }
 
-    // 2. Type Filter
     if (activeType !== 'ALL') {
       list = list.filter((t) => {
         if (activeType === 'P2P') return t.type === 'P2P' || !t.type;
         if (activeType === 'GRID_IMPORT') return t.type === 'GRID_IMPORT';
         if (activeType === 'GRID_EXPORT') return t.type === 'GRID_EXPORT';
         if (activeType === 'BATTERY') return t.type === 'BATTERY';
-        if (activeType === 'SYSTEM') return t.type === 'SYSTEM';
         return true;
       });
     }
 
-    // 3. Status Filter
     if (activeStatus !== 'ALL') {
       list = list.filter((t) => (t.status || 'SETTLED') === activeStatus);
     }
 
-    // 4. Sorting
     list.sort((a, b) => {
       if (sortBy === 'newest') return (new Date(b.timestamp || 0)) - (new Date(a.timestamp || 0));
       if (sortBy === 'oldest') return (new Date(a.timestamp || 0)) - (new Date(b.timestamp || 0));
@@ -150,22 +145,12 @@ export default function TransactionsView() {
     return list;
   }, [transactions, searchQuery, activeType, activeStatus, sortBy]);
 
-  // Aggregate Metrics Calculations from live transactions
-  const {
-    totalVolume,
-    totalValue,
-    sellerVolume,
-    sellerEarnings,
-    buyerVolume,
-    buyerSpent,
-    settledCount,
-  } = useMemo(() => {
+  // Aggregate Metrics Calculations
+  const { totalVolume, totalValue, sellerVolume, buyerVolume, settledCount } = useMemo(() => {
     let vol = 0;
     let val = 0;
     let sVol = 0;
-    let sEarn = 0;
     let bVol = 0;
-    let bSpent = 0;
     let settled = 0;
 
     transactions.forEach((t) => {
@@ -180,9 +165,7 @@ export default function TransactionsView() {
 
       if (t.type === 'P2P' || !t.type) {
         sVol += e;
-        sEarn += v;
         bVol += e;
-        bSpent += v;
       }
     });
 
@@ -190,9 +173,7 @@ export default function TransactionsView() {
       totalVolume: vol,
       totalValue: val,
       sellerVolume: sVol,
-      sellerEarnings: sEarn,
       buyerVolume: bVol,
-      buyerSpent: bSpent,
       settledCount: settled,
     };
   }, [transactions]);
@@ -223,25 +204,6 @@ export default function TransactionsView() {
     document.body.removeChild(link);
   };
 
-  // Demo Controls
-  const handleLoadDemo = () => {
-    const demoTxns = [
-      { id: '2026-001', timestamp: new Date().toISOString(), seller_household_id: 'House A', buyer_household_id: 'House B', energy_kwh: 2.0, price_per_kwh: 4.50, total_value: 9.00, type: 'P2P', status: 'SETTLED' },
-      { id: '2026-002', timestamp: new Date(Date.now() - 15 * 60000).toISOString(), seller_household_id: 'House C', buyer_household_id: 'House B', energy_kwh: 1.2, price_per_kwh: 4.50, total_value: 5.40, type: 'P2P', status: 'SETTLED' },
-      { id: '2026-003', timestamp: new Date(Date.now() - 35 * 60000).toISOString(), seller_household_id: 'House A', buyer_household_id: 'House D', energy_kwh: 3.5, price_per_kwh: 4.30, total_value: 15.05, type: 'P2P', status: 'SETTLED' },
-      { id: '2026-004', timestamp: new Date(Date.now() - 60 * 60000).toISOString(), seller_household_id: 'House A', buyer_household_id: 'House E', energy_kwh: 1.8, price_per_kwh: 4.50, total_value: 8.10, type: 'P2P', status: 'SETTLED' },
-      { id: '2026-005', timestamp: new Date(Date.now() - 90 * 60000).toISOString(), seller_household_id: 'Utility Grid', buyer_household_id: 'House B', energy_kwh: 2.4, price_per_kwh: 6.10, total_value: 14.64, type: 'GRID_IMPORT', status: 'SETTLED' },
-      { id: '2026-006', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), seller_household_id: 'House A', buyer_household_id: 'Utility Grid', energy_kwh: 1.5, price_per_kwh: 3.50, total_value: 5.25, type: 'GRID_EXPORT', status: 'SETTLED' },
-      { id: '2026-007', timestamp: new Date(Date.now() - 150 * 60000).toISOString(), seller_household_id: 'House A', buyer_household_id: 'Community Battery', energy_kwh: 4.0, price_per_kwh: 0.00, total_value: 0.00, type: 'BATTERY', status: 'SETTLED' },
-    ];
-    setTransactions(demoTxns);
-    setLiveToast({
-      title: '⚡ LEDGER DEMO STATE LOADED',
-      desc: 'Synchronized 7 verified bilateral microgrid transactions across House A, B, C & Grid.',
-    });
-    setTimeout(() => setLiveToast(null), 4000);
-  };
-
   const handleResetFilters = () => {
     setSearchQuery('');
     setActiveType('ALL');
@@ -259,112 +221,77 @@ export default function TransactionsView() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
       {/* Live Notification Banner */}
       {liveToast && (
-        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 shadow-sm animate-in fade-in slide-in-from-top-2">
-          <div className="flex items-center space-x-2 text-xs text-emerald-900 font-bold">
-            <FaIcon name="checkCircle" className="text-emerald-600 flex-shrink-0 text-sm" />
+        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E7F6EE] px-4 py-3 text-sm text-[#12392B] font-bold shadow-subtle animate-in fade-in">
+          <div className="flex items-center space-x-2.5">
+            <FaIcon name="check" className="text-[#209B67] flex-shrink-0 text-sm" />
             <span>{liveToast.title}:</span>
-            <span className="font-normal text-emerald-800">{liveToast.desc}</span>
+            <span className="font-normal text-[#5E6A63]">{liveToast.desc}</span>
           </div>
           <button
             type="button"
             onClick={() => setLiveToast(null)}
-            className="text-emerald-700 hover:text-emerald-900 text-xs font-bold"
+            className="text-[#209B67] hover:text-[#15211B] text-xs font-bold p-1"
           >
-            Dismiss
+            ✕
           </button>
         </div>
       )}
 
-      {/* ==================== 1. MAIN HEADER & DEMO CONTROLS ==================== */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
+      {/* 🌟 1. MAIN HEADER & CONTROLS */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-3xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card gap-4">
         <div className="flex items-center space-x-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-emerald-400 shadow-md">
-            <FaIcon name="transactions" className="text-lg" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#12392B] text-[#41C98A] shadow-sm flex-shrink-0">
+            <FaIcon name="transactions" className="text-base" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900">GridShare Energy Ledger</h2>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#15211B] tracking-tight">
+                Financial Energy Ledger
+              </h1>
               <Badge variant="surplus" size="xs">
                 Audit Verified
               </Badge>
             </div>
-            <p className="text-xs text-slate-500 font-normal">
-              Transparent record of P2P energy trades, wallet payments and utility grid settlements.
+            <p className="text-xs sm:text-sm text-[#5E6A63] font-medium mt-0.5">
+              Transparent record of bilateral P2P energy trades, battery injections, and utility settlements.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 flex-shrink-0">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={fetchLedgerData}
+            isLoading={isRefreshing}
+            icon={<FaIcon name="rotate" />}
+          >
+            Refresh
+          </Button>
           <Button
             variant="primary"
             size="sm"
-            onClick={handleLoadDemo}
-            icon={<FaIcon name="sparkles" />}
+            onClick={handleExportCSV}
+            icon={<FaIcon name="receipt" />}
           >
-            Load Ledger Demo
+            Export CSV
           </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleResetFilters}
-            icon={<FaIcon name="refresh" />}
-          >
-            Reset
-          </Button>
-
-          <IconButton
-            name="refresh"
-            size="sm"
-            variant="secondary"
-            onClick={async () => {
-              setIsRefreshing(true);
-              await fetchLedgerData();
-              setTimeout(() => setIsRefreshing(false), 400);
-            }}
-            disabled={isRefreshing}
-            className={isRefreshing ? 'animate-spin' : ''}
-            title="Sync Ledger"
-          />
         </div>
       </div>
 
-      {/* ==================== 2. PRIMARY LEDGER SUMMARY METRICS ==================== */}
+      {/* 🌟 2. SUMMARY METRIC CARDS */}
       <LedgerSummaryCards
         totalEnergyTraded={totalVolume}
         totalP2PValue={totalValue}
         energySold={sellerVolume}
         energyBought={buyerVolume}
         settledCount={settledCount}
-        gridTariff={6.10}
-        p2pBenchmark={4.50}
       />
 
-      {/* ==================== 3. 2.5D NETWORK TOPOLOGY & TRADER SUMMARIES ==================== */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Network Topology Graph (5 Cols) */}
-        <div className="lg:col-span-5">
-          <LedgerNetworkGraph activeTradesCount={filteredTransactions.length} />
-        </div>
-
-        {/* Prosumer Seller / Consumer Buyer Summaries (7 Cols) */}
-        <div className="lg:col-span-7">
-          <LedgerTraderSummaries
-            sellerKwh={sellerVolume}
-            sellerEarnings={sellerEarnings}
-            sellerAvgPrice={sellerVolume > 0 ? (sellerEarnings / sellerVolume) : 4.50}
-            buyerKwh={buyerVolume}
-            buyerSpent={buyerSpent}
-            buyerAvgPrice={buyerVolume > 0 ? (buyerSpent / buyerVolume) : 4.50}
-            buyerSavings={buyerVolume * (6.10 - 4.50)}
-          />
-        </div>
-      </div>
-
-      {/* ==================== 4. FILTER BAR ==================== */}
+      {/* 🌟 3. SEARCH & FILTER TOOLBAR */}
       <LedgerFilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -376,24 +303,35 @@ export default function TransactionsView() {
         onSortChange={setSortBy}
         dateRange={dateRange}
         onDateRangeChange={setDateRange}
-        onExportCSV={handleExportCSV}
-        onResetFilters={handleResetFilters}
-        totalMatching={filteredTransactions.length}
+        onReset={handleResetFilters}
+        totalResults={filteredTransactions.length}
       />
 
-      {/* ==================== 5. INTERACTIVE TRANSACTION TABLE ==================== */}
-      <LedgerTransactionTable
-        transactions={filteredTransactions}
-        onSelectTransaction={(tx) => setSelectedTx(tx)}
-        onNavigateMarketplace={() => navigate('/marketplace')}
-      />
+      {/* 🌟 4. TRANSACTION DATA TABLE */}
+      <div className="rounded-3xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
+          <div>
+            <h3 className="text-base font-bold text-[#15211B]">
+              Settlement Records ({filteredTransactions.length})
+            </h3>
+            <p className="text-xs text-[#5E6A63]">
+              Click any transaction row to inspect digital billing breakdown
+            </p>
+          </div>
+        </div>
 
-      {/* ==================== 6. TRANSACTION DETAIL INSPECTION MODAL ==================== */}
+        <LedgerTransactionTable
+          transactions={filteredTransactions}
+          onSelectTransaction={(tx) => setSelectedTx(tx)}
+        />
+      </div>
+
+      {/* 🌟 5. TRANSACTION DETAIL MODAL */}
       {selectedTx && (
         <TransactionDetailModal
-          transaction={selectedTx}
+          isOpen={Boolean(selectedTx)}
           onClose={() => setSelectedTx(null)}
-          gridTariff={6.10}
+          transaction={selectedTx}
         />
       )}
     </div>
