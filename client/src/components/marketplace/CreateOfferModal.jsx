@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import FaIcon from '../icons/FaIcon';
 
 export default function CreateOfferModal({
@@ -36,9 +37,9 @@ export default function CreateOfferModal({
     }, 600);
   };
 
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in select-none">
-      <div className="relative w-full max-w-lg rounded-xl glass-card p-6 sm:p-7 shadow-xl border border-white/95 space-y-5 animate-in zoom-in-95 duration-150">
+  const modalContent = (
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm select-none">
+      <div className="relative w-full max-w-lg rounded-xl glass-card p-6 sm:p-7 shadow-2xl border border-white/95 space-y-5 animate-in zoom-in-95 duration-150">
         
         {/* Header */}
         <div className="flex items-start justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
@@ -48,7 +49,7 @@ export default function CreateOfferModal({
             </div>
             <div>
               <h3 className="font-changa text-lg font-normal text-[#17221D]">
-                Create Energy Offer
+                Post Energy Listing
               </h3>
               <p className="text-xs text-[#5E6963]">
                 Share your surplus solar with nearby community members
@@ -94,9 +95,9 @@ export default function CreateOfferModal({
           {/* Preferred Price Input */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs font-semibold text-[#17221D]">
-              <label htmlFor="offer-price-kwh">Preferred P2P Price</label>
+              <label htmlFor="offer-price-kwh">Preferred P2P Tariff Rate</label>
               <span className="text-[#5E6963] font-normal">
-                Grid rate: <span className="font-mono text-[#D45C5C]">₹{gridBenchmarkRate.toFixed(2)}</span>
+                Grid utility rate: <span className="font-mono text-[#D45C5C]">₹{gridBenchmarkRate.toFixed(2)}</span>
               </span>
             </div>
             <div className="relative flex items-center">
@@ -118,7 +119,7 @@ export default function CreateOfferModal({
 
           {/* Validity Duration */}
           <div className="space-y-1.5">
-            <label htmlFor="offer-valid-hours" className="text-xs font-semibold text-[#17221D]">Offer Validity</label>
+            <label htmlFor="offer-valid-hours" className="text-xs font-semibold text-[#17221D]">Listing Validity</label>
             <select
               id="offer-valid-hours"
               value={validHours}
@@ -162,10 +163,10 @@ export default function CreateOfferModal({
             <button
               type="submit"
               disabled={isSubmitting || energyKwh <= 0}
-              className="px-5 py-2.5 rounded-lg bg-[#1E9B68] hover:bg-[#168557] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50 flex items-center space-x-1.5"
+              className="px-5 py-2.5 rounded-lg bg-[#12392B] hover:bg-[#174A37] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50 flex items-center space-x-1.5"
             >
-              <FaIcon name="plus" />
-              <span>{isSubmitting ? 'Publishing Offer...' : 'Post Energy Offer'}</span>
+              <FaIcon name="plus" className="text-[#43CB8C]" />
+              <span>{isSubmitting ? 'Publishing Listing...' : 'Publish Energy Listing'}</span>
             </button>
           </div>
 
@@ -174,4 +175,6 @@ export default function CreateOfferModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

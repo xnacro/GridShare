@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import FaIcon from '../icons/FaIcon';
 
 export default function TradeConfirmationModal({
@@ -22,8 +23,8 @@ export default function TradeConfirmationModal({
   const displaySeller = sellerName || sellerHousehold.name || sellOrder?.sellerName || 'Rahul\'s Home (Solar)';
   const displayBuyer = buyerName || buyerHousehold.name || purchase?.buyerName || 'Green Valley Block 2 (Demand)';
 
-  return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in select-none">
+  const modalContent = (
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm select-none">
       <div className="relative z-10 w-full max-w-lg rounded-xl glass-card p-6 sm:p-7 shadow-2xl border border-white/95 space-y-5 animate-in zoom-in-95 duration-150">
         
         {/* Header */}
@@ -59,7 +60,7 @@ export default function TradeConfirmationModal({
           {/* Seller */}
           <div className="rounded-lg border border-[#1E9B68]/20 bg-[#E8F6EE]/70 p-3 space-y-1">
             <div className="flex items-center justify-between text-[10px]">
-              <span className="font-changa font-bold text-[#1E9B68] uppercase tracking-wider">Seller (Prosumer)</span>
+              <span className="font-bold text-[#1E9B68]">Seller (Prosumer)</span>
               <span className="font-mono text-[#5E6963]">#{sellOrder?.id || 'GS-001'}</span>
             </div>
             <div className="font-bold text-[#17221D] text-sm truncate">
@@ -73,7 +74,7 @@ export default function TradeConfirmationModal({
           {/* Buyer */}
           <div className="rounded-lg border border-[#3C78CC]/20 bg-[#EDF3FD]/70 p-3 space-y-1">
             <div className="flex items-center justify-between text-[10px]">
-              <span className="font-changa font-bold text-[#3C78CC] uppercase tracking-wider">Buyer (Consumer)</span>
+              <span className="font-bold text-[#3C78CC]">Buyer (Consumer)</span>
               <span className="font-mono text-[#5E6963]">Local Feeder</span>
             </div>
             <div className="font-bold text-[#17221D] text-sm truncate">
@@ -140,4 +141,6 @@ export default function TradeConfirmationModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
