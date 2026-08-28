@@ -1,0 +1,253 @@
+{
+  "model_name": "Random Forest Regressor",
+  "model_version": "solar_v1",
+  "target": "target_15m_ghi",
+  "target_description": "Next 15-minute Global Horizontal Irradiance (W/m\u00b2)",
+  "target_type": "Solar Resource Forecast (Physical Atmospheric Irradiance)",
+  "pv_estimation_layer": {
+    "description": "Simplified estimated conversion from GHI to AC power, not measured rooftop PV telemetry",
+    "formula": "Estimated PV (kW) = (GHI / 1000) * Capacity_kWp * Efficiency * LossFactor",
+    "default_parameters": {
+      "capacity_kwp": 4.0,
+      "efficiency": 0.18,
+      "loss_factor": 0.86
+    }
+  },
+  "resolution": "15min",
+  "dataset": "NSRDB Meteosat IODC (PSM v3 India)",
+  "location": {
+    "city": "Guwahati",
+    "state": "Assam",
+    "country": "India",
+    "latitude": 26.13,
+    "longitude": 91.74,
+    "elevation_m": 76.0,
+    "year": 2019
+  },
+  "trained_at": "2026-08-28T11:34:57.061468+00:00",
+  "date_ranges": {
+    "train": {
+      "start": "2019-01-01 23:45:00",
+      "end": "2019-09-13 18:30:00",
+      "samples": 24460
+    },
+    "validation": {
+      "start": "2019-09-13 18:45:00",
+      "end": "2019-11-07 09:00:00",
+      "samples": 5242
+    },
+    "test": {
+      "start": "2019-11-07 09:15:00",
+      "end": "2019-12-31 23:30:00",
+      "samples": 5242
+    }
+  },
+  "hyperparameters": {
+    "n_estimators": 150,
+    "max_depth": 18,
+    "min_samples_leaf": 4,
+    "random_state": 42
+  },
+  "metrics_holdout_test": {
+    "mae": 10.16,
+    "rmse": 32.89,
+    "r2": 0.9789,
+    "smape": 14.81,
+    "daytime_mae": 23.58,
+    "daytime_rmse": 50.19,
+    "daytime_r2": 0.948,
+    "clear_sky_mae": 20.88,
+    "clear_sky_rmse": 45.13,
+    "cloudy_mae": 27.77,
+    "cloudy_rmse": 56.88,
+    "transition_mae": 17.48,
+    "transition_rmse": 39.5,
+    "night_mae": 0.05,
+    "night_rmse": 0.51,
+    "n_samples": 5242,
+    "n_daytime": 2251
+  },
+  "metrics_validation": {
+    "mae": 20.89,
+    "rmse": 51.74,
+    "r2": 0.957,
+    "smape": 23.21,
+    "daytime_mae": 43.54,
+    "daytime_rmse": 74.72,
+    "daytime_r2": 0.9188,
+    "clear_sky_mae": 53.19,
+    "clear_sky_rmse": 83.19,
+    "cloudy_mae": 44.24,
+    "cloudy_rmse": 76.82,
+    "transition_mae": 18.34,
+    "transition_rmse": 39.5,
+    "night_mae": 0.02,
+    "night_rmse": 0.35,
+    "n_samples": 5242,
+    "n_daytime": 2514
+  },
+  "features": [
+    "hour",
+    "minute",
+    "day_of_year",
+    "month",
+    "is_weekend",
+    "sin_hour",
+    "cos_hour",
+    "sin_day_of_year",
+    "cos_day_of_year",
+    "solar_elevation_proxy",
+    "lag_15m_ghi",
+    "lag_30m_ghi",
+    "lag_45m_ghi",
+    "lag_1h_ghi",
+    "lag_2h_ghi",
+    "lag_3h_ghi",
+    "lag_6h_ghi",
+    "lag_24h_ghi",
+    "lag_15m_dni",
+    "lag_15m_dhi",
+    "lag_15m_temp",
+    "lag_15m_humidity",
+    "lag_15m_wind",
+    "rolling_mean_1h_ghi",
+    "rolling_mean_3h_ghi",
+    "rolling_std_1h_ghi",
+    "rolling_mean_6h_ghi"
+  ],
+  "top_features": [
+    {
+      "feature": "lag_15m_ghi",
+      "importance": 0.96766
+    },
+    {
+      "feature": "lag_15m_dhi",
+      "importance": 0.00369
+    },
+    {
+      "feature": "cos_hour",
+      "importance": 0.00361
+    },
+    {
+      "feature": "solar_elevation_proxy",
+      "importance": 0.0031
+    },
+    {
+      "feature": "lag_30m_ghi",
+      "importance": 0.0025
+    },
+    {
+      "feature": "lag_24h_ghi",
+      "importance": 0.00193
+    },
+    {
+      "feature": "rolling_std_1h_ghi",
+      "importance": 0.00174
+    },
+    {
+      "feature": "lag_1h_ghi",
+      "importance": 0.00147
+    },
+    {
+      "feature": "rolling_mean_1h_ghi",
+      "importance": 0.00139
+    },
+    {
+      "feature": "lag_45m_ghi",
+      "importance": 0.00139
+    }
+  ],
+  "all_model_benchmarks": [
+    {
+      "model_name": "Baseline 1: Persistence (Last GHI)",
+      "model_type": "Heuristic Baseline",
+      "val_rmse": 56.26,
+      "val_daytime_rmse": 81.21,
+      "test_rmse": 39.67,
+      "test_daytime_rmse": 60.46,
+      "test_daytime_mae": 41.66,
+      "test_r2": 0.9693,
+      "test_clear_sky_rmse": 56.25,
+      "test_cloudy_rmse": 68.15,
+      "test_transition_rmse": 39.98
+    },
+    {
+      "model_name": "Baseline 2: Same-Time 24h Ago (Seasonal)",
+      "model_type": "Heuristic Baseline",
+      "val_rmse": 140.56,
+      "val_daytime_rmse": 202.97,
+      "test_rmse": 78.74,
+      "test_daytime_rmse": 120.15,
+      "test_daytime_mae": 66.95,
+      "test_r2": 0.879,
+      "test_clear_sky_rmse": 126.2,
+      "test_cloudy_rmse": 122.71,
+      "test_transition_rmse": 75.24
+    },
+    {
+      "model_name": "Baseline 3: Rolling Mean",
+      "model_type": "Heuristic Baseline",
+      "val_rmse": 137.83,
+      "val_daytime_rmse": 198.95,
+      "test_rmse": 81.75,
+      "test_daytime_rmse": 124.58,
+      "test_daytime_mae": 86.21,
+      "test_r2": 0.8695,
+      "test_clear_sky_rmse": 128.41,
+      "test_cloudy_rmse": 128.36,
+      "test_transition_rmse": 86.85
+    },
+    {
+      "model_name": "Baseline 4: Night-Zero Hybrid Persistence",
+      "model_type": "Heuristic Baseline",
+      "val_rmse": 223.05,
+      "val_daytime_rmse": 322.08,
+      "test_rmse": 198.24,
+      "test_daytime_rmse": 302.5,
+      "test_daytime_mae": 201.33,
+      "test_r2": 0.2327,
+      "test_clear_sky_rmse": 416.8,
+      "test_cloudy_rmse": 175.59,
+      "test_transition_rmse": 34.47
+    },
+    {
+      "model_name": "Random Forest Regressor",
+      "model_type": "Tree Ensemble (Bagging)",
+      "val_rmse": 51.74,
+      "val_daytime_rmse": 74.72,
+      "test_rmse": 32.89,
+      "test_daytime_rmse": 50.19,
+      "test_daytime_mae": 23.58,
+      "test_r2": 0.9789,
+      "test_clear_sky_rmse": 45.13,
+      "test_cloudy_rmse": 56.88,
+      "test_transition_rmse": 39.5
+    },
+    {
+      "model_name": "XGBoost Regressor",
+      "model_type": "Gradient Boosted Trees (XGBoost)",
+      "val_rmse": 63.8,
+      "val_daytime_rmse": 92.12,
+      "test_rmse": 38.82,
+      "test_daytime_rmse": 59.24,
+      "test_daytime_mae": 37.77,
+      "test_r2": 0.9706,
+      "test_clear_sky_rmse": 66.3,
+      "test_cloudy_rmse": 55.93,
+      "test_transition_rmse": 37.52
+    },
+    {
+      "model_name": "LightGBM Regressor",
+      "model_type": "Gradient Boosted Trees (LightGBM)",
+      "val_rmse": 54.33,
+      "val_daytime_rmse": 78.45,
+      "test_rmse": 35.37,
+      "test_daytime_rmse": 53.94,
+      "test_daytime_mae": 34.3,
+      "test_r2": 0.9756,
+      "test_clear_sky_rmse": 56.79,
+      "test_cloudy_rmse": 54.47,
+      "test_transition_rmse": 36.8
+    }
+  ]
+}

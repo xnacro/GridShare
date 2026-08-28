@@ -1,0 +1,186 @@
+{
+  "model_name": "Random Forest Regressor",
+  "model_version": "demand_v1",
+  "target": "target_15m",
+  "target_description": "Active household power consumption 15 minutes ahead (kW)",
+  "resolution": "15min",
+  "dataset": "UCI Individual Household Electric Power Consumption",
+  "trained_at": "2026-08-28T11:18:09.389033+00:00",
+  "date_ranges": {
+    "train": {
+      "start": "2006-12-17 17:00:00",
+      "end": "2009-09-12 04:15:00",
+      "samples": 95160
+    },
+    "validation": {
+      "start": "2009-09-12 04:30:00",
+      "end": "2010-04-17 23:45:00",
+      "samples": 20392
+    },
+    "test": {
+      "start": "2010-04-18 00:00:00",
+      "end": "2010-11-26 20:45:00",
+      "samples": 20392
+    }
+  },
+  "hyperparameters": {
+    "n_estimators": 150,
+    "max_depth": 18,
+    "min_samples_leaf": 4,
+    "random_state": 42
+  },
+  "metrics_holdout_test": {
+    "mae": 0.2353,
+    "rmse": 0.3935,
+    "r2": 0.7581,
+    "smape": 26.76,
+    "mape": 31.99,
+    "n_samples": 20392
+  },
+  "metrics_validation": {
+    "mae": 0.2694,
+    "rmse": 0.4586,
+    "r2": 0.7871,
+    "smape": 23.6,
+    "mape": 27.66,
+    "n_samples": 20392
+  },
+  "features": [
+    "hour",
+    "minute",
+    "day_of_week",
+    "day_of_month",
+    "month",
+    "is_weekend",
+    "sin_hour",
+    "cos_hour",
+    "sin_day_of_week",
+    "cos_day_of_week",
+    "sin_month",
+    "cos_month",
+    "lag_15m",
+    "lag_30m",
+    "lag_45m",
+    "lag_1h",
+    "lag_2h",
+    "lag_3h",
+    "lag_6h",
+    "lag_12h",
+    "lag_24h",
+    "rolling_mean_1h",
+    "rolling_mean_3h",
+    "rolling_std_1h",
+    "rolling_mean_6h",
+    "rolling_mean_24h",
+    "lag_15m_reactive_power",
+    "lag_15m_voltage",
+    "lag_15m_intensity",
+    "lag_15m_sub1",
+    "lag_15m_sub2",
+    "lag_15m_sub3"
+  ],
+  "top_features": [
+    {
+      "feature": "lag_15m",
+      "importance": 0.78489
+    },
+    {
+      "feature": "lag_15m_sub1",
+      "importance": 0.02919
+    },
+    {
+      "feature": "lag_30m",
+      "importance": 0.01689
+    },
+    {
+      "feature": "lag_15m_intensity",
+      "importance": 0.01674
+    },
+    {
+      "feature": "lag_15m_sub3",
+      "importance": 0.01197
+    },
+    {
+      "feature": "lag_15m_reactive_power",
+      "importance": 0.01069
+    },
+    {
+      "feature": "lag_15m_sub2",
+      "importance": 0.00989
+    },
+    {
+      "feature": "sin_hour",
+      "importance": 0.0085
+    },
+    {
+      "feature": "rolling_std_1h",
+      "importance": 0.00837
+    },
+    {
+      "feature": "lag_24h",
+      "importance": 0.00771
+    }
+  ],
+  "all_model_benchmarks": [
+    {
+      "model_name": "Baseline 1: Persistence (Last Reading)",
+      "model_type": "Heuristic Baseline",
+      "val_rmse": 0.5695,
+      "val_mae": 0.3217,
+      "test_rmse": 0.4912,
+      "test_mae": 0.2901,
+      "test_r2": 0.6231,
+      "test_smape": 32.45
+    },
+    {
+      "model_name": "Baseline 2: Same-Time 24h Ago (Seasonal)",
+      "model_type": "Heuristic Baseline",
+      "val_rmse": 1.1232,
+      "val_mae": 0.7609,
+      "test_rmse": 0.9145,
+      "test_mae": 0.6092,
+      "test_r2": -0.3065,
+      "test_smape": 58.84
+    },
+    {
+      "model_name": "Baseline 3: Rolling 24h Mean",
+      "model_type": "Heuristic Baseline",
+      "val_rmse": 0.9851,
+      "val_mae": 0.7737,
+      "test_rmse": 0.7685,
+      "test_mae": 0.596,
+      "test_r2": 0.0774,
+      "test_smape": 63.79
+    },
+    {
+      "model_name": "Random Forest Regressor",
+      "model_type": "Ensemble Trees (Bagging)",
+      "val_rmse": 0.4586,
+      "val_mae": 0.2694,
+      "test_rmse": 0.3935,
+      "test_mae": 0.2353,
+      "test_r2": 0.7581,
+      "test_smape": 26.76
+    },
+    {
+      "model_name": "XGBoost Regressor",
+      "model_type": "Gradient Boosted Trees (XGBoost)",
+      "val_rmse": 0.481,
+      "val_mae": 0.3322,
+      "test_rmse": 0.3857,
+      "test_mae": 0.2355,
+      "test_r2": 0.7675,
+      "test_smape": 27.28
+    },
+    {
+      "model_name": "LightGBM Regressor",
+      "model_type": "Gradient Boosted Trees (LightGBM)",
+      "val_rmse": 0.5155,
+      "val_mae": 0.371,
+      "test_rmse": 0.3938,
+      "test_mae": 0.2438,
+      "test_r2": 0.7578,
+      "test_smape": 28.36
+    }
+  ]
+}

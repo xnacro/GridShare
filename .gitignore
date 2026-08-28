@@ -33,6 +33,12 @@ instance/
 !.env.example
 !**/.env.example
 
+# Datasets & Large Data
+datasets/
+ml/data/raw/
+ml/data/processed/*.parquet
+!ml/data/processed/.gitkeep
+
 # OS & Editor files
 .DS_Store
 Thumbs.db
