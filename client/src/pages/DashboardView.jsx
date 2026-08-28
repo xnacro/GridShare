@@ -170,9 +170,9 @@ export default function DashboardView({ onOpenDemoModal }) {
             {greeting}, {userName} <span className="inline-block">👋</span>
           </div>
 
-          {/* Impactful Headline in Oswald Font */}
+          {/* Impactful Headline in Oswald Font with Natural Casing */}
           <div>
-            <h1 className="font-oswald text-3xl sm:text-4xl lg:text-[42px] font-semibold text-[#17221D] leading-[1.18] tracking-normal uppercase">
+            <h1 className="font-oswald text-3xl sm:text-4xl lg:text-[46px] font-semibold text-[#17221D] leading-[1.15] tracking-tight">
               Your community has{' '}
               <span className="text-[#1E9B68] font-bold whitespace-nowrap">
                 +{netCommunity.toFixed(1)} kW
