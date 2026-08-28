@@ -95,15 +95,10 @@ export default function TopNavbar({
           
           {/* LEFT: GRIDSHARE Logo */}
           <div className="flex items-center space-x-3 flex-shrink-0">
-            <NavLink to="/" className="flex items-center space-x-2.5 group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#163A2B] text-white shadow-sm group-hover:bg-[#12251D] transition-all">
-                <FaIcon name="energy" className="text-base text-[#34B978]" />
-              </div>
-              <div className="flex items-center space-x-1.5">
-                <span className="text-base font-extrabold tracking-tight text-[#102019]">
-                  GRID<span className="text-[#168A5A]">SHARE</span>
-                </span>
-              </div>
+            <NavLink to="/" className="flex items-center group">
+              <span className="font-changa text-2xl font-normal tracking-tight text-[#102019] hover:text-[#168A5A] transition-colors">
+                GridShare
+              </span>
             </NavLink>
           </div>
 

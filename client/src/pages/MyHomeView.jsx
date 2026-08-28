@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import ResidentialHouseCanvas3D from '../components/home-3d/ResidentialHouseCanvas3D';
-import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
 import GlassSurface from '../components/ui/GlassSurface';
 import SectionHeader from '../components/ui/SectionHeader';
@@ -147,46 +146,51 @@ export default function MyHomeView() {
   const householdType = household?.household_type || (isSurplus ? 'PROSUMER' : 'CONSUMER');
 
   return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+    <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. MY HOME HERO */}
-      <PageHero
-        category="YOUR HOUSEHOLD COCKPIT"
-        statusBadge={householdType}
-        statusVariant={isSurplus ? 'surplus' : 'deficit'}
-        title="Your household energy,"
-        highlightText={isSurplus ? "surplus ready to share." : "balanced and powered."}
-        subtitle={
-          isSurplus
-            ? `Your home is generating ${netHomeKw.toFixed(1)} kW excess solar energy. You can list it on the P2P Marketplace or buffer in community ESS.`
-            : `Your home is currently drawing ${Math.abs(netHomeKw).toFixed(1)} kW clean power to support active domestic circuits.`
-        }
-        supportingFacts={[
-          { label: 'Rooftop Solar', value: `${activeGenKw.toFixed(1)} kW`, icon: 'solar' },
-          { label: 'Active Load', value: `${totalApplianceKw.toFixed(1)} kW`, icon: 'home' },
-          { label: 'Net Balance', value: `${isSurplus ? '+' : ''}${netHomeKw.toFixed(1)} kW`, icon: 'network' },
-        ]}
-        primaryAction={{
-          label: 'Smart Load Balancing',
-          icon: 'sliders',
-          onClick: () => {
-            const el = document.getElementById('appliance-manager');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          },
-        }}
-        secondaryAction={{
-          label: 'Configure Data Source',
-          icon: 'devices',
-          onClick: () => {
-            const el = document.getElementById('data-source-panel');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          },
-        }}
-        tertiaryAction={{
-          label: 'View Marketplace →',
-          onClick: () => navigate('/marketplace'),
-        }}
-      />
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+              {householdTitle} Cockpit
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              {householdType}
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            {isSurplus
+              ? `Generating +${netHomeKw.toFixed(1)} kW surplus solar energy ready to share or buffer in community ESS`
+              : `Drawing ${Math.abs(netHomeKw).toFixed(1)} kW clean power to support active household circuits`}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('appliance-manager');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="sliders" className="text-[#8BC53D]" />
+            <span>Load Balancing</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('data-source-panel');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="devices" />
+            <span>Data Source</span>
+          </button>
+        </div>
+      </div>
 
       {/* Dynamic Status Notification */}
       {statusMessage && (

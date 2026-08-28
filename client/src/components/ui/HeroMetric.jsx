@@ -7,35 +7,28 @@ export default function HeroMetric({
   label,
   subtitle,
   iconName,
-  variant = 'default', // 'emerald' | 'solar' | 'ai' | 'grid' | 'deficit' | 'default'
+  variant = 'default',
   delta,
   deltaType = 'positive',
   className = '',
 }) {
   const variantColor = {
-    emerald: 'text-[#1E9B67]',
-    solar: 'text-[#E5A72D]',
-    ai: 'text-[#7358C8]',
-    grid: 'text-[#3979D0]',
-    deficit: 'text-[#D65D5D]',
-    default: 'text-[#15221B]',
-  }[variant] || 'text-[#15221B]';
+    emerald: 'text-[#8BC53D]',
+    solar: 'text-[#8BC53D]',
+    ai: 'text-[#012F13]',
+    grid: 'text-[#012F13]',
+    deficit: 'text-[#011207]',
+    default: 'text-[#011207]',
+  }[variant] || 'text-[#011207]';
 
-  const variantBg = {
-    emerald: 'bg-[#E6F5EC]',
-    solar: 'bg-[#FFF7E4]',
-    ai: 'bg-[#F1ECFF]',
-    grid: 'bg-[#EDF3FD]',
-    deficit: 'bg-[#FCECEC]',
-    default: 'bg-[#F5F7F3]',
-  }[variant] || 'bg-[#F5F7F3]';
+  const variantBg = 'bg-[#E2F0CC]';
 
   return (
     <div
-      className={`relative rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-5 sm:p-6 shadow-card hover:border-[rgba(23,56,43,0.15)] transition duration-200 space-y-2.5 ${className}`}
+      className={`relative rounded-2xl bg-white border border-[#E2F0CC] p-5 sm:p-6 shadow-sm hover:border-[#BED69E] transition duration-200 space-y-2.5 ${className}`}
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#5E6B63]">
+        <span className="text-xs font-bold uppercase tracking-wider text-[#4A5B4F]">
           {label}
         </span>
         {iconName && (
@@ -46,22 +39,22 @@ export default function HeroMetric({
       </div>
 
       <div className="flex items-baseline space-x-1.5">
-        <span className={`text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight ${variantColor}`}>
+        <span className={`font-changa text-2xl sm:text-3xl lg:text-[34px] font-normal tracking-tight ${variantColor}`}>
           {value}
         </span>
         {unit && (
-          <span className="text-sm font-bold text-[#5E6B63]">{unit}</span>
+          <span className="text-sm font-bold text-[#4A5B4F]">{unit}</span>
         )}
       </div>
 
       {subtitle && (
-        <p className="text-[12px] sm:text-[13px] text-[#5E6B63] font-medium leading-snug">
+        <p className="text-[12px] sm:text-[13px] text-[#4A5B4F] font-medium leading-snug">
           {subtitle}
         </p>
       )}
 
       {delta && (
-        <div className="pt-1 flex items-center gap-1.5 text-[11px] font-bold text-[#1E9B67]">
+        <div className="pt-1 flex items-center gap-1.5 text-[11px] font-bold text-[#8BC53D]">
           <span>{delta}</span>
         </div>
       )}

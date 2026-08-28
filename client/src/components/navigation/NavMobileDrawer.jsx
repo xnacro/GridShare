@@ -57,11 +57,8 @@ export default function NavMobileDrawer({
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#DCE4DE]">
           <div className="flex items-center space-x-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#12392B] text-white shadow-sm">
-              <FaIcon name="energy" className="text-sm text-[#41C98A]" />
-            </div>
-            <span className="text-base font-extrabold tracking-tight text-[#15211B]">
-              GRID<span className="text-[#209B67]">SHARE</span>
+            <span className="font-changa text-xl font-normal tracking-tight text-[#15211B]">
+              GridShare
             </span>
           </div>
 

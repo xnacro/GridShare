@@ -191,56 +191,45 @@ export default function MarketplaceView() {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. MINIMAL SPACIOUS CENTERED HERO */}
-      <div className="text-center max-w-4xl mx-auto space-y-3 pt-2 select-none">
-        
-        {/* Top Centered Clean Heading */}
-        <div className="space-y-1.5">
-          <h1 className="font-changa text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-tight tracking-wide">
-            Share clean energy with the{' '}
-            <span className="text-[#1E9B68] whitespace-nowrap">neighbors who need it.</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-[#5E6963] max-w-xl mx-auto">
-            Trade surplus rooftop solar with nearby homes at fair tariffs instead of sending it back to the grid.
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+              P2P Energy Marketplace
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              Avg P2P ₹{avgP2pPrice.toFixed(2)}/kWh
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            Direct peer-to-peer trading connecting solar surplus prosumers with nearby community demand
           </p>
         </div>
 
-        {/* Centered Bilateral Energy Route Indicator */}
-        <div className="flex items-center justify-center space-x-2 text-xs text-[#5E6963] flex-wrap gap-y-2 pt-1">
-          <span className="font-medium flex items-center gap-1.5 text-[#DDA12A] bg-[#FFF7E4] px-3.5 py-1.5 rounded-lg border border-[#DDA12A]/20">
-            <FaIcon name="solar" /> Rooftop Solar Surplus
-          </span>
-          <span className="text-[#1E9B68] font-bold text-xs">────( Local P2P @ ₹{avgP2pPrice.toFixed(2)}/kWh )────→</span>
-          <span className="font-medium flex items-center gap-1.5 text-[#3C78CC] bg-[#EDF3FD] px-3.5 py-1.5 rounded-lg border border-[#3C78CC]/20">
-            <FaIcon name="home" /> Nearby Demand
-          </span>
-        </div>
-
-        {/* Centered Post Energy Listing CTA */}
-        <div className="pt-1.5 flex justify-center">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => {
               setPrefilledOfferKwh(2.0);
               setIsCreateOfferOpen(true);
             }}
-            className="px-6 py-2.5 rounded-xl bg-[#12392B] hover:bg-[#174A37] text-white text-xs sm:text-sm font-bold shadow-xs transition active:scale-98 flex items-center space-x-2 border border-[rgba(255,255,255,0.1)]"
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
           >
-            <FaIcon name="plus" className="text-[#43CB8C]" />
+            <FaIcon name="plus" className="text-[#8BC53D]" />
             <span>Post Energy Listing</span>
           </button>
         </div>
-
       </div>
 
       {/* Dynamic Status Notification */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#1E9B68]/20 bg-[#E8F6EE] px-4 py-3 text-xs sm:text-sm text-[#12392B] font-bold shadow-xs animate-in fade-in">
+        <div className="flex items-center justify-between rounded-xl border border-[#BED69E] bg-[#E2F0CC] px-4 py-3 text-xs sm:text-sm text-[#012F13] font-bold shadow-xs animate-in fade-in">
           <div className="flex items-center gap-2">
-            <FaIcon name="check" className="text-[#1E9B68]" />
+            <FaIcon name="check" className="text-[#8BC53D]" />
             <span>{statusMessage}</span>
           </div>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#1E9B68] text-xs p-1 font-bold">
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#012F13] text-xs p-1 font-bold">
             ✕
           </button>
         </div>
@@ -304,31 +293,31 @@ export default function MarketplaceView() {
       </div>
 
       {/* 🌟 3. AI ENERGY OUTLOOK (Compact, 15-Minute ML Intelligence from solar_v1 & demand_v1) */}
-      <div className="glass-card rounded-xl p-5 border border-[#7358C7]/20 bg-gradient-to-r from-white via-[#F8F9F6] to-[#F1EDFF]/30 space-y-4">
+      <div className="glass-card rounded-xl p-5 border border-[#BED69E] bg-[#F4F9EB]/60 space-y-4">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[rgba(23,34,29,0.06)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#E2F0CC]">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#F1EDFF] text-[#7358C7] flex items-center justify-center text-sm shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm shadow-xs">
               <FaIcon name="sparkles" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-changa text-base font-normal text-[#17221D]">
+                <h3 className="font-changa text-base font-normal text-[#011207]">
                   AI Energy Outlook
                 </h3>
-                <span className="text-[10px] font-bold text-[#7358C7] bg-[#F1EDFF] px-2 py-0.5 rounded-md border border-[#7358C7]/20">
+                <span className="text-[10px] font-bold text-[#012F13] bg-[#E2F0CC] px-2 py-0.5 rounded-md border border-[#BED69E]">
                   Next 15 min
                 </span>
               </div>
-              <p className="text-xs text-[#5E6963]">
+              <p className="text-xs text-[#4A5B4F]">
                 Predictive Random Forest solar & demand models with risk-aware battery constraints
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2 text-xs">
-            <span className="text-[#5E6963]">Battery reserve:</span>
-            <span className="font-bold text-[#1E9B68] bg-[#E8F6EE] px-2.5 py-0.5 rounded-md">
+            <span className="text-[#4A5B4F]">Battery reserve:</span>
+            <span className="font-bold text-[#012F13] bg-[#E2F0CC] px-2.5 py-0.5 rounded-md border border-[#BED69E]">
               {batteryState.community_battery_soc?.toFixed(0) || 40}% (Floor &gt; 20%)
             </span>
           </div>
@@ -336,63 +325,62 @@ export default function MarketplaceView() {
 
         {/* 4 Compact Forecast Grid Pillars */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-          <div className="p-3 rounded-lg bg-[#FFF7E4]/70 border border-[#DDA12A]/20 space-y-0.5">
-            <div className="text-[10px] font-bold text-[#DDA12A] flex items-center justify-center gap-1">
-              <FaIcon name="solar" />
+          <div className="p-3 rounded-lg bg-[#F4F9EB] border border-[#E2F0CC] space-y-0.5">
+            <div className="text-[10px] font-bold text-[#4A5B4F] flex items-center justify-center gap-1">
+              <FaIcon name="solar" className="text-[#8BC53D]" />
               <span>Solar Forecast</span>
             </div>
-            <div className="font-changa text-lg font-normal text-[#DDA12A]">
+            <div className="font-changa text-lg font-normal text-[#011207]">
               {forecast.solar_kw?.toFixed(2) || '5.84'} kW
             </div>
-            <div className="text-[10px] text-[#5E6963]">
+            <div className="text-[10px] text-[#4A5B4F]">
               Range: {riskCheck.forecast_range_solar_kw?.[0]?.toFixed(2) || '5.31'}–{riskCheck.forecast_range_solar_kw?.[1]?.toFixed(2) || '6.28'} kW
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-[#EDF3FD]/70 border border-[#3C78CC]/20 space-y-0.5">
-            <div className="text-[10px] font-bold text-[#3C78CC] flex items-center justify-center gap-1">
-              <FaIcon name="home" />
+          <div className="p-3 rounded-lg bg-[#F4F9EB] border border-[#E2F0CC] space-y-0.5">
+            <div className="text-[10px] font-bold text-[#4A5B4F] flex items-center justify-center gap-1">
+              <FaIcon name="home" className="text-[#011207]" />
               <span>Expected Demand</span>
             </div>
-            <div className="font-changa text-lg font-normal text-[#17221D]">
+            <div className="font-changa text-lg font-normal text-[#011207]">
               {forecast.demand_kw?.toFixed(2) || '4.21'} kW
             </div>
-            <div className="text-[10px] text-[#5E6963]">
+            <div className="text-[10px] text-[#4A5B4F]">
               Household load trend
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-0.5">
-            <div className="text-[10px] font-bold text-[#1E9B68] flex items-center justify-center gap-1">
-              <FaIcon name="network" />
+          <div className="p-3 rounded-lg bg-[#F4F9EB] border border-[#E2F0CC] space-y-0.5">
+            <div className="text-[10px] font-bold text-[#4A5B4F] flex items-center justify-center gap-1">
+              <FaIcon name="network" className="text-[#8BC53D]" />
               <span>Expected Surplus</span>
             </div>
-            <div className="font-changa text-lg font-normal text-[#1E9B68]">
+            <div className="font-changa text-lg font-normal text-[#8BC53D]">
               +{forecast.balance_kw?.toFixed(2) || '1.63'} kW
             </div>
-            <div className="text-[10px] text-[#5E6963]">
+            <div className="text-[10px] text-[#4A5B4F]">
               Conservative: +{conservativeKw.toFixed(2)} kW
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-white border border-[rgba(23,34,29,0.08)] space-y-0.5 shadow-xs">
-            <div className="text-[10px] font-bold text-[#7358C7] flex items-center justify-center gap-1">
-              <FaIcon name="sparkles" />
+          <div className="p-3 rounded-lg bg-white border border-[#BED69E] space-y-0.5 shadow-xs">
+            <div className="text-[10px] font-bold text-[#012F13] flex items-center justify-center gap-1">
+              <FaIcon name="sparkles" className="text-[#8BC53D]" />
               <span>Safe 15-min Headroom</span>
             </div>
-            <div className="font-changa text-lg font-normal text-[#7358C7]">
+            <div className="font-changa text-lg font-normal text-[#012F13]">
               {safeTradeableKwh.toFixed(2)} kWh
             </div>
-            <div className="text-[10px] text-[#1E9B68] font-semibold">
+            <div className="text-[10px] text-[#8BC53D] font-semibold">
               Zero deficit risk
             </div>
           </div>
         </div>
 
         {/* Action Suggestion Bar */}
-        <div className="p-3 rounded-lg bg-white/90 border border-[#7358C7]/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <div className="flex items-center space-x-2 text-[#17221D]">
-            <span className="h-2 w-2 rounded-full bg-[#1E9B68] animate-pulse flex-shrink-0" />
+        <div className="p-3 rounded-lg bg-white border border-[#BED69E] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex items-center space-x-2 text-[#011207]">
             <span>
               <strong>AI Recommendation:</strong> Your solar surplus permits a safe trade of <strong>{safeTradeableKwh.toFixed(2)} kWh</strong> with nearby homes @ ₹{avgP2pPrice.toFixed(2)}/kWh without impacting storage.
             </span>

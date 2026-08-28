@@ -1,7 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InteractiveOptimizerScene3D, { OPTIMIZER_3D_POSITIONS } from '../components/energy-map-3d/InteractiveOptimizerScene3D';
-import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
 import MetricCard from '../components/ui/MetricCard';
 import Badge from '../components/ui/Badge';
@@ -349,39 +348,45 @@ export default function Optimization() {
   ];
 
   return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
-      {/* 🌟 1. OPTIMIZATION HERO */}
-      <PageHero
-        category="DISPATCH OPTIMIZATION ENGINE"
-        statusBadge="DETERMINISTIC SOLVER"
-        statusVariant="ai"
-        title="Dispatch optimization,"
-        highlightText="mathematically minimized."
-        subtitle={
-          optimizedPlan
-            ? `Optimal plan saves ₹${optimizedPlan.savings.toFixed(2)} (${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% cost reduction) while locking the 20% ESS emergency safety reserve.`
-            : 'Simulating multi-tier objective functions to minimize community electricity expenditure across Solar, P2P, ESS, and Grid.'
-        }
-        supportingFacts={[
-          { label: 'Renewable Fraction', value: optimizedPlan ? `${optimizedPlan.renewablePercent}%` : '88%', icon: 'leaf' },
-          { label: 'P2P Clearing', value: `₹${p2pPrice.toFixed(2)}/kWh`, icon: 'rupee' },
-          { label: 'Engine State', value: status, icon: 'ai' },
-        ]}
-        primaryAction={{
-          label: status === 'ANALYZING' ? 'Analyzing Solver...' : 'Run Optimization',
-          icon: status === 'ANALYZING' ? 'refresh' : 'play',
-          onClick: handleRunOptimizer,
-        }}
-        secondaryAction={{
-          label: 'Reset Baseline',
-          icon: 'refresh',
-          onClick: handleReset,
-        }}
-        tertiaryAction={{
-          label: 'View Marketplace →',
-          onClick: () => navigate('/marketplace'),
-        }}
-      />
+    <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+              Dispatch Optimization Engine
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              Deterministic Solver
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            {optimizedPlan
+              ? `Optimal plan saves ₹${optimizedPlan.savings.toFixed(2)} (${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% cost reduction) with 20% ESS safety reserve`
+              : 'Multi-tier objective functions minimizing community electricity expenditure across Solar, P2P, ESS, and Grid'}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleRunOptimizer}
+            disabled={status === 'ANALYZING'}
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+          >
+            <FaIcon name={status === 'ANALYZING' ? 'refresh' : 'play'} className={status === 'ANALYZING' ? 'animate-spin' : 'text-[#8BC53D]'} />
+            <span>{status === 'ANALYZING' ? 'Analyzing Solver...' : 'Run Optimization'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="refresh" />
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
 
       {/* 🌟 2. METRIC STRIP */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">

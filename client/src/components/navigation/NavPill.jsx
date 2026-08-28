@@ -1,12 +1,8 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import NavItem from './NavItem';
+import { NavLink, useLocation } from 'react-router-dom';
 import NavMoreMenu from './NavMoreMenu';
-import NavToggle from './NavToggle';
 
 export default function NavPill({
-  isCollapsed = false,
-  onToggleCollapse,
   onOpenDemoModal,
   onOpenHealthModal,
 }) {
@@ -28,53 +24,47 @@ export default function NavPill({
     return location.pathname === path;
   };
 
+  // Static navigation routes
   const navItems = [
-    { name: 'Overview', path: '/', iconName: 'overview', tooltip: 'Command center & community state' },
-    { name: 'Energy Network', path: '/network', iconName: 'network', tooltip: '3D spatial microgrid digital twin' },
-    { name: 'Hornet AI', path: '/ai', iconName: 'ai', isAi: true, tooltip: 'Hornet AI predictive orchestration' },
-    { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace', tooltip: 'AI-matched P2P energy exchange' },
-    { name: 'Battery', path: '/battery', iconName: 'battery', tooltip: '50 kWh storage asset & reserve floor' },
-    { name: 'My Home', path: '/my-home', iconName: 'home', tooltip: '3D residential energy cockpit' },
+    { name: 'Dashboard', path: '/' },
+    { name: 'Live Map', path: '/network' },
+    { name: 'Marketplace', path: '/marketplace' },
+    { name: 'Intelligence', path: '/ai' },
+    { name: 'Battery', path: '/battery' },
+    { name: 'My Home', path: '/my-home' },
   ];
 
   return (
     <nav
       aria-label="Main Navigation"
-      className={`inline-flex items-center rounded-2xl bg-white/95 backdrop-blur-xl border border-[rgba(23,34,29,0.08)] p-1.5 shadow-sm transition-all duration-300 ease-out select-none ${
-        isCollapsed ? 'space-x-1' : 'space-x-1 sm:space-x-1.5'
-      }`}
+      className="relative inline-flex items-center rounded-full bg-white/95 backdrop-blur-xl border border-[#BED69E] p-1.5 shadow-sm select-none"
     >
-      {/* PRIMARY NAVIGATION ITEMS */}
-      <div className="flex items-center space-x-1">
-        {navItems.map((item) => (
-          <NavItem
-            key={item.path}
-            name={item.name}
-            path={item.path}
-            iconName={item.iconName}
-            isCollapsed={isCollapsed}
-            isAi={item.isAi}
-            isActive={isCurrentActive(item.path)}
-            tooltip={item.tooltip}
+      <div className="flex items-center space-x-1 sm:space-x-1.5">
+        {navItems.map((item) => {
+          const active = isCurrentActive(item.path);
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={`px-3.5 sm:px-4.5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                active
+                  ? 'bg-[#012F13] text-white shadow-xs font-bold'
+                  : 'text-[#4A5B4F] hover:text-[#011207] hover:bg-[#E2F0CC]/40'
+              }`}
+            >
+              {item.name}
+            </NavLink>
+          );
+        })}
+
+        {/* More Menu dropdown button */}
+        <div className="flex items-center">
+          <NavMoreMenu
+            onOpenDemoModal={onOpenDemoModal}
+            onOpenHealthModal={onOpenHealthModal}
           />
-        ))}
-
-        {/* MORE MENU DROPDOWN */}
-        <NavMoreMenu
-          isCollapsed={isCollapsed}
-          onOpenDemoModal={onOpenDemoModal}
-          onOpenHealthModal={onOpenHealthModal}
-        />
+        </div>
       </div>
-
-      {/* SEPARATOR */}
-      <div className="h-5 w-[1px] bg-[rgba(23,34,29,0.08)] mx-1" />
-
-      {/* COLLAPSE / EXPAND TOGGLE */}
-      <NavToggle
-        isCollapsed={isCollapsed}
-        onToggle={onToggleCollapse}
-      />
     </nav>
   );
 }

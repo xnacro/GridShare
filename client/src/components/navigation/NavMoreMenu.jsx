@@ -3,33 +3,38 @@ import { NavLink, useLocation } from 'react-router-dom';
 import FaIcon from '../icons/FaIcon';
 
 export default function NavMoreMenu({
-  isCollapsed = false,
+  isOpen: controlledIsOpen,
+  setIsOpen: controlledSetIsOpen,
   onOpenDemoModal,
   onOpenHealthModal,
 }) {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const menuRef = useRef(null);
+
+  const isControlled = controlledIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
+  const setIsOpen = isControlled ? controlledSetIsOpen : setInternalIsOpen;
 
   const moreItems = [
     {
-      category: 'Energy',
+      category: 'Energy Infrastructure',
       items: [
-        { name: 'Devices', path: '/devices', iconName: 'devices', desc: 'Simulated smart meters & edge nodes' },
-        { name: 'Transactions', path: '/transactions', iconName: 'transactions', desc: 'Bilateral energy trade ledger' },
+        { name: 'Devices & Meters', path: '/devices', iconName: 'devices', desc: 'Simulated smart meters & edge telemetry' },
+        { name: 'Transaction Ledger', path: '/transactions', iconName: 'transactions', desc: 'Double-auction bilateral trade ledger' },
       ],
     },
     {
-      category: 'Insights',
+      category: 'Intelligence & Optimization',
       items: [
-        { name: 'Scenarios', action: 'demo', iconName: 'scenarios', desc: 'Guided microgrid stress tests' },
-        { name: 'Optimization', path: '/optimize', iconName: 'sliders', desc: 'Interactive dispatch priorities' },
+        { name: 'Dispatch Priorities', path: '/optimize', iconName: 'sliders', desc: 'Interactive rule-based optimizer' },
+        { name: 'Demo Scenarios', action: 'demo', iconName: 'scenarios', desc: 'Guided microgrid weather & load tests' },
       ],
     },
     {
-      category: 'System',
+      category: 'System Telemetry',
       items: [
-        { name: 'System Health', action: 'health', iconName: 'health', desc: 'Database & backend telemetry status' },
+        { name: 'System Health', action: 'health', iconName: 'health', desc: 'PostgreSQL & ML API pipeline status' },
       ],
     },
   ];
@@ -53,59 +58,35 @@ export default function NavMoreMenu({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [setIsOpen]);
 
   return (
     <div className="relative inline-flex items-center" ref={menuRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        title={isCollapsed ? 'More sub-systems' : undefined}
         aria-expanded={isOpen}
         aria-label="More navigation options"
-        className={`group relative inline-flex items-center justify-center rounded-full transition-all duration-200 ease-out select-none ${
-          isCollapsed ? 'h-9 w-9 p-0' : 'px-3 py-1.5 space-x-1.5'
-        } ${
+        className={`px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap flex items-center space-x-1.5 ${
           isOpen || isMoreActive
-            ? 'bg-[#E7F6EE] text-[#12392B] shadow-subtle'
-            : 'text-[#5E6A63] hover:text-[#15211B] hover:bg-[#F5F7F3]'
+            ? 'bg-[#E2F0CC] text-[#012F13] shadow-xs font-bold'
+            : 'text-[#4A5B4F] hover:text-[#011207] hover:bg-[#E2F0CC]/40'
         }`}
       >
+        <span>More</span>
         <FaIcon
-          name="ellipsis"
-          className={`text-sm flex-shrink-0 transition-colors ${
-            isOpen || isMoreActive ? 'text-[#209B67]' : 'text-[#87918B] group-hover:text-[#15211B]'
-          }`}
+          name={isOpen ? 'chevronUp' : 'chevronDown'}
+          className="text-[9px] text-[#7A8C7F] transition-transform ml-0.5"
         />
-
-        {!isCollapsed && (
-          <span className="text-xs sm:text-[13px] font-semibold tracking-tight">
-            More
-          </span>
-        )}
-
-        {!isCollapsed && (
-          <FaIcon
-            name={isOpen ? 'chevronUp' : 'chevronDown'}
-            className="text-[9px] text-[#87918B] transition-transform"
-          />
-        )}
-
-        {/* Floating tooltip in collapsed mode */}
-        {isCollapsed && (
-          <div className="absolute top-full mt-2.5 px-2.5 py-1 bg-[#12392B] text-white text-[11px] font-semibold rounded-lg shadow-modal opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-150 -translate-y-1 group-hover:translate-y-0 z-50 whitespace-nowrap">
-            More
-          </div>
-        )}
       </button>
 
-      {/* DROPDOWN MENU */}
+      {/* DROPDOWN MENU POPOVER */}
       {isOpen && (
-        <div className="absolute top-full right-0 sm:left-1/2 sm:-translate-x-1/2 mt-3 w-72 sm:w-80 rounded-2xl border border-[#DCE4DE] bg-white p-3 shadow-modal backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 z-50">
+        <div className="absolute top-full right-0 mt-3 w-72 sm:w-80 rounded-2xl border border-[#BED69E] bg-white p-3.5 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 z-50">
           <div className="space-y-3">
             {moreItems.map((group, gIdx) => (
               <div key={gIdx} className="space-y-1">
-                <div className="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#87918B]">
+                <div className="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#7A8C7F]">
                   {group.category}
                 </div>
 
@@ -119,14 +100,14 @@ export default function NavMoreMenu({
                           setIsOpen(false);
                           if (onOpenDemoModal) onOpenDemoModal();
                         }}
-                        className="w-full flex items-start space-x-3 p-2 rounded-xl text-left hover:bg-[#F5F7F3] transition text-[#15211B] group"
+                        className="w-full flex items-start space-x-3 p-2.5 rounded-xl text-left hover:bg-[#F4F9EB] transition text-[#011207] group"
                       >
-                        <div className="mt-0.5 w-7 h-7 rounded-lg bg-[#FFF3D7] text-[#E7AA31] flex items-center justify-center text-xs flex-shrink-0">
+                        <div className="mt-0.5 w-7 h-7 rounded-lg bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-xs flex-shrink-0">
                           <FaIcon name={item.iconName} />
                         </div>
                         <div>
-                          <div className="text-xs font-bold">{item.name}</div>
-                          <div className="text-[11px] text-[#87918B] leading-snug">{item.desc}</div>
+                          <div className="text-xs font-bold text-[#011207]">{item.name}</div>
+                          <div className="text-[11px] text-[#4A5B4F] leading-snug">{item.desc}</div>
                         </div>
                       </button>
                     );
@@ -141,14 +122,14 @@ export default function NavMoreMenu({
                           setIsOpen(false);
                           if (onOpenHealthModal) onOpenHealthModal();
                         }}
-                        className="w-full flex items-start space-x-3 p-2 rounded-xl text-left hover:bg-[#F5F7F3] transition text-[#15211B] group"
+                        className="w-full flex items-start space-x-3 p-2.5 rounded-xl text-left hover:bg-[#F4F9EB] transition text-[#011207] group"
                       >
-                        <div className="mt-0.5 w-7 h-7 rounded-lg bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-xs flex-shrink-0">
+                        <div className="mt-0.5 w-7 h-7 rounded-lg bg-[#E2F0CC] text-[#8BC53D] flex items-center justify-center text-xs flex-shrink-0">
                           <FaIcon name={item.iconName} />
                         </div>
                         <div>
-                          <div className="text-xs font-bold">{item.name}</div>
-                          <div className="text-[11px] text-[#87918B] leading-snug">{item.desc}</div>
+                          <div className="text-xs font-bold text-[#011207]">{item.name}</div>
+                          <div className="text-[11px] text-[#4A5B4F] leading-snug">{item.desc}</div>
                         </div>
                       </button>
                     );
@@ -160,27 +141,27 @@ export default function NavMoreMenu({
                       key={iIdx}
                       to={item.path}
                       onClick={() => setIsOpen(false)}
-                      className={`flex items-start space-x-3 p-2 rounded-xl transition ${
+                      className={`flex items-start space-x-3 p-2.5 rounded-xl transition ${
                         isActive
-                          ? 'bg-[#E7F6EE] text-[#12392B]'
-                          : 'hover:bg-[#F5F7F3] text-[#15211B]'
+                          ? 'bg-[#E2F0CC] text-[#012F13] font-bold'
+                          : 'hover:bg-[#F4F9EB] text-[#011207]'
                       }`}
                     >
                       <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0 ${
-                        isActive ? 'bg-white text-[#209B67]' : 'bg-[#F5F7F3] text-[#87918B]'
+                        isActive ? 'bg-white text-[#8BC53D]' : 'bg-[#F4F9EB] text-[#7A8C7F]'
                       }`}>
                         <FaIcon name={item.iconName} />
                       </div>
                       <div>
-                        <div className="text-xs font-bold">{item.name}</div>
-                        <div className="text-[11px] text-[#87918B] leading-snug">{item.desc}</div>
+                        <div className="text-xs font-bold text-[#011207]">{item.name}</div>
+                        <div className="text-[11px] text-[#4A5B4F] leading-snug">{item.desc}</div>
                       </div>
                     </NavLink>
                   );
                 })}
 
                 {gIdx < moreItems.length - 1 && (
-                  <div className="border-t border-[#DCE4DE] my-1" />
+                  <div className="border-t border-[#E2F0CC] my-1" />
                 )}
               </div>
             ))}

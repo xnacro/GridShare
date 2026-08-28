@@ -3,7 +3,6 @@ import { api } from '../services/api';
 import BatteryOwnership3D from '../components/3d/BatteryOwnership3D';
 import StatusBadge from '../components/StatusBadge';
 import { LoadingState, ErrorState } from '../components/StateFeedback';
-import PageHero from '../components/ui/PageHero';
 import {
   BatteryCharging,
   Zap,
@@ -107,36 +106,44 @@ export default function CommunityView() {
   const stored = batteryState?.current_energy_kwh || 11.0;
   const capacity = batteryState?.capacity_kwh || 50.0;
   const efficiency = batteryState?.efficiency_percent || 90.0;
-  const availableDispatch = batteryState?.available_dispatch_kwh || 0.0;
-  const totalCredits = ownershipData?.total_active_credits_kwh || 0.0;
+  return (
+    <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-changa text-2xl sm:text-3xl font-normal text-[#011207]">
+              Community Storage Equity
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              Proportional Ledger
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            Transparent proportional tracking of household energy deposits with 90% round-trip efficiency accounting
+          </p>
+        </div>
 
-  return (
-  return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
-      {/* 🌟 1. COMMUNITY BATTERY & FAIR ACCOUNTING HERO */}
-      <PageHero
-        category="COMMUNITY STORAGE & EQUITY"
-        statusBadge="PROPORTIONAL LEDGER"
-        statusVariant="surplus"
-        title="Community battery equity,"
-        highlightText="tracked and guaranteed."
-        subtitle="Transparent proportional tracking of household energy deposits with 90% round-trip efficiency accounting and anti-depletion fairness rules."
-        supportingFacts={[
-          { label: 'ESS Capacity', value: `${capacity.toFixed(0)} kWh`, icon: 'battery' },
-          { label: 'Active Deposits', value: `${totalCredits.toFixed(1)} kWh`, icon: 'sparkles' },
-          { label: 'Round-Trip ETA', value: `${efficiency}%`, icon: 'leaf' },
-        ]}
-        primaryAction={{
-          label: isDemoRunning ? 'Simulating...' : 'Run Fairness Demo',
-          icon: 'play',
-          onClick: handleRunBatteryFairnessDemo,
-        }}
-        secondaryAction={{
-          label: 'Reset Ledger',
-          icon: 'refresh',
-          onClick: handleResetDemo,
-        }}
-      />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleRunBatteryFairnessDemo}
+            disabled={isDemoRunning}
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+          >
+            <Play className="h-3.5 w-3.5 text-[#8BC53D]" />
+            <span>{isDemoRunning ? 'Simulating...' : 'Run Fairness Demo'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleResetDemo}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <RotateCcw className="h-3.5 w-3.5 text-[#4A5B4F]" />
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
 
       {/* Demo Feedback Banner */}
       {demoFeedback && (

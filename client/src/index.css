@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,89 +6,124 @@
 
 @layer base {
   :root {
-    --canvas: #F8F9F6;
-    --canvas-subtle: #F3F5F1;
+    /* =======================================================================
+       REVERTIBLE COLOR SCHEME CONFIGURATION
+       To revert to the previous color scheme, swap the active tokens below
+       with the commented PREVIOUS PALETTE block.
+       ======================================================================= */
+
+    /* --- CURRENT REFINED PALETTE --- */
+    --canvas: #F8FAF6;
+    --canvas-subtle: #F1F5EB;
     --surface: #FFFFFF;
     --surface-elevated: #FBFCFA;
     
-    --text-primary: #17221D;
-    --text-secondary: #5E6963;
-    --text-muted: #89938D;
-    --border-soft: rgba(23, 34, 29, 0.08);
-    --border-strong: rgba(23, 34, 29, 0.16);
+    --text-primary: #041D0D;
+    --text-secondary: #3F5346;
+    --text-muted: #6E8174;
+    --border-soft: #E2EED7;
+    --border-strong: #CDDFC0;
     
-    --forest-deep: #12392B;
-    --forest-mid: #164A35;
-    --forest-light: #1C5B42;
+    --sage-mint: #E2F0CC;
+    --apple-green: #8BC53D;
+    --dark-forest: #012F13;
+    --near-black: #041D0D;
     
-    --emerald-primary: #1E9B68;
-    --emerald-bright: #2CB477;
-    --emerald-light: #43CB8C;
-    --emerald-soft: #E8F6EE;
+    --forest-deep: #012F13;
+    --forest-mid: #0B3E1D;
+    --forest-light: #16532A;
     
-    --solar-amber: #DDA12A;
-    --solar-soft: #FFF3D8;
-    --battery-amber: #DDA12A;
-    --grid-blue: #3C78CC;
-    --grid-soft: #EDF3FB;
+    --emerald-primary: #8BC53D;
+    --emerald-bright: #8BC53D;
+    --emerald-light: #9ED64F;
+    --emerald-soft: #E2F0CC;
+    
+    --solar-amber: #8BC53D;
+    --solar-soft: #E2F0CC;
+    --battery-amber: #8BC53D;
+    --grid-blue: #012F13;
+    --grid-soft: #E2F0CC;
     --deficit-coral: #D45C5C;
-    --deficit-soft: #FCECEC;
-    --ai-violet: #7358C7;
-    --ai-soft: #F1EDFF;
+    --deficit-soft: #FDECEC;
+    --ai-violet: #012F13;
+    --ai-soft: #E2F0CC;
+
+    /* --- PREVIOUS PALETTE (For Instant Reversion if desired) ---
+    --canvas: #F9FAF6;
+    --canvas-subtle: #F3F6EC;
+    --surface: #FFFFFF;
+    --surface-elevated: #FBFCFA;
+    --text-primary: #011207;
+    --text-secondary: #4A5B4F;
+    --text-muted: #7A8C7F;
+    --border-soft: #E2F0CC;
+    --border-strong: #D5E6BE;
+    ----------------------------------------------------------- */
   }
 
   body {
     background-color: var(--canvas);
     color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
+  /* Sleek Modern Display Font (Option A: Outfit) */
+  .font-display {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.015em;
+  }
+
+  /* Precision Monospace for Telemetry & Currency (JetBrains Mono) */
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Smooth aliases for legacy font utility classes */
   .font-changa {
-    font-family: 'Changa One', sans-serif;
-    letter-spacing: 0.015em;
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.015em;
+    font-weight: 700;
   }
 
   .font-fjalla {
-    font-family: 'Changa One', 'Fjalla One', sans-serif;
-    letter-spacing: 0.015em;
-  }
-
-  .font-display {
-    font-family: 'Changa One', 'Plus Jakarta Sans', sans-serif;
-    letter-spacing: 0.015em;
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.015em;
+    font-weight: 700;
   }
 }
 
 @layer utilities {
-  /* Climate-Tech Glassmorphism with Luminous Glass Borders & 12px Radius */
+  /* Climate-Tech Glassmorphism with Luminous Elevation */
   .glass-card {
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.98);
-    box-shadow: 0 6px 24px -2px rgba(18, 57, 43, 0.04), 0 1px 2px 0 rgba(18, 57, 43, 0.03);
-    outline: 1px solid rgba(23, 34, 29, 0.06);
+    border: 1px solid rgba(226, 238, 215, 0.85);
+    box-shadow: 0 4px 20px -2px rgba(1, 47, 19, 0.04), 0 1px 3px 0 rgba(1, 47, 19, 0.02);
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 8px 30px -4px rgba(1, 47, 19, 0.07), 0 2px 6px 0 rgba(1, 47, 19, 0.03);
   }
 
   .glass-card-subtle {
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.92);
-    box-shadow: 0 4px 16px -2px rgba(18, 57, 43, 0.03);
-    outline: 1px solid rgba(23, 34, 29, 0.05);
+    border: 1px solid rgba(226, 238, 215, 0.7);
+    box-shadow: 0 2px 12px -2px rgba(1, 47, 19, 0.03);
   }
 
   .gs-glass-badge {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.98);
-    box-shadow: 0 4px 16px -2px rgba(18, 57, 43, 0.06), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
-    outline: 1px solid rgba(23, 34, 29, 0.05);
+    border: 1px solid rgba(205, 223, 192, 0.9);
+    box-shadow: 0 2px 8px -1px rgba(1, 47, 19, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   /* Micro-animation transitions */
@@ -108,7 +143,7 @@
   }
 }
 
-/* Premium Scrollbars */
+/* Premium Sleek Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -119,10 +154,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(23, 34, 29, 0.14);
+  background: rgba(1, 47, 19, 0.16);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(23, 34, 29, 0.25);
+  background: rgba(1, 47, 19, 0.3);
 }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
 import SectionHeader from '../components/ui/SectionHeader';
 import ForecastRangeChart from '../components/copilot/ForecastRangeChart';
@@ -126,32 +125,43 @@ export default function AiForecastView() {
   const isSurplus = aiForecast.balance_kw >= 0;
 
   return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+    <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. HERO HEADER */}
-      <PageHero
-        category="CENTRAL INTELLIGENCE LAYER"
-        statusBadge="DUAL ML REGRESSION ACTIVE"
-        statusVariant={isSurplus ? 'surplus' : 'deficit'}
-        title="Predict what comes next,"
-        highlightText="decide with certainty."
-        subtitle={`Real-time Random Forest predictions (solar_v1 & demand_v1) paired with battery constraints and deterministic dispatch rules.`}
-        supportingFacts={[
-          { label: 'Safe Tradeable Energy', value: `${aiForecast.safe_tradeable_kwh || 0.8} kWh`, icon: 'shield' },
-          { label: 'Forecast Horizon', value: selectedHorizon, icon: 'clock' },
-          { label: 'Battery Reserve', value: `${curState.battery_soc || 65}% (Min 20%)`, icon: 'battery' },
-        ]}
-        primaryAction={{
-          label: 'Ask Hornet AI',
-          icon: 'brain',
-          onClick: () => setIsAssistantOpen(true),
-        }}
-        secondaryAction={{
-          label: 'Scenario Lab',
-          icon: 'sliders-h',
-          onClick: () => setViewMode('SCENARIO'),
-        }}
-      />
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-changa text-2xl sm:text-3xl font-normal text-[#011207]">
+              Hornet AI Forecasting Hub
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              Dual ML Regression Active
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            Real-time Random Forest predictions (solar_v1 & demand_v1) paired with battery constraints and deterministic dispatch rules
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsAssistantOpen(true)}
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="brain" className="text-[#8BC53D]" />
+            <span>Ask Hornet AI</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode(viewMode === 'SCENARIO' ? 'OVERVIEW' : 'SCENARIO')}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="sliders" />
+            <span>{viewMode === 'SCENARIO' ? 'Standard Matrix' : 'Scenario Lab'}</span>
+          </button>
+        </div>
+      </div>
 
       {/* Action Toast Notice */}
       {actionNotice && (

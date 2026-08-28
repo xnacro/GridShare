@@ -102,22 +102,15 @@ export default function NavUtility({ onOpenLoginModal }) {
         <button
           type="button"
           onClick={() => setIsProfileOpen(!isProfileOpen)}
-          className="flex items-center space-x-2.5 px-2 py-1 rounded-full hover:bg-white/80 transition"
+          className="flex items-center space-x-2.5 px-2 py-1 rounded-full hover:bg-[#E2F0CC]/40 transition"
           aria-label="User Profile Menu"
         >
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-[rgba(23,34,29,0.12)] bg-[#12392B] text-white flex items-center justify-center text-xs flex-shrink-0 shadow-xs">
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-              alt={displayName}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
+          <div className="w-8 h-8 rounded-full border border-[#BED69E] bg-[#012F13] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-xs">
+            {displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'GS'}
           </div>
           <div className="text-left hidden md:block">
-            <div className="text-xs font-bold text-[#17221D] leading-tight">{displayName}</div>
-            <div className="text-[10px] font-medium text-[#5E6963] leading-tight truncate max-w-[140px]">
+            <div className="text-xs font-bold text-[#011207] leading-tight">{displayName}</div>
+            <div className="text-[10px] font-medium text-[#4A5B4F] leading-tight truncate max-w-[140px]">
               {householdName}
             </div>
           </div>

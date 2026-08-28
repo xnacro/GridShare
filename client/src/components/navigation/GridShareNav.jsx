@@ -45,8 +45,8 @@ export default function GridShareNav({
     <>
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-200 ease-out select-none ${isScrolled
-            ? 'py-2 sm:py-2.5 bg-[#F8F9F6]/90 backdrop-blur-md border-b border-[rgba(23,34,29,0.06)]'
-            : 'py-3 sm:py-3.5 bg-[#F8F9F6]'
+            ? 'py-2 sm:py-2.5 bg-[#F9FAF6]/90 backdrop-blur-md border-b border-[#E2F0CC]'
+            : 'py-3 sm:py-3.5 bg-[#F9FAF6]'
           }`}
       >
         <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 sm:px-8">
@@ -55,25 +55,18 @@ export default function GridShareNav({
           <div className="flex items-center space-x-3 flex-shrink-0">
             <NavLink
               to="/"
-              className="flex items-center space-x-2.5 group focus:outline-none"
-              title="GridShare AI Operating Platform"
+              className="flex items-center group focus:outline-none"
+              title="GridShare"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#12251D] text-white shadow-sm group-hover:bg-[#173C2B] transition-colors">
-                <FaIcon name="energy" className="text-base text-[#39C985]" />
-              </div>
-              <div className="flex items-center space-x-1">
-                <span className="text-base font-extrabold tracking-tight text-[#142019]">
-                  GRID<span className="text-[#1C9A67]">SHARE</span>
-                </span>
-              </div>
+              <span className="font-display text-2xl sm:text-[26px] font-bold tracking-tight text-[#041D0D] hover:text-[#012F13] transition-colors">
+                GridShare
+              </span>
             </NavLink>
           </div>
 
           {/* CENTER: FLOATING PILL NAVIGATION (Desktop / Tablet) */}
           <div className="hidden lg:flex flex-1 items-center justify-center px-4">
             <NavPill
-              isCollapsed={isCollapsed}
-              onToggleCollapse={toggleCollapse}
               onOpenDemoModal={onOpenDemoModal}
               onOpenHealthModal={onOpenHealthModal}
             />

@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import InteractiveBatteryTwin3D from '../components/battery/InteractiveBatteryTwin3D';
-import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
 import GlassSurface from '../components/ui/GlassSurface';
 import SectionHeader from '../components/ui/SectionHeader';
@@ -136,36 +135,43 @@ export default function BatteryView() {
   };
 
   return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+    <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. BATTERY HERO */}
-      <PageHero
-        category="COMMUNITY ENERGY STORAGE (ESS)"
-        statusBadge={`${battery.soc.toFixed(0)}% CHARGED`}
-        statusVariant="solar"
-        title="Shared community storage,"
-        highlightText="buffered and resilient."
-        subtitle={`Your microgrid has ${battery.storedKwh.toFixed(1)} kWh stored in the central battery with ${usableKwh.toFixed(1)} kWh usable above the ${battery.minSoc}% emergency floor.`}
-        supportingFacts={[
-          { label: 'Total Capacity', value: `${battery.capacity.toFixed(0)} kWh`, icon: 'battery' },
-          { label: 'Round-Trip Efficiency', value: `${battery.efficiency}%`, icon: 'leaf' },
-          { label: 'Emergency Floor', value: `${battery.minSoc}% (${reservedKwh.toFixed(0)} kWh locked)`, icon: 'shield' },
-        ]}
-        primaryAction={{
-          label: 'Buffer Solar Surplus',
-          icon: 'battery',
-          onClick: handleExecuteCharge,
-        }}
-        secondaryAction={{
-          label: 'Withdraw Credit',
-          icon: 'flash',
-          onClick: handleExecuteDischarge,
-        }}
-        tertiaryAction={{
-          label: 'View Marketplace →',
-          onClick: () => navigate('/marketplace'),
-        }}
-      />
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-changa text-2xl sm:text-3xl font-normal text-[#011207]">
+              Community Storage (ESS)
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              {battery.soc.toFixed(0)}% Charged ({usableKwh.toFixed(1)} kWh usable)
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            50 kWh central battery with 90% round-trip efficiency and {battery.minSoc}% emergency backup reserve floor
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleExecuteCharge}
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="battery" className="text-[#8BC53D]" />
+            <span>Buffer Solar Surplus</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleExecuteDischarge}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="flash" />
+            <span>Withdraw Credit</span>
+          </button>
+        </div>
+      </div>
 
       {/* Dynamic Status Notification */}
       {statusMessage && (

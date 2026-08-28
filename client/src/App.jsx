@@ -27,7 +27,7 @@ function AppContent() {
   };
 
   return (
-    <div className="flex min-h-screen w-screen flex-col bg-[#F8F9F6] text-[#15211B] overflow-x-hidden antialiased font-sans">
+    <div className="flex min-h-screen w-screen flex-col bg-[var(--canvas)] text-[var(--text-primary)] overflow-x-hidden antialiased font-sans">
       
       {/* 🧭 Centered Floating Pill Navigation Header */}
       <GridShareNav

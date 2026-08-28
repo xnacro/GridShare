@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
 import GlassSurface from '../components/ui/GlassSurface';
 import SectionHeader from '../components/ui/SectionHeader';
@@ -101,35 +100,46 @@ export default function TransactionsView() {
   }, [transactions, totalVolumeInr, totalEnergyTraded]);
 
   return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+    <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. TRANSACTIONS HERO */}
-      <PageHero
-        category="TRANSACTION AUDIT LEDGER"
-        statusBadge="DOUBLE AUCTION LEDGER"
-        statusVariant="surplus"
-        title="Community transaction ledger,"
-        highlightText="verified and cleared."
-        subtitle={`Audit history tracking ${transactions.length} settlements totaling ${totalEnergyTraded.toFixed(1)} kWh across peer trades and storage.`}
-        supportingFacts={[
-          { label: 'Total Volume', value: `₹${totalVolumeInr.toFixed(2)}`, icon: 'rupee' },
-          { label: 'Average Tariff', value: `₹${avgTariff.toFixed(2)} / kWh`, icon: 'leaf' },
-          { label: 'Settlement Status', value: '100% Cleared', icon: 'shield' },
-        ]}
-        primaryAction={{
-          label: 'Refresh Ledger',
-          icon: 'refresh',
-          onClick: () => {
-            setIsRefreshing(true);
-            fetchLedgerData();
-          },
-        }}
-        secondaryAction={{
-          label: 'Marketplace View',
-          icon: 'marketplace',
-          onClick: () => navigate('/marketplace'),
-        }}
-      />
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+              Settlement & Ledger Audit
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              100% Cleared
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            Audit history tracking {transactions.length} settlements totaling {totalEnergyTraded.toFixed(1)} kWh across peer trades and storage
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setIsRefreshing(true);
+              fetchLedgerData();
+            }}
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="refresh" className={isRefreshing ? 'animate-spin' : ''} />
+            <span>{isRefreshing ? 'Refreshing...' : 'Refresh Ledger'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/marketplace')}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="marketplace" />
+            <span>Marketplace</span>
+          </button>
+        </div>
+      </div>
 
       {/* 🌟 2. METRIC STRIP */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">

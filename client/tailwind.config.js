@@ -8,60 +8,68 @@ export default {
     extend: {
       colors: {
         gs: {
-          canvas: '#F5F7F3',
-          canvasSoft: '#EEF1EB',
+          canvas: '#F9FAF6',
+          canvasSoft: '#F3F6EC',
           surface: '#FFFFFF',
           surfaceElevated: '#FBFCFA',
           
-          // Typography
-          graphite: '#15211B',
-          forestInk: '#17382B',
-          secondary: '#5E6A63',
-          muted: '#87918B',
+          // Typography (Near-Black Green palette)
+          graphite: '#011207',
+          forestInk: '#012F13',
+          secondary: '#4A5B4F',
+          muted: '#7A8C7F',
           
           // Borders
-          border: '#DCE4DE',
-          borderSoft: '#DCE4DE',
-          borderStrong: '#C7D2CB',
+          border: '#D5E6BE',
+          borderSoft: '#E2F0CC',
+          borderStrong: '#BED69E',
+          
+          // Palette from user image
+          sageMint: '#E2F0CC',
+          appleGreen: '#8BC53D',
+          darkForest: '#012F13',
+          nearBlack: '#011207',
           
           // Brand & Energy Accents
-          deepForest: '#12392B',
-          forest: '#17513B',
-          emerald: '#209B67',
-          brightEnergy: '#41C98A',
-          softEmerald: '#E7F6EE',
+          deepForest: '#012F13',
+          forest: '#0B3E1D',
+          emerald: '#8BC53D',
+          brightEnergy: '#8BC53D',
+          softEmerald: '#E2F0CC',
           
           // Solar
-          solarGold: '#E7AA31',
-          softSolar: '#FFF3D7',
+          solarGold: '#8BC53D',
+          softSolar: '#E2F0CC',
           
           // Battery
-          batteryAmber: '#D79A27',
+          batteryAmber: '#8BC53D',
           
           // Grid
-          gridBlue: '#397BD2',
-          softGrid: '#EAF2FC',
+          gridBlue: '#012F13',
+          softGrid: '#E2F0CC',
           
           // Deficit / Alert
-          deficitCoral: '#D85D5D',
+          deficitCoral: '#D45C5C',
           softCoral: '#FDECEC',
           
-          // AI Intelligence Layer (Secondary Accent)
-          aiViolet: '#7359C8',
-          softAi: '#F1EDFF',
+          // AI Intelligence Layer
+          aiViolet: '#012F13',
+          softAi: '#E2F0CC',
         },
         brand: {
-          50: '#E7F6EE',
-          100: '#C7EDD9',
-          500: '#41C98A',
-          600: '#209B67',
-          700: '#17513B',
-          800: '#12392B',
+          50: '#F4F9EB',
+          100: '#E2F0CC',
+          500: '#8BC53D',
+          600: '#75AA2F',
+          700: '#0B3E1D',
+          800: '#012F13',
+          900: '#011207',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        display: ['Outfit', 'Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       borderRadius: {
         'pill': '9999px',

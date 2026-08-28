@@ -4,7 +4,6 @@ import {
   computeHouseholdStates,
 } from '../services/marketEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
-import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
 import GlassSurface from '../components/ui/GlassSurface';
 import FaIcon from '../components/icons/FaIcon';
@@ -81,79 +80,49 @@ export default function InteractiveMicrogridView() {
   const nodeNet = (activeNode?.generation || 0) - (activeNode?.consumption || 0);
 
   return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
-      
-      {/* 🌟 1. ENERGY NETWORK HERO */}
-      <PageHero
-        category="COMMUNITY ENERGY NETWORK"
-        statusBadge="LIVE 3D TWIN"
-        statusVariant="surplus"
-        title="See how renewable energy moves"
-        highlightText="through your community right now."
-        subtitle="Visualizing real-time power routing across prosumers, smart circuits, 50 kWh central storage, and utility grid interties."
-        supportingFacts={[
-          { label: 'Current Balance', value: netCommunity >= 0 ? `+${netCommunity.toFixed(1)} kW Surplus` : `${netCommunity.toFixed(1)} kW Deficit`, icon: 'network' },
-          { label: 'Network Nodes', value: '4 Households + 1 ESS', icon: 'home' },
-          { label: 'Storage State', value: `${battery.soc.toFixed(0)}% (20% Floor)`, icon: 'battery' },
-        ]}
-        primaryAction={{
-          label: 'Top-Down Overview',
-          icon: 'network',
-          onClick: () => sceneRef.current?.setTopDownView?.(),
-        }}
-        secondaryAction={{
-          label: 'Reset Camera',
-          icon: 'refresh',
-          onClick: () => sceneRef.current?.resetCamera?.(),
-        }}
-        tertiaryAction={{
-          label: 'View Marketplace →',
-          onClick: () => navigate('/marketplace'),
-        }}
-      />
+    <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
 
-      {/* 🌟 2. METRIC STRIP */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <HeroMetric
-          label="Total Generation"
-          value={totalGen.toFixed(1)}
-          unit="kW"
-          subtitle="Rooftop solar irradiance"
-          iconName="solar"
-          variant="solar"
-        />
+      {/* 🌟 1. COMPACT PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+              Live Microgrid Twin
+            </h1>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+              {netCommunity >= 0 ? `+${netCommunity.toFixed(1)} kW Surplus` : `${netCommunity.toFixed(1)} kW Deficit`}
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+            Real-time power routing across prosumers, smart circuits, 20 kWh central ESS, and utility grid
+          </p>
+        </div>
 
-        <HeroMetric
-          label="Total Demand"
-          value={totalCon.toFixed(1)}
-          unit="kW"
-          subtitle="Residential loads & EV draws"
-          iconName="home"
-          variant="default"
-        />
-
-        <HeroMetric
-          label="Net Microgrid Balance"
-          value={netCommunity >= 0 ? `+${netCommunity.toFixed(1)}` : `${netCommunity.toFixed(1)}`}
-          unit="kW"
-          subtitle={isSurplus ? "Zero external grid import required" : "Drawing from community ESS buffer"}
-          iconName="network"
-          variant={isSurplus ? "emerald" : "default"}
-        />
-
-        <HeroMetric
-          label="Community Battery"
-          value={`${battery.soc.toFixed(0)}%`}
-          unit="SOC"
-          subtitle="50 kWh central storage unit"
-          iconName="battery"
-          variant="solar"
-        />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => sceneRef.current?.setTopDownView?.()}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="network" />
+            <span>Top-Down</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => sceneRef.current?.resetCamera?.()}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+          >
+            <FaIcon name="refresh" />
+            <span>Reset 3D</span>
+          </button>
+        </div>
       </div>
+
+
 
       {/* 🌟 3. EXPANSIVE 3D DIGITAL TWIN (75-80% Screen Presence) */}
       <div className="relative glass-card rounded-xl p-3 sm:p-5 overflow-hidden">
-        
+
         <div className="h-[520px] sm:h-[620px] w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.05)]">
           <MarketplaceScene3D
             ref={sceneRef}
@@ -234,11 +203,10 @@ export default function InteractiveMicrogridView() {
                 key={h.id}
                 type="button"
                 onClick={() => setSelectedNodeId(h.id)}
-                className={`px-3 py-1 text-xs font-bold rounded-xl transition ${
-                  selectedNodeId === h.id
-                    ? 'bg-[#12382A] text-white shadow-xs'
-                    : 'text-[#5E6B63] hover:text-[#15221B] hover:bg-white/60'
-                }`}
+                className={`px-3 py-1 text-xs font-bold rounded-xl transition ${selectedNodeId === h.id
+                  ? 'bg-[#12382A] text-white shadow-xs'
+                  : 'text-[#5E6B63] hover:text-[#15221B] hover:bg-white/60'
+                  }`}
               >
                 {h.id.toUpperCase().replace('_', ' ')}
               </button>
@@ -247,6 +215,44 @@ export default function InteractiveMicrogridView() {
 
         </div>
 
+      </div>
+      {/* 🌟 2. METRIC STRIP */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <HeroMetric
+          label="Total Generation"
+          value={totalGen.toFixed(1)}
+          unit="kW"
+          subtitle="Rooftop solar irradiance"
+          iconName="solar"
+          variant="solar"
+        />
+
+        <HeroMetric
+          label="Total Demand"
+          value={totalCon.toFixed(1)}
+          unit="kW"
+          subtitle="Residential loads & EV draws"
+          iconName="home"
+          variant="default"
+        />
+
+        <HeroMetric
+          label="Net Microgrid Balance"
+          value={netCommunity >= 0 ? `+${netCommunity.toFixed(1)}` : `${netCommunity.toFixed(1)}`}
+          unit="kW"
+          subtitle={isSurplus ? "Zero external grid import required" : "Drawing from community ESS buffer"}
+          iconName="network"
+          variant={isSurplus ? "emerald" : "default"}
+        />
+
+        <HeroMetric
+          label="Community Battery"
+          value={`${battery.soc.toFixed(0)}%`}
+          unit="SOC"
+          subtitle="50 kWh central storage unit"
+          iconName="battery"
+          variant="solar"
+        />
       </div>
 
     </div>
