@@ -1,0 +1,123 @@
+{
+  "audit_version": "2.0.0",
+  "audit_date": "2026-08-28T19:00:00Z",
+  "system_name": "GridShare Microgrid Operating Platform",
+  "frontend_stack": {
+    "framework": "React 18.3",
+    "bundler": "Vite 5.4",
+    "css_framework": "TailwindCSS 3.4",
+    "icons": "FontAwesome Solid Icons (@fortawesome/react-fontawesome)",
+    "charts": "Recharts 2.15",
+    "3d_engine": "Three.js 0.185 + React Three Fiber 8.18"
+  },
+  "pages_audited": [
+    {
+      "id": "overview",
+      "path": "/",
+      "component": "DashboardView.jsx",
+      "purpose": "Primary executive command center",
+      "data_source": "GET /api/dashboard, GET /api/copilot/insights",
+      "trust_level": "High",
+      "classification": "Hybrid (Live ML Insights + Simulated Telemetry)",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "energy_network",
+      "path": "/network",
+      "component": "InteractiveMicrogridView.jsx",
+      "purpose": "3D spatial digital twin of Guwahati microgrid topology",
+      "data_source": "MarketplaceScene3D, MARKET_3D_POSITIONS",
+      "trust_level": "High",
+      "classification": "Simulated Spatial Telemetry",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "hornet_ai",
+      "path": "/ai",
+      "component": "AiForecastView.jsx",
+      "purpose": "6-step AI energy decision pipeline & prediction intervals",
+      "data_source": "GET /api/copilot/insights, POST /api/copilot/simulate-shock",
+      "trust_level": "Authoritative",
+      "classification": "Real ML Models (demand_v1 + solar_v1) + Deterministic Optimizer",
+      "status": "Completed V2"
+    },
+    {
+      "id": "marketplace",
+      "path": "/marketplace",
+      "component": "MarketplaceView.jsx",
+      "purpose": "Bilateral P2P energy exchange & double-auction order matching",
+      "data_source": "GET /api/market/offers, GET /api/market/requests, POST /api/market/match",
+      "trust_level": "High",
+      "classification": "Real Double-Auction Algorithm + Simulated Telemetry",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "battery",
+      "path": "/battery",
+      "component": "BatteryView.jsx",
+      "purpose": "50 kWh central storage asset & 20% reserve floor protection",
+      "data_source": "GET /api/battery, GET /api/battery/ownership, GET /api/battery/ledger",
+      "trust_level": "High",
+      "classification": "Real Battery Accounting Logic + Virtual Asset State",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "my_home",
+      "path": "/my-home",
+      "component": "MyHomeView.jsx",
+      "purpose": "Residential prosumer/consumer 3D home energy cockpit",
+      "data_source": "Household telemetry & appliance power models",
+      "trust_level": "High",
+      "classification": "Simulated Residential Profiles",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "scenarios",
+      "path": "/optimize",
+      "component": "Optimization.jsx",
+      "purpose": "Guided microgrid scenario workbench & weather shock tester",
+      "data_source": "POST /api/demo/run-scenario, POST /api/copilot/simulate-shock",
+      "trust_level": "High",
+      "classification": "Deterministic Simulation Sandbox",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "transactions",
+      "path": "/transactions",
+      "component": "TransactionsView.jsx",
+      "purpose": "Verifiable financial ledger of energy trades and storage credits",
+      "data_source": "GET /api/market/transactions, GET /api/battery/ledger",
+      "trust_level": "Authoritative",
+      "classification": "SQLAlchemy Database Ledger Records",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "devices",
+      "path": "/devices",
+      "component": "DevicesView.jsx",
+      "purpose": "Virtual smart meter circuits and edge gateway diagnostics",
+      "data_source": "GET /api/devices",
+      "trust_level": "High",
+      "classification": "Simulated Edge Telemetry (Hardware Boundary)",
+      "status": "Refactored V2"
+    },
+    {
+      "id": "system_health",
+      "path": "Modal Overlay",
+      "component": "SystemHealthModal.jsx",
+      "purpose": "Infrastructure status, DB latency, ML model availability",
+      "data_source": "GET /api/health",
+      "trust_level": "Authoritative",
+      "classification": "Real Infrastructure Telemetry",
+      "status": "Completed V2"
+    }
+  ],
+  "design_principles_enforced": {
+    "clarity_over_density": true,
+    "no_fake_confidence": true,
+    "empirical_prediction_ranges": true,
+    "human_in_the_loop_governance": true,
+    "strict_kw_vs_kwh_units": true,
+    "zero_unrequested_backend_changes": true
+  }
+}
