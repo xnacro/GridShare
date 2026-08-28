@@ -68,24 +68,24 @@ export default function SimulatorView() {
 
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4 text-xs">
           <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-3">
-            <span className="text-gray-400">House A (Solar Node)</span>
-            <div className="mt-1 font-bold text-amber-400">Gen: 6.8 kW | Con: 2.1 kW</div>
-            <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">Surplus: +4.7 kW</div>
+            <span className="text-gray-400">Anjali's Home (Prosumer)</span>
+            <div className="mt-1 font-bold text-amber-400">Gen: 6.4 kW | Con: 2.2 kW</div>
+            <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">Surplus: +4.2 kW</div>
           </div>
           <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-3">
-            <span className="text-gray-400">House B (Consumer)</span>
-            <div className="mt-1 font-bold text-blue-400">Gen: 1.2 kW | Con: 4.0 kW</div>
-            <div className="text-[11px] text-rose-400 font-semibold mt-0.5">Deficit: -2.8 kW</div>
+            <span className="text-gray-400">Prince's Home (Consumer)</span>
+            <div className="mt-1 font-bold text-blue-400">Gen: 0.8 kW | Con: 4.8 kW</div>
+            <div className="text-[11px] text-rose-400 font-semibold mt-0.5">Deficit: -4.0 kW</div>
           </div>
           <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-3">
-            <span className="text-gray-400">Community Battery</span>
-            <div className="mt-1 font-bold text-teal-400">SOC: 40.0% (50 kWh)</div>
-            <div className="text-[11px] text-gray-400 mt-0.5">Min Reserve: 20%</div>
+            <span className="text-gray-400">Ayush's Home (Balanced)</span>
+            <div className="mt-1 font-bold text-emerald-400">Gen: 3.2 kW | Con: 3.1 kW</div>
+            <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">Net: +0.1 kW</div>
           </div>
           <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-3">
-            <span className="text-gray-400">Grid Tariff Benchmark</span>
-            <div className="mt-1 font-bold text-white">Grid: ₹6.10/kWh</div>
-            <div className="text-[11px] text-emerald-400 font-semibold mt-0.5">P2P Tariff: ₹4.50/kWh</div>
+            <span className="text-gray-400">Rahul's Home (EV Load)</span>
+            <div className="mt-1 font-bold text-purple-400">Gen: 1.8 kW | Con: 5.2 kW</div>
+            <div className="text-[11px] text-rose-400 font-semibold mt-0.5">Deficit: -3.4 kW</div>
           </div>
         </div>
 

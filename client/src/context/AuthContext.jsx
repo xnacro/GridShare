@@ -43,11 +43,14 @@ export function AuthProvider({ children }) {
     let isMounted = true;
 
     async function initAuth() {
-      // Check if demo token in localStorage
+      // 1. Check if demo user token in localStorage
       const storedDemoToken = localStorage.getItem('gridshare_demo_user');
-      if (storedDemoToken) {
-        saveTokenToStorage(storedDemoToken);
-        const meData = await fetchMe(storedDemoToken);
+      const storedToken = localStorage.getItem('gridshare_access_token');
+      const activeToken = storedDemoToken || storedToken;
+
+      if (activeToken) {
+        saveTokenToStorage(activeToken);
+        const meData = await fetchMe(activeToken);
         if (meData && isMounted) {
           setUser(meData.user);
           setLoading(false);
@@ -68,8 +71,8 @@ export function AuthProvider({ children }) {
           console.error('Error fetching Supabase session:', err);
         }
       } else {
-        // Fallback: Default to demo House A for instant development if no session
-        const defaultDemoToken = 'demo-token-user-a';
+        // Fallback: Default to Anjali's Home (Prosumer)
+        const defaultDemoToken = 'demo-token-anjali';
         saveTokenToStorage(defaultDemoToken);
         const meData = await fetchMe(defaultDemoToken);
         if (meData && isMounted) {
@@ -112,38 +115,47 @@ export function AuthProvider({ children }) {
     };
   }, [fetchMe]);
 
-  // Sign In with Email & Password
+  // Sign In with Email & Password (e.g. admin@123)
   const signIn = async (email, password) => {
     setError(null);
     setLoading(true);
 
-    if (isSupabaseConfigured) {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (authError) {
+    try {
+      // 1. Try Backend Local/PostgreSQL Login first
+      const res = await api.login({ email, password });
+      if (res.data?.status === 'SUCCESS') {
+        const token = res.data.access_token;
+        saveTokenToStorage(token);
+        setProfile(res.data.user);
+        setHousehold(res.data.household);
+        setEnergyNode(res.data.energy_node);
+        setUser(res.data.user);
         setLoading(false);
-        setError(authError.message);
-        throw authError;
+        return res.data;
       }
-      setSession(data.session);
-      setUser(data.user);
-      saveTokenToStorage(data.session.access_token);
-      await fetchMe(data.session.access_token);
-      setLoading(false);
-      return data;
-    } else {
-      // Local demo mode fallback
-      const demoToken = email.includes('house_b') ? 'demo-token-user-b' : 'demo-token-user-a';
-      localStorage.setItem('gridshare_demo_user', demoToken);
-      saveTokenToStorage(demoToken);
-      const meData = await fetchMe(demoToken);
-      if (meData) {
-        setUser(meData.user);
+    } catch (backendErr) {
+      // 2. If Supabase is configured, fallback to Supabase Auth
+      if (isSupabaseConfigured) {
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (authError) {
+          setLoading(false);
+          setError(authError.message);
+          throw authError;
+        }
+        setSession(data.session);
+        setUser(data.user);
+        saveTokenToStorage(data.session.access_token);
+        await fetchMe(data.session.access_token);
+        setLoading(false);
+        return data;
       }
       setLoading(false);
-      return { user: meData?.user };
+      const errMsg = backendErr.response?.data?.message || 'Login failed. Please check credentials.';
+      setError(errMsg);
+      throw new Error(errMsg);
     }
   };
 
@@ -176,12 +188,16 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return data;
     } else {
-      // Local fallback
-      const demoToken = 'demo-token-user-a';
-      saveTokenToStorage(demoToken);
-      const meData = await fetchMe(demoToken);
+      // Local fallback: use login with default password
+      const res = await api.login({ email, password: password || 'admin@123' });
+      if (res.data?.status === 'SUCCESS') {
+        saveTokenToStorage(res.data.access_token);
+        setProfile(res.data.user);
+        setHousehold(res.data.household);
+        setUser(res.data.user);
+      }
       setLoading(false);
-      return { user: meData?.user };
+      return res.data;
     }
   };
 
@@ -189,7 +205,7 @@ export function AuthProvider({ children }) {
   const signInWithGoogle = async () => {
     setError(null);
     if (!isSupabaseConfigured) {
-      return signInAsDemo('house_a');
+      return signInAsDemo('anjali');
     }
     const { data, error: authError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -204,10 +220,21 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  // Instant Demo Switcher for Evaluation / Hackathon Judges
-  const signInAsDemo = async (role = 'house_a') => {
+  // Instant Demo Switcher for the 4 authentic users
+  const signInAsDemo = async (role = 'anjali') => {
     setLoading(true);
-    const demoToken = role === 'house_b' ? 'demo-token-user-b' : role === 'house_c' ? 'demo-token-user-c' : 'demo-token-user-a';
+    const tokenMap = {
+      anjali: 'demo-token-anjali',
+      prince: 'demo-token-prince',
+      ayush: 'demo-token-ayush',
+      rahul: 'demo-token-rahul',
+      // Legacy aliases mapped cleanly
+      house_a: 'demo-token-anjali',
+      house_b: 'demo-token-prince',
+      house_c: 'demo-token-ayush',
+      house_d: 'demo-token-rahul',
+    };
+    const demoToken = tokenMap[role.toLowerCase()] || 'demo-token-anjali';
     localStorage.setItem('gridshare_demo_user', demoToken);
     saveTokenToStorage(demoToken);
     const meData = await fetchMe(demoToken);

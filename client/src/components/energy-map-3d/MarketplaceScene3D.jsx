@@ -8,6 +8,10 @@ import GridSubstation3D from './GridSubstation3D';
 
 export const MARKET_3D_POSITIONS = {
   solarSun: [-4.2, 4.2, 1.2],
+  house_anjali: [-4.2, 0, 1.2],
+  house_prince: [0.2, 0, 2.2],
+  house_ayush: [-2.2, 0, -2.0],
+  house_rahul: [2.8, 0, -1.2],
   house_a: [-4.2, 0, 1.2],
   house_b: [0.2, 0, 2.2],
   house_c: [-2.2, 0, -2.0],

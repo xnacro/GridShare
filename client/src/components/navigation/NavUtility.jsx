@@ -142,36 +142,66 @@ export default function NavUtility({ onOpenLoginModal }) {
               </div>
             </div>
 
-            {/* Switch Demo Identity for Judges/Testing */}
+            {/* Switch Demo Identity for 4 Authentic Microgrid Users */}
             <div className="space-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#89938D] px-1">
-                Multi-Tenant Switcher
+                Community Member Switcher
               </span>
               <div className="grid grid-cols-2 gap-1.5">
+                {/* Anjali */}
                 <button
                   type="button"
-                  onClick={() => handleSwitchDemo('house_a')}
+                  onClick={() => handleSwitchDemo('anjali')}
                   className={`p-2 rounded-xl border text-left text-xs transition ${
-                    household?.id === 'house_a'
+                    household?.id === 'house_anjali'
                       ? 'bg-[#E8F6EE] border-[#1E9B68] text-[#12392B] font-bold'
                       : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
                   }`}
                 >
-                  <div className="text-[11px]">House A</div>
-                  <div className="text-[9px] font-mono text-[#1E9B68]">+4.7 kW</div>
+                  <div className="text-[11px] font-bold truncate">Anjali</div>
+                  <div className="text-[9px] font-mono text-[#1E9B68]">+4.2 kW Solar</div>
                 </button>
 
+                {/* Prince */}
                 <button
                   type="button"
-                  onClick={() => handleSwitchDemo('house_b')}
+                  onClick={() => handleSwitchDemo('prince')}
                   className={`p-2 rounded-xl border text-left text-xs transition ${
-                    household?.id === 'house_b'
+                    household?.id === 'house_prince'
                       ? 'bg-[#FCECEC] border-[#D45C5C] text-[#17221D] font-bold'
                       : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
                   }`}
                 >
-                  <div className="text-[11px]">House B</div>
-                  <div className="text-[9px] font-mono text-[#D45C5C]">-2.8 kW</div>
+                  <div className="text-[11px] font-bold truncate">Prince</div>
+                  <div className="text-[9px] font-mono text-[#D45C5C]">-4.0 kW Load</div>
+                </button>
+
+                {/* Ayush */}
+                <button
+                  type="button"
+                  onClick={() => handleSwitchDemo('ayush')}
+                  className={`p-2 rounded-xl border text-left text-xs transition ${
+                    household?.id === 'house_ayush'
+                      ? 'bg-[#E8F6EE] border-[#1E9B68] text-[#12392B] font-bold'
+                      : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
+                  }`}
+                >
+                  <div className="text-[11px] font-bold truncate">Ayush</div>
+                  <div className="text-[9px] font-mono text-[#1E9B68]">+0.1 kW Balance</div>
+                </button>
+
+                {/* Rahul */}
+                <button
+                  type="button"
+                  onClick={() => handleSwitchDemo('rahul')}
+                  className={`p-2 rounded-xl border text-left text-xs transition ${
+                    household?.id === 'house_rahul'
+                      ? 'bg-[#FCECEC] border-[#D45C5C] text-[#17221D] font-bold'
+                      : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
+                  }`}
+                >
+                  <div className="text-[11px] font-bold truncate">Rahul</div>
+                  <div className="text-[9px] font-mono text-[#3C78CC]">-3.4 kW EV</div>
                 </button>
               </div>
             </div>

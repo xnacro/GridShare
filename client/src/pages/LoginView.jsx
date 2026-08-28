@@ -205,33 +205,61 @@ export default function LoginView() {
           {/* Quick Demo Switcher Strip for Evaluators */}
           <div className="pt-3 border-t border-[#DCE4DE] space-y-2">
             <div className="flex items-center justify-between text-[11px] font-bold text-[#87918B]">
-              <span className="uppercase tracking-wider">Instant Evaluator Demo Login</span>
-              <Badge variant="ai" size="xs">1-Click Test</Badge>
+              <span className="uppercase tracking-wider">Demo Accounts (Password: admin@123)</span>
+              <Badge variant="ai" size="xs">1-Click Login</Badge>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
+              {/* Anjali */}
               <button
                 type="button"
-                onClick={() => handleDemoSignIn('house_a')}
+                onClick={() => handleDemoSignIn('anjali')}
                 className="p-2.5 rounded-xl border border-[#DCE4DE] bg-[#F5F7F3] hover:bg-[#E7F6EE] hover:border-[#209B67] text-left transition"
               >
                 <div className="text-[11px] font-bold text-[#15211B] flex items-center gap-1">
                   <FaIcon name="solar" className="text-[#209B67] text-xs" />
-                  House A (Prosumer)
+                  Anjali (Prosumer)
                 </div>
-                <div className="text-[10px] font-mono text-[#209B67] mt-0.5">+4.7 kW Surplus</div>
+                <div className="text-[10px] font-mono text-[#209B67] mt-0.5">+4.2 kW Solar</div>
               </button>
 
+              {/* Prince */}
               <button
                 type="button"
-                onClick={() => handleDemoSignIn('house_b')}
+                onClick={() => handleDemoSignIn('prince')}
                 className="p-2.5 rounded-xl border border-[#DCE4DE] bg-[#F5F7F3] hover:bg-[#FDF2F2] hover:border-[#D85D5D] text-left transition"
               >
                 <div className="text-[11px] font-bold text-[#15211B] flex items-center gap-1">
                   <FaIcon name="home" className="text-[#397BD2] text-xs" />
-                  House B (Consumer)
+                  Prince (High Load)
                 </div>
-                <div className="text-[10px] font-mono text-[#D85D5D] mt-0.5">-2.8 kW Deficit</div>
+                <div className="text-[10px] font-mono text-[#D85D5D] mt-0.5">-4.0 kW Deficit</div>
+              </button>
+
+              {/* Ayush */}
+              <button
+                type="button"
+                onClick={() => handleDemoSignIn('ayush')}
+                className="p-2.5 rounded-xl border border-[#DCE4DE] bg-[#F5F7F3] hover:bg-[#E7F6EE] hover:border-[#209B67] text-left transition"
+              >
+                <div className="text-[11px] font-bold text-[#15211B] flex items-center gap-1">
+                  <FaIcon name="battery" className="text-[#E5A72D] text-xs" />
+                  Ayush (Balanced)
+                </div>
+                <div className="text-[10px] font-mono text-[#209B67] mt-0.5">+0.1 kW Balanced</div>
+              </button>
+
+              {/* Rahul */}
+              <button
+                type="button"
+                onClick={() => handleDemoSignIn('rahul')}
+                className="p-2.5 rounded-xl border border-[#DCE4DE] bg-[#F5F7F3] hover:bg-[#FDF2F2] hover:border-[#D85D5D] text-left transition"
+              >
+                <div className="text-[11px] font-bold text-[#15211B] flex items-center gap-1">
+                  <FaIcon name="energy" className="text-[#7358C7] text-xs" />
+                  Rahul (EV Load)
+                </div>
+                <div className="text-[10px] font-mono text-[#7358C7] mt-0.5">-3.4 kW EV Spike</div>
               </button>
             </div>
           </div>

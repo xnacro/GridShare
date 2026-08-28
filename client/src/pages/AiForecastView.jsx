@@ -97,20 +97,20 @@ export default function AiForecastView() {
 
   const aiRec = copilotData?.recommendation || {
     action: 'LOCAL_TRADE',
-    headline: 'Trade 1.0 kWh locally (House A → House B)',
-    summary: 'Local prosumer surplus is available at House A while House B has active EV demand.',
+    headline: `Trade 1.0 kWh locally (${household?.name || "Anjali's Home"} → Prince's Home)`,
+    summary: 'Local prosumer surplus is available while nearby neighbor has active electrical demand.',
     economic_benefit_inr: 4.48,
   };
 
   const aiReasoning = copilotData?.reasoning || [
     'Surplus expected to remain positive through afternoon peak',
-    'Local demand detected at House B (EV charging session active)',
+    "Local demand detected at nearby consumer household on same sub-feeder",
     'Community battery reserve is healthy (>20% emergency floor preserved)',
     'P2P clearing tariff ₹4.50/kWh saves community vs ₹6.10 grid rate',
   ];
 
   const handleExecuteDispatch = () => {
-    setActionNotice('Dispatch approved! 1.0 kWh matched for House A ➔ House B.');
+    setActionNotice(`Dispatch approved! 1.0 kWh matched for ${household?.name || "Anjali's Home"} ➔ Prince's Home.`);
     setTimeout(() => setActionNotice(null), 5000);
   };
 

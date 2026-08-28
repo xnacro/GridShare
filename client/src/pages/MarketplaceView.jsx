@@ -18,45 +18,45 @@ export default function MarketplaceView() {
   const [copilotData, setCopilotData] = useState(null);
   const [copilotLoading, setCopilotLoading] = useState(true);
 
-  // Master Matches State with Humanized Identities & Compact Tag Metadata
+  // Master Matches State with Authentic Community Identities & Compact Tag Metadata
   const [aiMatches, setAiMatches] = useState([
     {
       id: 'MATCH-001',
-      sellerId: 'house_a',
-      sellerName: `${householdName} (Solar)`,
-      surplusKwh: 2.8,
-      buyerId: 'house_b',
-      buyerName: 'Green Valley Block 2 (EV Load)',
-      demandKwh: 2.8,
+      sellerId: 'house_anjali',
+      sellerName: "Anjali's Home (Solar Surplus)",
+      surplusKwh: 1.5,
+      buyerId: 'house_prince',
+      buyerName: "Prince's Home (High Load)",
+      demandKwh: 1.5,
       pricePerKwh: 4.5,
       gridPrice: 6.1,
       distanceMeters: 45,
-      expectedSaving: 4.48,
+      expectedSaving: 2.40,
       tags: ['45 m distance', 'Low branch loss', '26% cheaper than grid', 'Battery safe'],
       status: 'READY_TO_SETTLE',
     },
     {
       id: 'MATCH-002',
-      sellerId: 'house_c',
-      sellerName: 'Eco Villa 14 (Rooftop Prosumer)',
-      surplusKwh: 1.5,
-      buyerId: 'house_d',
-      buyerName: 'Palm Grove Apartments (Heat Pump)',
-      demandKwh: 1.5,
-      pricePerKwh: 4.8,
+      sellerId: 'house_ayush',
+      sellerName: "Ayush's Home (Solar Prosumer)",
+      surplusKwh: 0.8,
+      buyerId: 'house_rahul',
+      buyerName: "Rahul's Home (EV Load Spike)",
+      demandKwh: 0.8,
+      pricePerKwh: 4.6,
       gridPrice: 6.1,
-      distanceMeters: 110,
-      expectedSaving: 1.95,
-      tags: ['110 m distance', 'Continuous HVAC load', 'Zero transmission fee'],
+      distanceMeters: 80,
+      expectedSaving: 1.20,
+      tags: ['80 m distance', 'EV demand window', 'Zero transmission surcharge'],
       status: 'READY_TO_SETTLE',
     },
   ]);
 
   // Bilateral Settlement Ledger
   const [transactions, setTransactions] = useState([
-    { id: 'TXN-001', time: '12:14 PM', sellerName: `${householdName}`, buyerName: 'Green Valley Block 2', energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, status: 'SETTLED', icon: 'home' },
-    { id: 'TXN-002', time: '11:45 AM', sellerName: 'Eco Villa 14', buyerName: 'Palm Grove Apartments', energyKwh: 1.2, pricePerKwh: 4.8, totalValue: 5.76, status: 'SETTLED', icon: 'marketplace' },
-    { id: 'TXN-003', time: '11:10 AM', sellerName: 'Solar Ridge 7', buyerName: 'Community ESS Battery', energyKwh: 2.5, pricePerKwh: 4.2, totalValue: 10.50, status: 'STORED', icon: 'battery' },
+    { id: 'TXN-001', time: '12:14 PM', sellerName: "Anjali's Home", buyerName: "Prince's Home", energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, status: 'SETTLED', icon: 'home' },
+    { id: 'TXN-002', time: '11:45 AM', sellerName: "Ayush's Home", buyerName: "Rahul's Home", energyKwh: 1.2, pricePerKwh: 4.8, totalValue: 5.76, status: 'SETTLED', icon: 'marketplace' },
+    { id: 'TXN-003', time: '11:10 AM', sellerName: "Anjali's Home", buyerName: 'Community ESS Battery', energyKwh: 2.5, pricePerKwh: 4.2, totalValue: 10.50, status: 'STORED', icon: 'battery' },
   ]);
 
   // Modal States

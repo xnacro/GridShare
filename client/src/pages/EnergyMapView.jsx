@@ -89,7 +89,7 @@ export default function EnergyMapView() {
     clearAllDemoTimers();
     setIsDemoRunning(true);
     setDemoStage(1);
-    setDemoStatusText('Step 1: House A (Surplus) sells 2.80 kW to House B (Deficit) @ ₹4.50/kWh');
+    setDemoStatusText("Step 1: Anjali (Surplus) sells 2.0 kW to Prince (Deficit) @ ₹4.50/kWh");
 
     try {
       await api.runDemoScenario();
@@ -149,11 +149,10 @@ export default function EnergyMapView() {
 
   // Derive household telemetry
   const households = observeData?.households || [
-    { id: 'house_a', name: 'House A (Solar)', generation: 6.8, consumption: 2.1, status: 'SURPLUS' },
-    { id: 'house_b', name: 'House B (Consumer)', generation: 1.2, consumption: 4.0, status: 'DEFICIT' },
-    { id: 'house_c', name: 'House C (Prosumer)', generation: 3.5, consumption: 2.5, status: 'SURPLUS' },
-    { id: 'house_d', name: 'House D (Apartment)', generation: 0.8, consumption: 2.0, status: 'DEFICIT' },
-    { id: 'house_e', name: 'House E (Villa)', generation: 4.2, consumption: 3.1, status: 'SURPLUS' },
+    { id: 'house_anjali', name: "Anjali's Home (Solar)", generation: 6.4, consumption: 2.2, status: 'SURPLUS' },
+    { id: 'house_prince', name: "Prince's Home (Consumer)", generation: 0.8, consumption: 4.8, status: 'DEFICIT' },
+    { id: 'house_ayush', name: "Ayush's Home (Prosumer)", generation: 3.2, consumption: 3.1, status: 'SURPLUS' },
+    { id: 'house_rahul', name: "Rahul's Home (EV Load)", generation: 1.8, consumption: 5.2, status: 'DEFICIT' },
   ];
 
   const batterySoc = observeData?.battery?.current_soc ?? 40.0;
@@ -316,14 +315,14 @@ export default function EnergyMapView() {
       recent_action: 'Receiving residual microgrid export & backup supply',
     } : {
       ...(nodeStats[selectedNode] || {}),
-      name: selectedNode === 'house_a' ? 'House A (Solar Champion)' :
-            selectedNode === 'house_b' ? 'House B (Heavy EV Load)' :
-            selectedNode === 'house_c' ? 'House C (Balanced Prosumer)' :
-            selectedNode === 'house_d' ? 'House D (Smart Apartment)' :
-            'House E (Solar Villa)',
+      name: selectedNode === 'house_anjali' ? "Anjali's Home (Solar Champion)" :
+            selectedNode === 'house_prince' ? "Prince's Home (Heavy Load)" :
+            selectedNode === 'house_ayush' ? "Ayush's Home (Balanced Prosumer)" :
+            selectedNode === 'house_rahul' ? "Rahul's Home (EV Load Spike)" :
+            'Community Energy Node',
       predicted_demand: predictions.find(p => p.household_id === selectedNode)?.predicted_demand_kw ?
         `${predictions.find(p => p.household_id === selectedNode).predicted_demand_kw.toFixed(2)} kW` :
-        selectedNode === 'house_a' ? '3.20 kW' : '4.10 kW',
+        selectedNode === 'house_anjali' ? '2.20 kW' : '4.80 kW',
       recent_action: decisions.find(d => d.source_household === selectedNode || d.target === selectedNode)?.action ||
         (nodeStats[selectedNode]?.status === 'SURPLUS' ? 'Local Trade Seller' : 'Local Trade Buyer'),
     }

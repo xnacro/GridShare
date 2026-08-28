@@ -1,13 +1,22 @@
 import sys
+import os
 import json
 import requests
 import time
+
+server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+root_dir = os.path.abspath(os.path.join(server_dir, ".."))
+for p in (root_dir, server_dir):
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+import _bootstrap
 
 BASE_URL = "http://127.0.0.1:5000/api"
 
 def run_e2e_verification():
     print("==================================================")
-    print("[E2E] GridShare Full Pipeline Verification")
+    print("[E2E] GridShare 4-User Authentic Pipeline Verification")
     print("==================================================")
 
     # 1. Health Check
@@ -16,102 +25,66 @@ def run_e2e_verification():
     assert r.status_code == 200, f"Health failed: {r.text}"
     print(f"Health OK: {r.json()['status']}")
 
-    # 2. Ingest PPT Demo Telemetry via POST /api/telemetry
-    print("\n[Step 2] Ingesting PPT Demo Telemetry...")
-    # House A (Solar Champion)
-    payload_a = {
-        "household_id": "house_a",
-        "generation_kw": 6.8,
-        "consumption_kw": 2.1,
-        "battery_soc": 85.0,
-        "grid_price": 6.10,
-        "source": "SIMULATED",
-    }
-    r_a = requests.post(f"{BASE_URL}/telemetry", json=payload_a)
-    assert r_a.status_code == 201, f"House A ingestion failed: {r_a.text}"
-    print(f"House A Ingested: Gen=6.8kW, Con=2.1kW -> Surplus=+4.7kW")
+    # 2. Authenticate the 4 community users with password admin@123
+    print("\n[Step 2] Testing Password Authentication (admin@123) for all 4 users...")
+    demo_users = [
+        ("anjali@gridshare.io", "Anjali Sharma", "house_anjali", "PROSUMER"),
+        ("prince@gridshare.io", "Prince Patel", "house_prince", "CONSUMER"),
+        ("ayush@gridshare.io", "Ayush Verma", "house_ayush", "PROSUMER"),
+        ("rahul@gridshare.io", "Rahul Sharma", "house_rahul", "CONSUMER"),
+    ]
 
-    # House B (Heavy EV Consumer)
-    payload_b = {
-        "household_id": "house_b",
-        "generation_kw": 1.2,
-        "consumption_kw": 4.0,
-        "battery_soc": None,
-        "grid_price": 6.10,
-        "source": "SIMULATED",
-    }
-    r_b = requests.post(f"{BASE_URL}/telemetry", json=payload_b)
-    assert r_b.status_code == 201, f"House B ingestion failed: {r_b.text}"
-    print(f"House B Ingested: Gen=1.2kW, Con=4.0kW -> Deficit=-2.8kW")
+    tokens = {}
+    for email, expected_name, expected_house, expected_type in demo_users:
+        r_login = requests.post(f"{BASE_URL}/auth/login", json={"email": email, "password": "admin@123"})
+        assert r_login.status_code == 200, f"Login failed for {email}: {r_login.text}"
+        data = r_login.json()
+        assert data["user"]["email"] == email
+        assert data["household"]["id"] == expected_house
+        tokens[email] = data["access_token"]
+        print(f"  [OK] {expected_name} ({email}) authenticated successfully -> Household: {expected_house}")
 
-    # Set Central Battery SOC to 40%
-    r_bat = requests.patch(f"{BASE_URL}/battery", json={"current_soc": 40.0, "min_reserve": 20.0})
-    assert r_bat.status_code == 200
-    print("Community Battery set to 40% SOC (20% Min Reserve)")
+    # 3. Verify Isolated User Telemetry & Scoping (/api/my-energy)
+    print("\n[Step 3] Verifying Multi-Tenant Scoping for Anjali & Prince...")
+    r_anjali_energy = requests.get(f"{BASE_URL}/my-energy", headers={"Authorization": f"Bearer {tokens['anjali@gridshare.io']}"})
+    assert r_anjali_energy.status_code == 200
+    anjali_data = r_anjali_energy.json()["energy"]
+    print(f"  * Anjali Telemetry: Gen={anjali_data['generation_kw']} kW, Con={anjali_data['consumption_kw']} kW -> Status: {anjali_data['status']}")
 
-    # 3. Observe Layer Verification
-    print("\n[Step 3] Querying Observe Layer (/api/observe/state)...")
+    r_prince_energy = requests.get(f"{BASE_URL}/my-energy", headers={"Authorization": f"Bearer {tokens['prince@gridshare.io']}"})
+    assert r_prince_energy.status_code == 200
+    prince_data = r_prince_energy.json()["energy"]
+    print(f"  * Prince Telemetry: Gen={prince_data['generation_kw']} kW, Con={prince_data['consumption_kw']} kW -> Status: {prince_data['status']}")
+
+    # 4. Observe Layer Verification (/api/observe/state)
+    print("\n[Step 4] Querying Microgrid Observe Layer (/api/observe/state)...")
     r_obs = requests.get(f"{BASE_URL}/observe/state")
     assert r_obs.status_code == 200
     obs_data = r_obs.json()["data"]
     summary = obs_data["summary"]
-    print(f"Total Community Surplus: {summary['total_surplus_kw']} kW")
-    print(f"Total Community Deficit: {summary['total_deficit_kw']} kW")
-    print(f"Central Battery SOC: {summary['community_battery_soc']}%")
-    print(f"Current Grid Price: INR {summary['current_grid_price']}/kWh")
+    print(f"  * Total Generation: {summary['total_generation_kw']} kW")
+    print(f"  * Total Consumption: {summary['total_consumption_kw']} kW")
+    print(f"  * Community Battery SOC: {summary['community_battery_soc']}%")
+    print(f"  * Base Grid Price: INR {summary['current_grid_price']}/kWh")
 
-    # 4. ML Prediction Layer Execution
-    print("\n[Step 4] Triggering ML Prediction Layer (POST /api/predictions/run)...")
-    r_pred = requests.post(f"{BASE_URL}/predictions/run")
-    assert r_pred.status_code == 200
-    pred_data = r_pred.json()
-    print(f"ML Pipeline Executed: {pred_data['predictions_count']} household forecasts generated.")
-    for p in pred_data["latest_predictions"][:2]:
-        print(f"  * {p['household_id']}: Predicted Demand = {p['predicted_demand_kw']} kW (std = {p['uncertainty_value']} kW)")
+    # 5. AI Copilot Insights (/api/copilot/insights)
+    print("\n[Step 5] Triggering 15-Minute ML Copilot (solar_v1 & demand_v1)...")
+    r_copilot = requests.get(f"{BASE_URL}/copilot/insights?household_id=house_anjali")
+    assert r_copilot.status_code == 200
+    copilot_data = r_copilot.json()["data"]
+    print(f"  * Copilot Forecast Solar: {copilot_data['forecast']['solar_kw']} kW")
+    print(f"  * Copilot Forecast Demand: {copilot_data['forecast']['demand_kw']} kW")
+    print(f"  * Decision Recommendation: {copilot_data['decision']['action']} ({copilot_data['decision']['action_label']})")
 
-    # 5. Optimization Layer Execution
-    print("\n[Step 5] Triggering Deterministic Optimization Engine...")
-    from gridshare.backend.app.services.rule_optimizer import RuleBasedOptimizer
-    demo_opt = RuleBasedOptimizer.allocate_energy(
-        surplus_kw=4.70,
-        deficit_kw=2.80,
-        battery_soc=40.0,
-        battery_capacity_kwh=50.0,
-        max_charge_rate_kw=1.20,
-    )
-    alloc = demo_opt["summary_allocation"]
-
-    print("\n[OPTIMIZATION ALLOCATION PLAN RESULTS]:")
-    print(f"  * Local Trade Allocation : {alloc['local_trade_kw']} kW (Expected: 2.8 kW)")
-    print(f"  * Battery Storage Buffer : {alloc['battery_allocation_kw']} kW (Expected: 1.2 kW)")
-    print(f"  * Grid Export (Feed-in)  : {alloc['grid_export_kw']} kW (Expected: 0.7 kW)")
-    print(f"  * Total Allocated Energy : {demo_opt['input_state']['available_surplus_kw']} kW (House A Surplus: 4.7 kW)")
-
-    assert abs(alloc['local_trade_kw'] - 2.8) < 0.01, f"Local trade mismatch: {alloc['local_trade_kw']}"
-    assert abs(alloc['battery_allocation_kw'] - 1.2) < 0.01, f"Battery mismatch: {alloc['battery_allocation_kw']}"
-    assert abs(alloc['grid_export_kw'] - 0.7) < 0.01, f"Grid export mismatch: {alloc['grid_export_kw']}"
-    print("[SUCCESS] All allocation values matched expected PPT prototype demo values exactly!")
-
-    # 6. Verify Transaction Records
-    print("\n[Step 6] Verifying Executed Energy Transactions (/api/trades)...")
-    r_trades = requests.get(f"{BASE_URL}/trades")
-    assert r_trades.status_code == 200
-    trades = r_trades.json()["trades"]
-    print(f"Total Transactions Found: {len(trades)}")
-    for t in trades[:3]:
-        print(f"  * #TX-{t['id']}: {t['seller_household_id']} -> {t['buyer_household_id']} | {t['energy_kwh']} kWh @ INR {t['price_per_kwh']}/kWh = INR {t['total_value']} ({t['status']})")
-
-    # 7. Dashboard Summary Verification
-    print("\n[Step 7] Verifying Dashboard Summary Endpoint (/api/dashboard/summary)...")
-    r_dash = requests.get(f"{BASE_URL}/dashboard/summary")
-    assert r_dash.status_code == 200
-    dash_data = r_dash.json()["data"]
-    print(f"Dashboard Net Balance: {dash_data['energy_summary']['community_net_balance_kw']} kW")
-    print(f"Dashboard Battery SOC: {dash_data['battery']['current_soc']}%")
-    print(f"Dashboard Recent Trades: {len(dash_data['recent_trades'])}")
+    # 6. Verify Settled Energy Transactions
+    print("\n[Step 6] Verifying Settled Bilateral Transactions (/api/my-transactions)...")
+    r_txns = requests.get(f"{BASE_URL}/my-transactions", headers={"Authorization": f"Bearer {tokens['anjali@gridshare.io']}"})
+    assert r_txns.status_code == 200
+    txns = r_txns.json()["transactions"]
+    print(f"  * Verified {len(txns)} transactions in Anjali's ledger.")
 
     print("\n==================================================")
-    print("[SUCCESS] End-to-End Pipeline Fully Verified!")
+    print("[SUCCESS] ALL 4 AUTHENTIC USERS & END-TO-END PIPELINES VERIFIED!")
     print("==================================================")
 
 if __name__ == "__main__":

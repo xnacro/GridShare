@@ -25,6 +25,9 @@ export const api = {
   // System Health
   getHealth: () => apiClient.get('/health'),
 
+  // Authentication
+  login: (credentials) => apiClient.post('/auth/login', credentials),
+
   // Authenticated User Identity & Multi-Tenant Scoping
   getMe: (tokenOverride) => {
     const headers = tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : {};

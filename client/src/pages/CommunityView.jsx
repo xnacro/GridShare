@@ -64,14 +64,14 @@ export default function CommunityView() {
   const handleRunBatteryFairnessDemo = async () => {
     try {
       setIsDemoRunning(true);
-      setDemoFeedback('Executing Step 1: House A (10 kWh) & House B (1 kWh) contributing to shared battery...');
+      setDemoFeedback("Executing Step 1: Anjali (10 kWh) & Prince (5 kWh) contributing to shared battery...");
       setVisMode('CONTRIBUTION');
 
       const res = await api.runBatteryFairnessDemo();
       if (res.data?.status === 'SUCCESS') {
         setTimeout(async () => {
           setVisMode('WITHDRAWAL');
-          setDemoFeedback('Executing Step 2: Proportional withdrawal of 5.0 kWh (House A: 4.545 kWh | House B: 0.455 kWh)...');
+          setDemoFeedback("Executing Step 2: Proportional withdrawal of 5.0 kWh (Anjali: 3.33 kWh | Prince: 1.67 kWh)...");
           await fetchAllData();
 
           setTimeout(() => {

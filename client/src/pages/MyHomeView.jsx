@@ -21,22 +21,23 @@ export default function MyHomeView() {
 
   // Live Backend Energy State
   const [sourceType, setSourceType] = useState(energyNode?.source_type || 'SIMULATION');
-  const [solarKw, setSolarKw] = useState(household?.id === 'house_b' ? 1.2 : 6.8);
-  const [manualGenInput, setManualGenInput] = useState(6.2);
-  const [manualConInput, setManualConInput] = useState(2.7);
+  const [solarKw, setSolarKw] = useState(household?.household_type === 'CONSUMER' ? 1.0 : 6.4);
+  const [manualGenInput, setManualGenInput] = useState(6.4);
+  const [manualConInput, setManualConInput] = useState(2.2);
 
   // Appliance Circuit Loads
+  const isConsumerHousehold = household?.household_type === 'CONSUMER' || household?.id === 'house_prince' || household?.id === 'house_rahul';
   const [appliances, setAppliances] = useState({
     livingRoom: { name: 'Living Room Lights & Media', kw: 0.4, active: true, icon: 'tv' },
     kitchen: { name: 'Kitchen Induction & Refrigerator', kw: 0.8, active: true, icon: 'plug' },
     ac: { name: 'Inverter Air Conditioner (24°C)', kw: 1.2, active: true, icon: 'fan' },
-    ev: { name: 'Level 2 Electric Vehicle Charger', kw: household?.id === 'house_b' ? 3.3 : 1.5, active: household?.id === 'house_b', icon: 'charging' },
+    ev: { name: 'Level 2 Electric Vehicle Charger', kw: isConsumerHousehold ? 3.2 : 1.5, active: isConsumerHousehold, icon: 'charging' },
     waterHeater: { name: 'Smart Heat Pump Water Heater', kw: 0.9, active: false, icon: 'plug' },
   });
 
   const [activityLogs] = useState([
     { time: '11:15', action: 'Battery Charge', energy: 1.5, source: 'Rooftop Solar', dest: 'Home Storage', status: 'COMPLETED' },
-    { time: '11:45', action: 'P2P Peer Sale', energy: 2.0, source: 'Solar Surplus', dest: 'House B (EV)', status: 'COMPLETED' },
+    { time: '11:45', action: 'P2P Peer Sale', energy: 2.0, source: 'Solar Surplus', dest: "Prince's Home (EV)", status: 'COMPLETED' },
     { time: '12:00', action: 'Auto Load Shift', energy: 1.2, source: 'Solar Array', dest: 'Air Conditioning', status: 'ACTIVE' },
   ]);
 

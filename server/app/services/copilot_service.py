@@ -75,6 +75,20 @@ class CopilotService:
         selected_household = None
         if household_id:
             selected_household = next((h for h in observed["households"] if h["household_id"] == household_id), None)
+            if selected_household:
+                cur_gen = selected_household["generation_kw"]
+                cur_demand = selected_household["consumption_kw"]
+                cur_balance = selected_household["net_energy_kw"]
+                if selected_household.get("battery_soc") is not None:
+                    battery_soc = selected_household["battery_soc"]
+                # Dynamic installed PV capacity map
+                cap_map = {
+                    "house_anjali": 6.0,
+                    "house_prince": 1.0,
+                    "house_ayush": 4.0,
+                    "house_rahul": 2.0
+                }
+                installed_kwp = cap_map.get(household_id, installed_kwp)
 
         # 2. Run Demand ML Model (demand_v1)
         demand_pred_engine = cls.get_demand_predictor()

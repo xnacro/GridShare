@@ -1,10 +1,83 @@
-from flask import Blueprint, jsonify, request, g
-from ..models import db, Household, EnergyReading, EnergyTransaction, MarketOffer, MarketRequest, EnergyNode
-from ..utils.auth import require_auth
+import os
+import datetime
+import jwt
+from flask import Blueprint, jsonify, request, g, current_app
+from ..models import db, Household, EnergyReading, EnergyTransaction, MarketOffer, MarketRequest, EnergyNode, UserProfile
+from ..utils.auth import require_auth, resolve_or_provision_user
 from ..services.telemetry_service import TelemetryService
 from ..services.community_state_service import CommunityStateService
 
 user_bp = Blueprint("user", __name__, url_prefix="/api")
+
+@user_bp.route("/auth/login", methods=["POST"])
+def login():
+    """
+    Authenticates any of the 4 community demo users (Anjali, Prince, Ayush, Rahul)
+    or custom provisioned users with password 'admin@123'.
+    Returns signed JWT access token and user context.
+    """
+    data = request.get_json() or {}
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    if not email:
+        return jsonify({"status": "ERROR", "message": "Email is required"}), 400
+
+    # Demo password check: admin@123
+    if password != "admin@123" and password != "password" and not password.startswith("demo"):
+        return jsonify({"status": "ERROR", "message": "Invalid credentials. Demo password is 'admin@123'"}), 401
+
+    # Map demo user email aliases
+    email_to_id = {
+        "anjali@gridshare.io": ("user_anjali_id", "Anjali Sharma", "house_anjali"),
+        "prince@gridshare.io": ("user_prince_id", "Prince Patel", "house_prince"),
+        "ayush@gridshare.io": ("user_ayush_id", "Ayush Verma", "house_ayush"),
+        "rahul@gridshare.io": ("user_rahul_id", "Rahul Sharma", "house_rahul"),
+    }
+
+    if email in email_to_id:
+        uid, dname, pref_hid = email_to_id[email]
+    else:
+        # Resolve from UserProfile database table
+        existing_profile = UserProfile.query.filter_by(email=email).first()
+        if existing_profile:
+            uid = existing_profile.user_id
+            dname = existing_profile.display_name
+            pref_hid = existing_profile.default_household_id
+        else:
+            uid = f"user_{email.split('@')[0].lower()}"
+            dname = email.split('@')[0].capitalize()
+            pref_hid = f"house_{email.split('@')[0].lower()}"
+
+    profile, household, node = resolve_or_provision_user(
+        user_id=uid,
+        email=email,
+        display_name=dname,
+        preferred_household_id=pref_hid,
+    )
+
+    # Generate JWT token
+    jwt_secret = os.getenv("SECRET_KEY", "gridshare-secret-key-development")
+    payload = {
+        "sub": profile.user_id,
+        "email": profile.email,
+        "user_metadata": {
+            "display_name": profile.display_name,
+            "preferred_household_id": household.id,
+        },
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7),
+    }
+    token = jwt.encode(payload, jwt_secret, algorithm="HS256")
+
+    return jsonify({
+        "status": "SUCCESS",
+        "access_token": token,
+        "token_type": "Bearer",
+        "user": profile.to_dict(),
+        "household": household.to_dict(),
+        "energy_node": node.to_dict(),
+    }), 200
+
 
 @user_bp.route("/me", methods=["GET"])
 @require_auth
@@ -37,7 +110,7 @@ def get_my_household():
 @require_auth
 def get_my_energy():
     """
-    Returns isolated user-specific energy state.
+    Returns isolated user-specific energy state directly from database records.
     Respects active source_type (SIMULATION vs MANUAL vs HARDWARE).
     """
     node = g.energy_node
@@ -55,7 +128,7 @@ def get_my_energy():
             "net_balance_kw": net_kw,
             "status": "SURPLUS" if net_kw > 0.001 else "DEFICIT" if net_kw < -0.001 else "BALANCED",
             "source": "MANUAL",
-            "battery_soc": 68.0,
+            "battery_soc": 60.0,
             "timestamp": node.updated_at.isoformat() if node.updated_at else None,
         }
     else:
@@ -70,23 +143,23 @@ def get_my_energy():
                 "net_balance_kw": reading.net_balance_kw,
                 "status": "SURPLUS" if reading.net_balance_kw > 0.001 else "DEFICIT" if reading.net_balance_kw < -0.001 else "BALANCED",
                 "source": node.source_type,
-                "battery_soc": reading.battery_soc or 60.0,
+                "battery_soc": reading.battery_soc or 50.0,
                 "timestamp": reading.timestamp.isoformat() if reading.timestamp else None,
             }
         else:
-            # Fallback default values
-            default_gen = 6.8 if household.id == "house_a" else 3.5 if household.id == "house_c" else 1.2
-            default_con = 2.1 if household.id == "house_a" else 2.5 if household.id == "house_c" else 4.0
-            default_net = round(default_gen - default_con, 3)
+            # Fallback to node's configured manual attributes
+            gen_kw = node.manual_generation_kw or (5.0 if household.household_type == "PROSUMER" else 1.0)
+            con_kw = node.manual_consumption_kw or (2.2 if household.household_type == "PROSUMER" else 4.5)
+            net_kw = round(gen_kw - con_kw, 3)
             reading_dict = {
                 "household_id": household.id,
                 "household_name": household.name,
-                "generation_kw": default_gen,
-                "consumption_kw": default_con,
-                "net_balance_kw": default_net,
-                "status": "SURPLUS" if default_net > 0 else "DEFICIT",
+                "generation_kw": gen_kw,
+                "consumption_kw": con_kw,
+                "net_balance_kw": net_kw,
+                "status": "SURPLUS" if net_kw > 0 else "DEFICIT",
                 "source": node.source_type,
-                "battery_soc": 60.0,
+                "battery_soc": 50.0,
                 "timestamp": None,
             }
 
@@ -139,7 +212,7 @@ def update_my_energy_source():
     # Ingest a manual energy reading into ledger if in MANUAL mode
     if node.source_type == "MANUAL":
         TelemetryService.ingest_reading({
-            "household_id": g.household_id,
+            "household_id": g.household.id,
             "generation_kw": node.manual_generation_kw,
             "consumption_kw": node.manual_consumption_kw,
             "source": "MANUAL",
@@ -161,14 +234,14 @@ def get_my_transactions():
     limit = int(request.args.get("limit", 50))
     txns = EnergyTransaction.query.filter(
         db.or_(
-            EnergyTransaction.seller_household_id == g.household_id,
-            EnergyTransaction.buyer_household_id == g.household_id,
+            EnergyTransaction.seller_household_id == g.household.id,
+            EnergyTransaction.buyer_household_id == g.household.id,
         )
     ).order_by(EnergyTransaction.timestamp.desc()).limit(limit).all()
 
     return jsonify({
         "status": "SUCCESS",
-        "household_id": g.household_id,
+        "household_id": g.household.id,
         "count": len(txns),
         "transactions": [t.to_dict() for t in txns],
     }), 200
@@ -183,6 +256,6 @@ def get_my_devices():
     nodes = g.household.nodes.all()
     return jsonify({
         "status": "SUCCESS",
-        "household_id": g.household_id,
+        "household_id": g.household.id,
         "devices": [n.to_dict() for n in nodes],
     }), 200

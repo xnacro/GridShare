@@ -21,6 +21,26 @@ def get_copilot_insights():
     or a specific household.
     """
     household_id = request.args.get("household_id")
+    
+    # If no household_id query param, attempt to resolve from auth token
+    if not household_id:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            from gridshare.backend.app.utils.auth import decode_supabase_token, resolve_or_provision_user
+            token = auth_header.split(" ", 1)[1]
+            decoded = decode_supabase_token(token)
+            if decoded and decoded.get("id"):
+                try:
+                    _, household, _ = resolve_or_provision_user(
+                        user_id=decoded["id"],
+                        email=decoded.get("email"),
+                        preferred_household_id=decoded.get("user_metadata", {}).get("preferred_household_id")
+                    )
+                    if household:
+                        household_id = household.id
+                except Exception:
+                    pass
+
     horizon = int(request.args.get("horizon_minutes", 15))
     installed_kwp = float(request.args.get("installed_kwp", 4.0))
 

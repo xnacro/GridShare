@@ -341,9 +341,9 @@ export default function Optimization() {
   };
 
   const households = [
-    { id: 'house_a', name: 'House A (Solar)', generation: generation, consumption: 2.1, netEnergy: generation - 2.1, status: generation > 2.1 ? 'SURPLUS' : 'DEFICIT' },
-    { id: 'house_b', name: 'House B (EV Load)', generation: 0.0, consumption: load - 2.1, netEnergy: -(load - 2.1), status: 'DEFICIT' },
-    { id: 'house_c', name: 'House C (Prosumer)', generation: 2.0, consumption: 1.8, netEnergy: 0.2, status: 'BALANCED' },
+    { id: 'house_anjali', name: "Anjali's Home (Solar)", generation: generation, consumption: 2.2, netEnergy: generation - 2.2, status: generation > 2.2 ? 'SURPLUS' : 'DEFICIT' },
+    { id: 'house_prince', name: "Prince's Home (High Load)", generation: 0.0, consumption: load - 2.2, netEnergy: -(load - 2.2), status: 'DEFICIT' },
+    { id: 'house_ayush', name: "Ayush's Home (Balanced)", generation: 3.2, consumption: 3.1, netEnergy: 0.1, status: 'BALANCED' },
   ];
 
   return (

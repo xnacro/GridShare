@@ -52,11 +52,12 @@ export default function DevicesView() {
   }
 
   const devices = devicesData?.devices || [
-    { id: 'SM-HOUSE-A', name: 'House A Solar Inverter & Smart Meter', type: 'SIMULATED_SMART_METER', status: 'ONLINE', powerKw: 6.8, voltage: 230, lastUpdate: 'Just now', firmware: 'v1.0.4-sim' },
-    { id: 'SM-HOUSE-B', name: 'House B EV Circuit Smart Meter', type: 'SIMULATED_SMART_METER', status: 'ONLINE', powerKw: 4.0, voltage: 228, lastUpdate: 'Just now', firmware: 'v1.0.4-sim' },
-    { id: 'SM-HOUSE-C', name: 'House C Prosumer Smart Meter', type: 'SIMULATED_SMART_METER', status: 'ONLINE', powerKw: 3.5, voltage: 231, lastUpdate: 'Just now', firmware: 'v1.0.4-sim' },
-    { id: 'ESS-BMS-01', name: 'Central ESS Battery Management Unit', type: 'SIMULATED_CONTROLLER', status: 'ONLINE', powerKw: 1.5, voltage: 400, lastUpdate: 'Just now', firmware: 'v2.1.0-sim' },
-    { id: 'GRID-SUB-01', name: 'Substation Interconnection Gateway', type: 'SIMULATED_GATEWAY', status: 'ONLINE', powerKw: 0.7, voltage: 415, lastUpdate: 'Just now', firmware: 'v1.2.0-sim' },
+    { id: 'SM-HOUSE-ANJALI', name: "Anjali's Solar Inverter & Smart Meter", type: 'SIMULATED_SMART_METER', status: 'ONLINE', powerKw: 6.4, voltage: 230, lastUpdate: 'Just now', firmware: 'v1.0.4-sim' },
+    { id: 'SM-HOUSE-PRINCE', name: "Prince's Load Circuit Smart Meter", type: 'SIMULATED_SMART_METER', status: 'ONLINE', powerKw: 4.8, voltage: 228, lastUpdate: 'Just now', firmware: 'v1.0.4-sim' },
+    { id: 'SM-HOUSE-AYUSH', name: "Ayush's Solar Prosumer Smart Meter", type: 'SIMULATED_SMART_METER', status: 'ONLINE', powerKw: 3.2, voltage: 231, lastUpdate: 'Just now', firmware: 'v1.0.4-sim' },
+    { id: 'SM-HOUSE-RAHUL', name: "Rahul's EV Fast Charger Smart Meter", type: 'SIMULATED_SMART_METER', status: 'ONLINE', powerKw: 5.2, voltage: 229, lastUpdate: 'Just now', firmware: 'v1.0.4-sim' },
+    { id: 'ESS-BMS-01', name: 'Central ESS Battery Management Unit', type: 'SIMULATED_CONTROLLER', status: 'ONLINE', powerKw: 2.0, voltage: 400, lastUpdate: 'Just now', firmware: 'v2.1.0-sim' },
+    { id: 'GRID-SUB-01', name: 'Substation Interconnection Gateway', type: 'SIMULATED_GATEWAY', status: 'ONLINE', powerKw: 1.0, voltage: 415, lastUpdate: 'Just now', firmware: 'v1.2.0-sim' },
   ];
 
   const onlineCount = devices.filter((d) => d.status === 'ONLINE').length;
