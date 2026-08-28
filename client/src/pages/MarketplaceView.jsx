@@ -14,9 +14,6 @@ export default function MarketplaceView() {
   const userName = profile?.display_name || user?.email?.split('@')[0] || 'Rahul';
   const householdName = household?.name || 'Rahul\'s Home';
 
-  // Scope: 'COMMUNITY' or 'MY_ENERGY'
-  const [viewScope, setViewScope] = useState('COMMUNITY');
-
   // Master Matches State with Humanized Identities
   const [aiMatches, setAiMatches] = useState([
     {
@@ -173,17 +170,17 @@ export default function MarketplaceView() {
     };
 
     setAiMatches((prev) => [newMatch, ...prev]);
-    setStatusMessage(`Energy offer for ${offerData.energyKwh} kWh @ ₹${offerData.pricePerKwh}/kWh published to community!`);
+    setStatusMessage(`Energy listing for ${offerData.energyKwh} kWh @ ₹${offerData.pricePerKwh}/kWh published to community!`);
     setTimeout(() => setStatusMessage(''), 4500);
   };
 
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. MINIMAL SPACIOUS HERO & ACTION BAR */}
-      <div className="space-y-5 pt-2 select-none">
+      {/* 🌟 1. MINIMAL SPACIOUS HERO (Clean Heading, Direct Action, Full Width) */}
+      <div className="space-y-4 pt-2 select-none">
         
-        {/* Top Centered Clean Heading (No cluttered badges or multi-row buttons) */}
+        {/* Top Centered Clean Heading */}
         <div className="text-center max-w-4xl mx-auto space-y-2">
           <h1 className="font-changa text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-tight tracking-wide">
             Share clean energy with the{' '}
@@ -194,54 +191,28 @@ export default function MarketplaceView() {
           </p>
         </div>
 
-        {/* Horizontal Control & Flow Bar (Utilizing full margin width) */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
+        {/* Horizontal Action Bar: Flow Diagram on Left/Center + Premium Listing Button on Right */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1 border-b border-[rgba(23,34,29,0.06)] pb-4">
           
-          {/* Left: Scope Control Pill */}
-          <div className="inline-flex items-center p-1 rounded-xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => setViewScope('COMMUNITY')}
-              className={`px-4 py-1.5 rounded-lg transition ${
-                viewScope === 'COMMUNITY'
-                  ? 'bg-[#12392B] text-white shadow-xs font-bold'
-                  : 'text-[#5E6963] hover:text-[#17221D]'
-              }`}
-            >
-              Community Market
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewScope('MY_ENERGY')}
-              className={`px-4 py-1.5 rounded-lg transition ${
-                viewScope === 'MY_ENERGY'
-                  ? 'bg-[#12392B] text-white shadow-xs font-bold'
-                  : 'text-[#5E6963] hover:text-[#17221D]'
-              }`}
-            >
-              My Energy ({myEnergy.surplus > 0 ? `+${myEnergy.surplus.toFixed(1)} kW` : 'Demand'})
-            </button>
-          </div>
-
-          {/* Center: Clean Energy Route Indicator */}
-          <div className="hidden md:flex items-center space-x-2 text-xs text-[#5E6963]">
-            <span className="font-medium flex items-center gap-1 text-[#DDA12A] bg-[#FFF7E4] px-2.5 py-1 rounded-lg">
-              <FaIcon name="solar" /> Solar Surplus
+          {/* Left/Center: Clean Bilateral Energy Route Indicator */}
+          <div className="flex items-center space-x-2 text-xs text-[#5E6963] flex-wrap gap-y-1">
+            <span className="font-medium flex items-center gap-1 text-[#DDA12A] bg-[#FFF7E4] px-3 py-1.5 rounded-lg border border-[#DDA12A]/20">
+              <FaIcon name="solar" /> Rooftop Solar Surplus
             </span>
-            <span className="text-[#1E9B68] font-bold text-xs">────( Local P2P @ ₹4.50/kWh )────→</span>
-            <span className="font-medium flex items-center gap-1 text-[#3C78CC] bg-[#EDF3FD] px-2.5 py-1 rounded-lg">
+            <span className="text-[#1E9B68] font-bold text-xs hidden sm:inline">────( Local P2P @ ₹4.50/kWh )────→</span>
+            <span className="font-medium flex items-center gap-1 text-[#3C78CC] bg-[#EDF3FD] px-3 py-1.5 rounded-lg border border-[#3C78CC]/20">
               <FaIcon name="home" /> Nearby Demand
             </span>
           </div>
 
-          {/* Right: Single Primary CTA */}
+          {/* Right: High-End Post Energy Listing CTA */}
           <button
             type="button"
             onClick={() => setIsCreateOfferOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-[#1E9B68] hover:bg-[#168557] text-white text-xs sm:text-sm font-bold shadow-xs transition active:scale-98 flex items-center space-x-2"
+            className="px-5 py-2.5 rounded-xl bg-[#12392B] hover:bg-[#174A37] text-white text-xs sm:text-sm font-bold shadow-xs transition active:scale-98 flex items-center space-x-2 border border-[rgba(255,255,255,0.1)]"
           >
-            <FaIcon name="plus" />
-            <span>Create Energy Offer</span>
+            <FaIcon name="plus" className="text-[#43CB8C]" />
+            <span>Post Energy Listing</span>
           </button>
 
         </div>
@@ -318,69 +289,7 @@ export default function MarketplaceView() {
 
       </div>
 
-      {/* 🌟 3. "HOW GRIDSHARE MARKETPLACE WORKS" */}
-      <div className="space-y-4">
-        <div className="text-center space-y-1">
-          <h2 className="font-changa text-xl sm:text-2xl font-normal text-[#17221D]">
-            How GridShare Marketplace Works
-          </h2>
-          <p className="text-xs sm:text-sm text-[#5E6963]">
-            Your surplus energy finds a nearby home that needs it.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Step 1 */}
-          <div className="glass-card rounded-xl p-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-changa text-2xl font-normal text-[#1E9B68]">01</span>
-              <div className="w-8 h-8 rounded-lg bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs">
-                <FaIcon name="solar" />
-              </div>
-            </div>
-            <h3 className="text-base font-bold text-[#17221D]">
-              Generate
-            </h3>
-            <p className="text-xs text-[#5E6963] leading-relaxed">
-              A household produces more clean rooftop solar energy than it currently consumes.
-            </p>
-          </div>
-
-          {/* Step 2 */}
-          <div className="glass-card rounded-xl p-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-changa text-2xl font-normal text-[#7358C7]">02</span>
-              <div className="w-8 h-8 rounded-lg bg-[#F1EDFF] text-[#7358C7] flex items-center justify-center text-xs">
-                <FaIcon name="network" />
-              </div>
-            </div>
-            <h3 className="text-base font-bold text-[#17221D]">
-              Match
-            </h3>
-            <p className="text-xs text-[#5E6963] leading-relaxed">
-              GridShare finds nearby electrical demand and computes a fair local P2P price below utility rates.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div className="glass-card rounded-xl p-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-changa text-2xl font-normal text-[#1E9B68]">03</span>
-              <div className="w-8 h-8 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
-                <FaIcon name="check" />
-              </div>
-            </div>
-            <h3 className="text-base font-bold text-[#17221D]">
-              Settle
-            </h3>
-            <p className="text-xs text-[#5E6963] leading-relaxed">
-              Energy is routed locally and the transaction is recorded in the verifiable community ledger.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 🌟 4. LIVE ENERGY MATCHES */}
+      {/* 🌟 3. LIVE ENERGY MATCHES / MARKET LISTINGS (Placed Prominently on Top) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -410,9 +319,10 @@ export default function MarketplaceView() {
             <button
               type="button"
               onClick={() => setIsCreateOfferOpen(true)}
-              className="px-4 py-2 rounded-xl bg-[#1E9B68] text-white text-xs font-bold shadow-xs hover:bg-[#168557] transition"
+              className="px-4 py-2 rounded-xl bg-[#12392B] text-white text-xs font-bold shadow-xs hover:bg-[#174A37] transition flex items-center space-x-1.5 mx-auto"
             >
-              Post an Energy Offer
+              <FaIcon name="plus" className="text-[#43CB8C]" />
+              <span>Post an Energy Listing</span>
             </button>
           </div>
         ) : (
@@ -501,7 +411,7 @@ export default function MarketplaceView() {
         )}
       </div>
 
-      {/* 🌟 5. PRICE EXPLANATION & COMPARISON CARD */}
+      {/* 🌟 4. PRICE EXPLANATION & COMPARISON CARD */}
       <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -544,7 +454,7 @@ export default function MarketplaceView() {
         </div>
       </div>
 
-      {/* 🌟 6. EXPANDED TWO-PANEL BOTTOM SECTION */}
+      {/* 🌟 5. EXPANDED TWO-PANEL SECTION: COMMUNITY IMPACT & RECENT TRADES */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Card: Community Marketplace Impact */}
@@ -655,6 +565,68 @@ export default function MarketplaceView() {
           </div>
         </div>
 
+      </div>
+
+      {/* 🌟 6. "HOW GRIDSHARE MARKETPLACE WORKS" (Placed at the Bottom as Requested) */}
+      <div className="space-y-4 pt-4 border-t border-[rgba(23,34,29,0.06)]">
+        <div className="text-center space-y-1">
+          <h2 className="font-changa text-xl sm:text-2xl font-normal text-[#17221D]">
+            How GridShare Marketplace Works
+          </h2>
+          <p className="text-xs sm:text-sm text-[#5E6963]">
+            Your surplus energy finds a nearby home that needs it.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Step 1 */}
+          <div className="glass-card rounded-xl p-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-changa text-2xl font-normal text-[#1E9B68]">01</span>
+              <div className="w-8 h-8 rounded-lg bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs">
+                <FaIcon name="solar" />
+              </div>
+            </div>
+            <h3 className="text-base font-bold text-[#17221D]">
+              Generate
+            </h3>
+            <p className="text-xs text-[#5E6963] leading-relaxed">
+              A household produces more clean rooftop solar energy than it currently consumes.
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="glass-card rounded-xl p-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-changa text-2xl font-normal text-[#7358C7]">02</span>
+              <div className="w-8 h-8 rounded-lg bg-[#F1EDFF] text-[#7358C7] flex items-center justify-center text-xs">
+                <FaIcon name="network" />
+              </div>
+            </div>
+            <h3 className="text-base font-bold text-[#17221D]">
+              Match
+            </h3>
+            <p className="text-xs text-[#5E6963] leading-relaxed">
+              GridShare finds nearby electrical demand and computes a fair local P2P price below utility rates.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="glass-card rounded-xl p-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-changa text-2xl font-normal text-[#1E9B68]">03</span>
+              <div className="w-8 h-8 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
+                <FaIcon name="check" />
+              </div>
+            </div>
+            <h3 className="text-base font-bold text-[#17221D]">
+              Settle
+            </h3>
+            <p className="text-xs text-[#5E6963] leading-relaxed">
+              Energy is routed locally and the transaction is recorded in the verifiable community ledger.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* 🌟 7. MODALS */}
