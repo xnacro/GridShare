@@ -348,7 +348,9 @@ export default function EnergyMapView() {
         <div className="absolute top-4 left-4 z-10 select-none">
           <div className="rounded-xl border border-slate-200/90 bg-white/95 p-3.5 shadow-md backdrop-blur-md">
             <div className="flex items-center space-x-2">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
+              <div className="w-5 h-5 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                <FaIcon name="network" />
+              </div>
               <h2 className="text-sm font-extrabold tracking-tight text-slate-900">LIVE ENERGY MAP</h2>
               <Badge variant="surplus" size="xs">
                 SIMULATED COMMUNITY DATA

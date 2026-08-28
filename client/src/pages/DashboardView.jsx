@@ -1,20 +1,15 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   INITIAL_DEMO_STATE,
   computeHouseholdStates,
-  validateSellOrder,
-  validatePurchaseOrder,
 } from '../services/marketEngine';
 import {
-  PRESET_SCENARIOS,
   generate24HourProfile,
   calculateMicrogridFlows,
-  DIURNAL_PROFILES,
 } from '../services/dashboardSimulationEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
 import LiveEnergyChart from '../components/LiveEnergyChart';
-import TransactionLedger from '../components/marketplace/TransactionLedger';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
 import DecisionTimeline from '../components/ui/DecisionTimeline';
 import FaIcon from '../components/icons/FaIcon';
@@ -22,31 +17,32 @@ import MetricCard from '../components/ui/MetricCard';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 
-export default function DashboardView() {
+export default function DashboardView({ onOpenDemoModal }) {
   const navigate = useNavigate();
 
   // Master Microgrid State
-  const [households, setHouseholds] = useState(INITIAL_DEMO_STATE.households);
-  const [battery, setBattery] = useState(INITIAL_DEMO_STATE.battery);
-  const [grid, setGrid] = useState(INITIAL_DEMO_STATE.grid);
-  const [orders, setOrders] = useState({
+  const [households] = useState(INITIAL_DEMO_STATE.households);
+  const [battery] = useState(INITIAL_DEMO_STATE.battery);
+  const [grid] = useState(INITIAL_DEMO_STATE.grid);
+  const [orders] = useState({
     sellOrders: [
       { id: 'GS-SELL-001', household_id: 'house_a', energy_kwh: 2.0, min_price_per_kwh: 4.5, remaining_kwh: 2.0, status: 'OPEN' }
     ],
     buyOrders: [],
   });
   const [transactions, setTransactions] = useState([
-    { id: 'TX-GS-001', time: '12:30', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' }
+    { id: 'TX-GS-001', time: '12:30', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' },
+    { id: 'TX-GS-002', time: '11:45', sellerId: 'HOUSE_C', buyerId: 'HOUSE_D', energyKwh: 1.5, pricePerKwh: 4.8, totalValue: 7.2, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' }
   ]);
 
   // Simulation Clock & Node Selection
-  const [currentHour, setCurrentHour] = useState(12);
+  const [currentHour] = useState(12);
   const [selectedNode, setSelectedNode] = useState('house_a');
   const [isAiExecuting, setIsAiExecuting] = useState(false);
   const [aiExecutionMessage, setAiExecutionMessage] = useState('');
 
   // Confirmation Modal
-  const [activePurchase, setActivePurchase] = useState(null);
+  const [activePurchase] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const sceneRef = useRef();
@@ -75,7 +71,7 @@ export default function DashboardView() {
   // Execute AI Recommendation trigger
   const handleExecuteRecommendation = () => {
     setIsAiExecuting(true);
-    setAiExecutionMessage('Executing automated P2P bilateral match between House A and House B...');
+    setAiExecutionMessage('Connecting House A with House B for local peer exchange...');
     setTimeout(() => {
       setTransactions((prev) => [
         {
@@ -93,68 +89,106 @@ export default function DashboardView() {
         ...prev,
       ]);
       setIsAiExecuting(false);
-      setAiExecutionMessage('Optimal trade executed: 2.0 kWh settled @ ₹4.50/kWh.');
+      setAiExecutionMessage('Great match! 2.0 kWh shared locally @ ₹4.50/kWh.');
       setTimeout(() => setAiExecutionMessage(''), 4000);
-    }, 1200);
+    }, 1000);
   };
 
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+      
+      {/* 🌟 1. FRIENDLY, WARM, MODERN HERO GREETING */}
+      <div className="rounded-3xl border border-[#DDE4DF] bg-white p-6 sm:p-8 shadow-card relative overflow-hidden">
+        {/* Modern subtle ambient glow */}
+        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[#E7F5EE]/80 blur-3xl pointer-events-none" />
+        <div className="absolute right-32 -bottom-12 h-48 w-48 rounded-full bg-[#F0ECFF]/60 blur-3xl pointer-events-none" />
 
-      {/* Page Title & Status Subheading */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-        <div>
-          <div className="flex items-center space-x-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102019] tracking-tight">
-              Community Energy Command Center
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-3 max-w-3xl">
+            <div className="flex items-center space-x-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#E7F5EE] text-[#1C9A67] text-[11px] font-bold uppercase tracking-wider">
+                COMMUNITY OVERVIEW
+              </span>
+              <Badge variant="surplus" size="xs">
+                {isSurplus ? 'NET SURPLUS' : 'NET DEFICIT'}
+              </Badge>
+            </div>
+
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#142019] tracking-tight leading-tight">
+              {isSurplus
+                ? `Your community has ${netCommunity.toFixed(1)} kW clean surplus to share today!`
+                : `Your community is drawing ${Math.abs(netCommunity).toFixed(1)} kW from backup storage.`}
             </h1>
-            <Badge variant="surplus" size="sm">
-              Live Operating Layer
-            </Badge>
-          </div>
-          <p className="text-sm text-[#5D6B64] font-medium mt-1">
-            Real-time physical telemetry, short-term forecasting, and deterministic peer dispatch.
-          </p>
-        </div>
 
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ai"
-            size="sm"
-            onClick={() => navigate('/ai')}
-            icon={<FaIcon name="ai" />}
-          >
-            Open AI Copilot
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => navigate('/network')}
-            icon={<FaIcon name="network" />}
-          >
-            View 3D Network
-          </Button>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm font-semibold text-[#5C6962]">
+              <span className="flex items-center gap-1.5 text-[#142019]">
+                <FaIcon name="solar" className="text-[#E7A82D] text-xs" />
+                {totalGen.toFixed(1)} kW generated
+              </span>
+              <span className="text-[#C9D2CC]">•</span>
+              <span className="flex items-center gap-1.5 text-[#142019]">
+                <FaIcon name="home" className="text-[#3A78D1] text-xs" />
+                {totalCon.toFixed(1)} kW consumed
+              </span>
+              <span className="text-[#C9D2CC]">•</span>
+              <span className="flex items-center gap-1.5 text-[#142019]">
+                <FaIcon name="battery" className="text-[#D89A25] text-xs" />
+                {battery.soc.toFixed(0)}% battery storage
+              </span>
+            </div>
+
+            <p className="text-xs sm:text-sm text-[#7C8781] font-medium pt-1">
+              GridShare automatically coordinates your community solar, central storage, and peer trading in real time.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+            <Button
+              variant="ai"
+              size="md"
+              onClick={() => navigate('/ai')}
+              icon={<FaIcon name="ai" />}
+            >
+              Ask AI Copilot
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => navigate('/marketplace')}
+              icon={<FaIcon name="trade" />}
+            >
+              P2P Market
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => navigate('/network')}
+              icon={<FaIcon name="network" />}
+            >
+              3D Twin
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Dynamic Action Notification */}
       {aiExecutionMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#DDE5E0] bg-[#E7F5EE] px-4 py-3 text-sm text-[#163A2B] font-bold shadow-subtle animate-in fade-in slide-in-from-top-2">
+        <div className="flex items-center justify-between rounded-2xl border border-[#DDE4DF] bg-[#E7F5EE] px-4 py-3 text-sm text-[#12372A] font-bold shadow-subtle animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center space-x-2.5">
-            <span className="h-2 w-2 rounded-full bg-[#168A5A] animate-pulse" />
+            <FaIcon name="sparkles" className="text-[#1C9A67] text-sm" />
             <span>{aiExecutionMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => setAiExecutionMessage('')}
-            className="text-[#168A5A] hover:text-[#102019] text-xs font-bold p-1"
+            className="text-[#1C9A67] hover:text-[#142019] text-xs font-bold p-1"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* 🌟 ROW 1: PRIMARY METRICS HIERARCHY */}
+      {/* 🌟 2. PRIMARY PROMINENT METRIC CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <MetricCard
           title="Generation"
@@ -169,10 +203,10 @@ export default function DashboardView() {
         <MetricCard
           title="Community Load"
           value={`${totalCon.toFixed(1)} kW`}
-          subtitle="Active community demand"
+          subtitle="Active residential demand"
           iconName="home"
           variant="default"
-          delta="Normal residential draw"
+          delta="Normal household draw"
           deltaType="neutral"
         />
 
@@ -183,14 +217,14 @@ export default function DashboardView() {
           iconName="energy"
           variant={isSurplus ? "surplus" : "deficit"}
           badge={isSurplus ? "SURPLUS" : "DEFICIT"}
-          delta={isSurplus ? "Local self-sufficiency active" : "Grid import supplemental"}
+          delta={isSurplus ? "Local self-sufficiency active" : "Buffered by ESS reserve"}
           deltaType={isSurplus ? "positive" : "negative"}
         />
 
         <MetricCard
           title="Battery SOC"
           value={`${battery.soc.toFixed(0)}%`}
-          subtitle="Available ESS storage reserve"
+          subtitle="Central ESS storage reserve"
           iconName="battery"
           variant="battery"
           badge="SAFE BUFFER"
@@ -199,22 +233,24 @@ export default function DashboardView() {
         />
       </div>
 
-      {/* 🌟 ROW 2: 3D DIGITAL TWIN + EMBEDDED AI COPILOT PANEL */}
+      {/* 🌟 3. 3D DIGITAL TWIN + EMBEDDED AI COPILOT PANEL */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
+        
         {/* CENTERPIECE 3D SPATIAL DIGITAL TWIN (65% width) */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
-          <div className="flex flex-col h-full rounded-2xl border border-[#DDE5E0] bg-white p-4 sm:p-5 shadow-card">
-
-            {/* 3D Viewport Header Bar */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
-              <div className="flex items-center space-x-2.5">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-[#168A5A] ring-4 ring-[#E7F5EE]" />
+          <div className="flex flex-col h-full rounded-3xl border border-[#DDE4DF] bg-white p-5 sm:p-6 shadow-card">
+            
+            {/* 3D Viewport Header Bar with Clean Icon */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#DDE4DF]">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-xl bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center text-sm flex-shrink-0">
+                  <FaIcon name="network" />
+                </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#102019] tracking-tight">
+                  <h3 className="text-base font-bold text-[#142019] tracking-tight">
                     Spatial Microgrid Digital Twin
                   </h3>
-                  <p className="text-xs text-[#5D6B64]">
+                  <p className="text-xs text-[#5C6962]">
                     Real-time multi-household power vectors & bilateral transfers
                   </p>
                 </div>
@@ -224,16 +260,16 @@ export default function DashboardView() {
                 <button
                   type="button"
                   onClick={() => sceneRef.current?.resetCamera()}
-                  className="px-2.5 py-1 rounded-lg border border-[#DDE5E0] bg-[#F5F7F6] text-xs font-semibold text-[#102019] hover:bg-white transition"
+                  className="px-2.5 py-1 rounded-lg border border-[#DDE4DF] bg-[#F5F6F2] text-xs font-semibold text-[#142019] hover:bg-white transition"
                   title="Reset Camera Angle"
                 >
-                  <FaIcon name="camera" className="mr-1 text-[11px] text-[#5D6B64]" />
+                  <FaIcon name="camera" className="mr-1 text-[11px] text-[#5C6962]" />
                   Reset View
                 </button>
                 <button
                   type="button"
                   onClick={() => sceneRef.current?.topView()}
-                  className="hidden sm:inline-flex px-2.5 py-1 rounded-lg border border-[#DDE5E0] bg-[#F5F7F6] text-xs font-semibold text-[#102019] hover:bg-white transition"
+                  className="hidden sm:inline-flex px-2.5 py-1 rounded-lg border border-[#DDE4DF] bg-[#F5F6F2] text-xs font-semibold text-[#142019] hover:bg-white transition"
                   title="Overhead View"
                 >
                   Top-Down
@@ -242,7 +278,7 @@ export default function DashboardView() {
             </div>
 
             {/* 3D Scene Viewport */}
-            <div className="mt-4 h-[380px] sm:h-[420px] w-full relative rounded-xl overflow-hidden bg-[#F5F7F6]">
+            <div className="mt-4 h-[380px] sm:h-[420px] w-full relative rounded-2xl overflow-hidden bg-[#F5F6F2]">
               <MarketplaceScene3D
                 ref={sceneRef}
                 households={computedHouseholds}
@@ -255,9 +291,9 @@ export default function DashboardView() {
 
               {/* Floating Active Conduits Pill */}
               <div className="absolute top-3 left-3 pointer-events-none">
-                <div className="flex items-center space-x-2 rounded-full border border-[#DDE5E0] bg-white/95 px-3 py-1 shadow-card backdrop-blur-md">
-                  <span className="h-2 w-2 rounded-full bg-[#168A5A] animate-pulse" />
-                  <span className="text-xs font-bold text-[#102019]">
+                <div className="flex items-center space-x-2 rounded-full border border-[#DDE4DF] bg-white/95 px-3 py-1 shadow-card backdrop-blur-md">
+                  <FaIcon name="bolt" className="text-[#1C9A67] text-xs" />
+                  <span className="text-xs font-bold text-[#142019]">
                     {activeFlows.length > 0 ? `${activeFlows.length} Active Flow Conduits` : 'Baseline Ready'}
                   </span>
                 </div>
@@ -265,18 +301,19 @@ export default function DashboardView() {
             </div>
 
             {/* Node Quick Selector Footer */}
-            <div className="mt-3.5 pt-3 border-t border-[#DDE5E0] flex flex-wrap items-center justify-between gap-2 text-xs">
-              <span className="text-[#5D6B64] font-medium">Select Household Node:</span>
+            <div className="mt-3.5 pt-3 border-t border-[#DDE4DF] flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="text-[#5C6962] font-medium">Select Household Node:</span>
               <div className="flex flex-wrap items-center gap-1.5">
                 {computedHouseholds.map((h) => (
                   <button
                     key={h.id}
                     type="button"
                     onClick={() => setSelectedNode(h.id)}
-                    className={`px-2.5 py-1 rounded-lg font-bold transition text-xs ${selectedNode === h.id
-                        ? 'bg-[#163A2B] text-white shadow-xs'
-                        : 'bg-[#F5F7F6] text-[#5D6B64] hover:text-[#102019] border border-[#DDE5E0]'
-                      }`}
+                    className={`px-3 py-1 rounded-xl font-bold transition text-xs ${
+                      selectedNode === h.id
+                        ? 'bg-[#12372A] text-white shadow-xs'
+                        : 'bg-[#F5F6F2] text-[#5C6962] hover:text-[#142019] border border-[#DDE4DF]'
+                    }`}
                   >
                     {h.name.split(' ')[0]} {h.name.split(' ')[1]}
                   </button>
@@ -288,19 +325,19 @@ export default function DashboardView() {
 
         {/* PREMIUM AI COPILOT OVERVIEW PANEL (35% width) */}
         <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
-          <div className="flex flex-col h-full rounded-2xl border border-[#E2D9F8] bg-[#FBFCFB] p-5 sm:p-6 shadow-card space-y-4">
-
+          <div className="flex flex-col h-full rounded-3xl border border-[#E2D9F8] bg-[#FDFCFE] p-5 sm:p-6 shadow-card space-y-4">
+            
             {/* AI Copilot Header */}
             <div className="flex items-start justify-between pb-3 border-b border-[#E2D9F8]">
               <div className="flex items-center space-x-2.5">
-                <div className="w-10 h-10 rounded-xl bg-[#F0EBFF] text-[#7657D8] flex items-center justify-center text-lg flex-shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-[#F0ECFF] text-[#7357C8] flex items-center justify-center text-base flex-shrink-0">
                   <FaIcon name="brain" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#102019]">
+                  <h3 className="text-base font-bold text-[#142019]">
                     GridShare AI Copilot
                   </h3>
-                  <div className="text-xs text-[#7657D8] font-semibold">
+                  <div className="text-xs text-[#7357C8] font-semibold">
                     Forecast Horizon: 60 Minutes
                   </div>
                 </div>
@@ -311,56 +348,56 @@ export default function DashboardView() {
             </div>
 
             {/* Predicted Balance & Confidence */}
-            <div className="grid grid-cols-2 gap-3 p-3 rounded-xl border border-[#DDE5E0] bg-white">
+            <div className="grid grid-cols-2 gap-3 p-3 rounded-2xl border border-[#DDE4DF] bg-white">
               <div>
-                <span className="text-xs text-[#5D6B64] font-medium block">Predicted Balance</span>
-                <span className="text-xl sm:text-2xl font-extrabold text-[#168A5A]">
+                <span className="text-xs text-[#5C6962] font-medium block">Predicted Balance</span>
+                <span className="text-xl sm:text-2xl font-extrabold text-[#1C9A67]">
                   +1.7 kW
                 </span>
               </div>
               <div>
-                <span className="text-xs text-[#5D6B64] font-medium block">Confidence</span>
+                <span className="text-xs text-[#5C6962] font-medium block">Confidence</span>
                 <div className="flex items-center space-x-1 mt-0.5">
-                  <span className="text-xl sm:text-2xl font-extrabold text-[#7657D8]">91%</span>
-                  <span className="text-[11px] text-[#5D6B64] font-normal">High</span>
+                  <span className="text-xl sm:text-2xl font-extrabold text-[#7357C8]">91%</span>
+                  <span className="text-[11px] text-[#5C6962] font-normal">High</span>
                 </div>
               </div>
             </div>
 
             {/* Recommended Action Card */}
-            <div className="rounded-xl border border-[#DDE5E0] bg-white p-4 space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#7657D8]">
+            <div className="rounded-2xl border border-[#DDE4DF] bg-white p-4 space-y-2">
+              <span className="text-[10.5px] font-bold uppercase tracking-wider text-[#7357C8]">
                 Recommended Action
               </span>
-              <div className="text-sm font-bold text-[#102019]">
-                Trade 2.0 kWh locally (House A ➔ House B)
+              <div className="text-sm font-bold text-[#142019]">
+                TRADE 2.0 kWh LOCALLY (House A ➔ House B)
               </div>
-              <p className="text-xs text-[#5D6B64] leading-relaxed">
+              <p className="text-xs text-[#5C6962] leading-relaxed">
                 Solar surplus is expected to persist for the next hour. Peer exchange clears at ₹4.50/kWh, yielding ₹9.00 community earnings and saving House B ₹3.20 vs grid tariff.
               </p>
             </div>
 
             {/* Why This Action? Reasoning Box */}
-            <div className="rounded-xl bg-[#F0EBFF]/50 border border-[#E2D9F8] p-4 space-y-2 text-xs">
-              <span className="font-bold text-[#7657D8] uppercase tracking-wide text-[11px] block">
+            <div className="rounded-2xl bg-[#F0ECFF]/40 border border-[#E2D9F8] p-4 space-y-2 text-xs">
+              <span className="font-bold text-[#7357C8] uppercase tracking-wide text-[10.5px] block">
                 Why This Action?
               </span>
-              <ul className="space-y-1.5 text-[#102019] text-[12.5px]">
+              <ul className="space-y-1.5 text-[#142019] text-[12px]">
                 <li className="flex items-start gap-2">
-                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
-                  <span>Local deficit detected at House B (4.0 kW active load)</span>
+                  <FaIcon name="check" className="text-[#1C9A67] text-xs mt-0.5 flex-shrink-0" />
+                  <span>Local demand detected at House B (4.0 kW active load)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
+                  <FaIcon name="check" className="text-[#1C9A67] text-xs mt-0.5 flex-shrink-0" />
                   <span>Surplus expected to continue through afternoon peak</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
-                  <span>Battery storage (40% SOC) safely exceeds 10% reserve floor</span>
+                  <FaIcon name="check" className="text-[#1C9A67] text-xs mt-0.5 flex-shrink-0" />
+                  <span>Battery reserve is healthy (40% SOC exceeds 10% floor)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
-                  <span>P2P trade (₹4.50) strongly preferable to utility export (₹3.20)</span>
+                  <FaIcon name="check" className="text-[#1C9A67] text-xs mt-0.5 flex-shrink-0" />
+                  <span>Local trade currently preferable to utility grid export</span>
                 </li>
               </ul>
             </div>
@@ -383,30 +420,30 @@ export default function DashboardView() {
                 onClick={() => navigate('/ai')}
                 className="w-full sm:w-auto justify-center"
               >
-                Review Details
+                Review Decision
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 🌟 ROW 3: AI DECISION TIMELINE & DISPATCH LOGIC */}
+      {/* 🌟 4. OBSERVE -> PREDICT -> OPTIMIZE -> TRADE DECISION TIMELINE */}
       <DecisionTimeline
         title="AI Decision Sequence & Dispatch Logic"
         subtitle="End-to-end trace of how GridShare observes surplus, predicts horizon load, and settles bilateral trades"
       />
 
-      {/* 🌟 ROW 4: COMMUNITY PERFORMANCE + RECENT ACTIVITY */}
+      {/* 🌟 5. COMMUNITY PERFORMANCE + RECENT ACTIVITY */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
+        
         {/* 24-HOUR ENERGY PROFILE (7 cols) */}
-        <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0] mb-3">
+        <div className="lg:col-span-7 rounded-3xl border border-[#DDE4DF] bg-white p-5 shadow-card">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE4DF] mb-3">
             <div>
-              <h3 className="text-base font-bold text-[#102019]">
+              <h3 className="text-base font-bold text-[#142019]">
                 24-Hour Diurnal Energy Profile
               </h3>
-              <p className="text-xs text-[#5D6B64]">
+              <p className="text-xs text-[#5C6962]">
                 Solar generation curve vs community demand load
               </p>
             </div>
@@ -419,13 +456,13 @@ export default function DashboardView() {
         </div>
 
         {/* RECENT SETTLED TRADES & ACTIVITY (5 cols) */}
-        <div className="lg:col-span-5 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0] mb-3">
+        <div className="lg:col-span-5 rounded-3xl border border-[#DDE4DF] bg-white p-5 shadow-card">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE4DF] mb-3">
             <div>
-              <h3 className="text-base font-bold text-[#102019]">
+              <h3 className="text-base font-bold text-[#142019]">
                 Settled P2P Transactions
               </h3>
-              <p className="text-xs text-[#5D6B64]">
+              <p className="text-xs text-[#5C6962]">
                 Bilateral microgrid ledger transactions
               </p>
             </div>
@@ -438,24 +475,51 @@ export default function DashboardView() {
             {transactions.map((tx) => (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-3 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] hover:bg-white text-xs transition"
+                className="flex items-center justify-between p-3 rounded-2xl border border-[#DDE4DF] bg-[#F5F6F2]/40 hover:bg-white text-xs transition"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#E7F5EE] text-[#168A5A] flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-[#E7F5EE] text-[#1C9A67] flex items-center justify-center">
                     <FaIcon name="trade" />
                   </div>
                   <div>
-                    <div className="font-bold text-[#102019]">{tx.sellerId} ➔ {tx.buyerId}</div>
-                    <div className="text-[11px] text-[#83908A]">{tx.time} • {tx.energyKwh} kWh @ ₹{tx.pricePerKwh}/kWh</div>
+                    <div className="font-bold text-[#142019]">{tx.sellerId} ➔ {tx.buyerId}</div>
+                    <div className="text-[11px] text-[#7C8781]">{tx.time} • {tx.energyKwh} kWh @ ₹{tx.pricePerKwh}/kWh</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-[#168A5A]">₹{tx.totalValue.toFixed(2)}</div>
-                  <span className="text-[10px] text-[#83908A] font-semibold">SETTLED</span>
+                  <div className="font-bold text-[#1C9A67]">₹{tx.totalValue.toFixed(2)}</div>
+                  <span className="text-[10px] text-[#7C8781] font-semibold">SETTLED</span>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* 🌟 6. SECONDARY METRICS: COMMUNITY IMPACT */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5">
+        <div className="rounded-3xl border border-[#DDE4DF] bg-white p-5 shadow-card">
+          <span className="text-xs font-semibold text-[#7C8781] block">P2P Energy Traded</span>
+          <span className="text-xl sm:text-2xl font-extrabold text-[#142019] mt-1 block">28.4 kWh</span>
+          <span className="text-[11px] text-[#1C9A67] font-semibold">100% clean solar</span>
+        </div>
+
+        <div className="rounded-3xl border border-[#DDE4DF] bg-white p-5 shadow-card">
+          <span className="text-xs font-semibold text-[#7C8781] block">Grid Peak Shaved</span>
+          <span className="text-xl sm:text-2xl font-extrabold text-[#3A78D1] mt-1 block">14.2 kW</span>
+          <span className="text-[11px] text-[#5C6962]">Substation relief</span>
+        </div>
+
+        <div className="rounded-3xl border border-[#DDE4DF] bg-white p-5 shadow-card">
+          <span className="text-xs font-semibold text-[#7C8781] block">Estimated CO2 Avoided</span>
+          <span className="text-xl sm:text-2xl font-extrabold text-[#1C9A67] mt-1 block">23.3 kg</span>
+          <span className="text-[11px] text-[#7C8781]">vs coal baseline</span>
+        </div>
+
+        <div className="rounded-3xl border border-[#DDE4DF] bg-white p-5 shadow-card">
+          <span className="text-xs font-semibold text-[#7C8781] block">Community Savings</span>
+          <span className="text-xl sm:text-2xl font-extrabold text-[#12372A] mt-1 block">₹142.50</span>
+          <span className="text-[11px] text-[#1C9A67] font-semibold">vs utility peak tariff</span>
         </div>
       </div>
 

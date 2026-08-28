@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef } from 'react';
 import InteractiveBatteryTwin3D from '../components/battery/InteractiveBatteryTwin3D';
 import MetricCard from '../components/ui/MetricCard';
 import Badge from '../components/ui/Badge';
@@ -80,7 +80,7 @@ export default function BatteryView() {
     setStatus('CHARGING');
     setActiveFlow({ type: 'CHARGE', kw: chargeAmount });
     setStatusMessage(`Buffering ${chargeAmount} kWh excess solar yield into Community ESS.`);
-
+    
     setTimeout(() => {
       setBattery((prev) => {
         const nextSoc = Math.min(95, prev.soc + Math.round((chargeAmount / prev.capacity) * 100));
@@ -116,7 +116,7 @@ export default function BatteryView() {
     setStatus('DISCHARGING');
     setActiveFlow({ type: 'DISCHARGE', kw: dischargeAmount });
     setStatusMessage(`Discharging ${dischargeAmount} kWh to support House B peak deficit.`);
-
+    
     setTimeout(() => {
       setBattery((prev) => {
         const nextSoc = Math.max(10, prev.soc - Math.round((dischargeAmount / prev.capacity) * 100));
@@ -146,19 +146,19 @@ export default function BatteryView() {
 
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
-
+      
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         <div>
           <div className="flex items-center space-x-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102019] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#142019] tracking-tight">
               Community Energy Storage System (ESS)
             </h1>
             <Badge variant="battery" size="sm">
               50 kWh Battery Twin
             </Badge>
           </div>
-          <p className="text-sm text-[#5D6B64] font-medium mt-1">
+          <p className="text-sm text-[#5C6962] font-medium mt-1">
             Centralized lithium-iron-phosphate (LFP) storage with automated BMS reserve management and blackout protection.
           </p>
         </div>
@@ -185,9 +185,9 @@ export default function BatteryView() {
 
       {/* Dynamic Status Notification */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#DDE5E0] bg-[#E7F5EE] px-4 py-3 text-sm text-[#163A2B] font-bold shadow-subtle animate-in fade-in">
+        <div className="flex items-center justify-between rounded-2xl border border-[#DDE4DF] bg-[#E7F5EE] px-4 py-3 text-sm text-[#12372A] font-bold shadow-subtle animate-in fade-in">
           <span>{statusMessage}</span>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#168A5A] text-xs font-bold p-1">
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#1C9A67] text-xs font-bold p-1">
             ✕
           </button>
         </div>
@@ -238,45 +238,47 @@ export default function BatteryView() {
       </div>
 
       {/* 🌟 2. VISUAL BATTERY SOC GAUGE STRIP */}
-      <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-3">
+      <div className="rounded-3xl border border-[#DDE4DF] bg-white p-6 shadow-card space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <FaIcon name="battery" className="text-[#D99A26] text-base" />
-            <span className="text-sm font-bold text-[#102019]">
+            <div className="w-7 h-7 rounded-lg bg-[#FFF3D7] text-[#E7A82D] flex items-center justify-center text-xs">
+              <FaIcon name="battery" />
+            </div>
+            <span className="text-sm font-bold text-[#142019]">
               Community Storage Allocation Gauge
             </span>
           </div>
-          <span className="text-xs font-mono font-bold text-[#168A5A]">
+          <span className="text-xs font-mono font-bold text-[#1C9A67]">
             {availableKwh.toFixed(1)} kWh Usable | {reservedKwh.toFixed(1)} kWh Reserved
           </span>
         </div>
 
         {/* Multi-segment battery bar */}
-        <div className="h-4 w-full rounded-full bg-[#F5F7F6] border border-[#DDE5E0] overflow-hidden flex p-0.5">
+        <div className="h-4 w-full rounded-full bg-[#F5F6F2] border border-[#DDE4DF] overflow-hidden flex p-0.5">
           {/* Reserved Floor (10%) */}
           <div
-            className="h-full bg-[#D95C5C] rounded-l-full"
+            className="h-full bg-[#D95E5E] rounded-l-full"
             style={{ width: '10%' }}
             title="10% Emergency Reserve Floor"
           />
           {/* Usable Active Charge */}
           <div
-            className="h-full bg-[#168A5A] transition-all duration-500"
+            className="h-full bg-[#1C9A67] transition-all duration-500"
             style={{ width: `${Math.max(0, battery.soc - 10)}%` }}
             title={`${battery.soc - 10}% Available for P2P trading`}
           />
         </div>
 
-        <div className="flex items-center justify-between text-xs text-[#5D6B64] font-medium pt-0.5">
-          <span className="flex items-center gap-1.5 text-[#D95C5C]">
-            <span className="w-2 h-2 rounded-full bg-[#D95C5C]" />
+        <div className="flex items-center justify-between text-xs text-[#5C6962] font-medium pt-0.5">
+          <span className="flex items-center gap-1.5 text-[#D95E5E]">
+            <FaIcon name="shield" className="text-xs" />
             0–10% Reserve Floor (Protected)
           </span>
-          <span className="flex items-center gap-1.5 text-[#168A5A]">
-            <span className="w-2 h-2 rounded-full bg-[#168A5A]" />
+          <span className="flex items-center gap-1.5 text-[#1C9A67]">
+            <FaIcon name="bolt" className="text-xs" />
             10–{battery.soc}% Available for Local Dispatch
           </span>
-          <span className="text-[#83908A]">
+          <span className="text-[#7C8781]">
             {battery.soc}–100% Headroom
           </span>
         </div>
@@ -284,24 +286,29 @@ export default function BatteryView() {
 
       {/* 🌟 3. 3D DIGITAL RACK TWIN + DISPATCH CONTROLLER */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
+        
         {/* 3D RACK TWIN (7 cols) */}
-        <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
-            <div>
-              <h3 className="text-base font-bold text-[#102019]">
-                Interactive 3D Storage Rack Twin
-              </h3>
-              <p className="text-xs text-[#5D6B64]">
-                Click any cell module in the 3D rack to inspect voltage and temperature
-              </p>
+        <div className="lg:col-span-7 rounded-3xl border border-[#DDE4DF] bg-white p-5 sm:p-6 shadow-card space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE4DF]">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-xl bg-[#FFF3D7] text-[#E7A82D] flex items-center justify-center text-xs">
+                <FaIcon name="battery" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-[#142019]">
+                  Interactive 3D Storage Rack Twin
+                </h3>
+                <p className="text-xs text-[#5C6962]">
+                  Click any cell module in the 3D rack to inspect voltage and temperature
+                </p>
+              </div>
             </div>
             <Badge variant="battery" size="xs">
               BMS Active
             </Badge>
           </div>
 
-          <div className="h-[380px] w-full relative rounded-xl overflow-hidden bg-[#F5F7F6]">
+          <div className="h-[380px] w-full relative rounded-2xl overflow-hidden bg-[#F5F6F2]">
             <InteractiveBatteryTwin3D
               ref={sceneRef}
               battery={battery}
@@ -315,11 +322,11 @@ export default function BatteryView() {
               households={households}
             />
 
-            {/* Micro Badge Overlay */}
+            {/* Clean Micro Badge Overlay */}
             <div className="absolute top-3 left-3 pointer-events-none">
-              <div className="flex items-center space-x-2 rounded-full border border-[#DDE5E0] bg-white/95 px-3 py-1 shadow-card backdrop-blur-md">
-                <span className={`h-2 w-2 rounded-full ${activeFlow ? 'bg-[#168A5A] animate-pulse' : 'bg-[#83908A]'}`} />
-                <span className="text-xs font-bold text-[#102019]">
+              <div className="flex items-center space-x-2 rounded-full border border-[#DDE4DF] bg-white/95 px-3 py-1 shadow-card backdrop-blur-md">
+                <FaIcon name="bolt" className={`text-xs ${activeFlow ? 'text-[#1C9A67]' : 'text-[#7C8781]'}`} />
+                <span className="text-xs font-bold text-[#142019]">
                   {activeFlow ? `Active Flow: ${activeFlow.type} (${activeFlow.kw} kW)` : 'BMS Standby'}
                 </span>
               </div>
@@ -328,13 +335,13 @@ export default function BatteryView() {
         </div>
 
         {/* CHARGE / DISCHARGE DISPATCH CONTROLLER (5 cols) */}
-        <div className="lg:col-span-5 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+        <div className="lg:col-span-5 rounded-3xl border border-[#DDE4DF] bg-white p-5 sm:p-6 shadow-card space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE4DF]">
             <div>
-              <h3 className="text-base font-bold text-[#102019]">
+              <h3 className="text-base font-bold text-[#142019]">
                 Manual Storage Dispatch
               </h3>
-              <p className="text-xs text-[#5D6B64]">
+              <p className="text-xs text-[#5C6962]">
                 Inject prosumer solar yield or discharge to relieve local deficit
               </p>
             </div>
@@ -344,9 +351,9 @@ export default function BatteryView() {
           </div>
 
           {/* Quick Charge Action */}
-          <div className="p-4 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-3">
+          <div className="p-4 rounded-2xl border border-[#DDE4DF] bg-[#F5F6F2]/40 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#102019]">Store Excess Solar Yield</span>
+              <span className="text-xs font-bold text-[#142019]">Store Excess Solar Yield</span>
               <Badge variant="surplus" size="xs">Charge</Badge>
             </div>
             <div className="flex items-center space-x-3">
@@ -357,9 +364,9 @@ export default function BatteryView() {
                 step="0.5"
                 value={chargeAmount}
                 onChange={(e) => setChargeAmount(Number(e.target.value))}
-                className="w-24 rounded-xl border border-[#DDE5E0] bg-white px-3 py-1.5 text-xs font-mono font-bold text-[#102019]"
+                className="w-24 rounded-xl border border-[#DDE4DF] bg-white px-3 py-1.5 text-xs font-mono font-bold text-[#142019]"
               />
-              <span className="text-xs text-[#5D6B64]">kWh from House A</span>
+              <span className="text-xs text-[#5C6962]">kWh from House A</span>
               <Button
                 variant="primary"
                 size="sm"
@@ -373,9 +380,9 @@ export default function BatteryView() {
           </div>
 
           {/* Quick Discharge Action */}
-          <div className="p-4 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-3">
+          <div className="p-4 rounded-2xl border border-[#DDE4DF] bg-[#F5F6F2]/40 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#102019]">Discharge to Support Deficit</span>
+              <span className="text-xs font-bold text-[#142019]">Discharge to Support Deficit</span>
               <Badge variant="warning" size="xs">Discharge</Badge>
             </div>
             <div className="flex items-center space-x-3">
@@ -386,9 +393,9 @@ export default function BatteryView() {
                 step="0.5"
                 value={dischargeAmount}
                 onChange={(e) => setDischargeAmount(Number(e.target.value))}
-                className="w-24 rounded-xl border border-[#DDE5E0] bg-white px-3 py-1.5 text-xs font-mono font-bold text-[#102019]"
+                className="w-24 rounded-xl border border-[#DDE4DF] bg-white px-3 py-1.5 text-xs font-mono font-bold text-[#142019]"
               />
-              <span className="text-xs text-[#5D6B64]">kWh to House B</span>
+              <span className="text-xs text-[#5C6962]">kWh to House B</span>
               <Button
                 variant="warning"
                 size="sm"
@@ -402,12 +409,12 @@ export default function BatteryView() {
           </div>
 
           {/* Blackout Reserve Notice */}
-          <div className="p-3 rounded-xl bg-[#FFF4D8]/60 border border-[#F7E7BE] text-xs text-[#102019] space-y-1">
-            <span className="font-bold flex items-center gap-1 text-[#E8A72B]">
+          <div className="p-3.5 rounded-2xl bg-[#FFF3D7]/60 border border-[#FDE7B4] text-xs text-[#142019] space-y-1">
+            <span className="font-bold flex items-center gap-1.5 text-[#E7A82D]">
               <FaIcon name="shield" />
               Automated Reserve Protection
             </span>
-            <p className="text-[#5D6B64] leading-relaxed text-[11.5px]">
+            <p className="text-[#5C6962] leading-relaxed text-[11.5px]">
               The BMS actively protects a 10% reserve threshold (5.0 kWh) to guarantee emergency lighting and circuit continuity during grid blackouts.
             </p>
           </div>
@@ -416,13 +423,13 @@ export default function BatteryView() {
 
       {/* 🌟 4. EXPANDABLE ADVANCED BMS DIAGNOSTICS */}
       {isAdvancedOpen && (
-        <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 sm:p-6 shadow-card space-y-4 animate-in fade-in duration-150">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+        <div className="rounded-3xl border border-[#DDE4DF] bg-white p-6 shadow-card space-y-4 animate-in fade-in duration-150">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE4DF]">
             <div>
-              <h3 className="text-base font-bold text-[#102019]">
+              <h3 className="text-base font-bold text-[#142019]">
                 Battery Management System (BMS) Hardware Diagnostics
               </h3>
-              <p className="text-xs text-[#5D6B64]">
+              <p className="text-xs text-[#5C6962]">
                 Rack-level thermal profiles, cell balancing, and telemetry status
               </p>
             </div>
@@ -432,34 +439,34 @@ export default function BatteryView() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
-              <span className="text-[#5D6B64] text-[11px]">Bus Voltage</span>
-              <div className="text-base font-mono font-bold text-[#102019] mt-0.5">400.0 V DC</div>
+            <div className="p-3.5 rounded-2xl border border-[#DDE4DF] bg-[#F5F6F2]/40">
+              <span className="text-[#5C6962] text-[11px]">Bus Voltage</span>
+              <div className="text-base font-mono font-bold text-[#142019] mt-0.5">400.0 V DC</div>
             </div>
-            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
-              <span className="text-[#5D6B64] text-[11px]">Internal Temperature</span>
-              <div className="text-base font-mono font-bold text-[#168A5A] mt-0.5">{battery.tempC}°C (Optimal)</div>
+            <div className="p-3.5 rounded-2xl border border-[#DDE4DF] bg-[#F5F6F2]/40">
+              <span className="text-[#5C6962] text-[11px]">Internal Temperature</span>
+              <div className="text-base font-mono font-bold text-[#1C9A67] mt-0.5">{battery.tempC}°C (Optimal)</div>
             </div>
-            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
-              <span className="text-[#5D6B64] text-[11px]">State of Health (SOH)</span>
-              <div className="text-base font-mono font-bold text-[#168A5A] mt-0.5">{battery.health}%</div>
+            <div className="p-3.5 rounded-2xl border border-[#DDE4DF] bg-[#F5F6F2]/40">
+              <span className="text-[#5C6962] text-[11px]">State of Health (SOH)</span>
+              <div className="text-base font-mono font-bold text-[#1C9A67] mt-0.5">{battery.health}%</div>
             </div>
-            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
-              <span className="text-[#5D6B64] text-[11px]">Total Equivalent Cycles</span>
-              <div className="text-base font-mono font-bold text-[#102019] mt-0.5">{battery.cycleCount} Cycles</div>
+            <div className="p-3.5 rounded-2xl border border-[#DDE4DF] bg-[#F5F6F2]/40">
+              <span className="text-[#5C6962] text-[11px]">Total Equivalent Cycles</span>
+              <div className="text-base font-mono font-bold text-[#142019] mt-0.5">{battery.cycleCount} Cycles</div>
             </div>
           </div>
         </div>
       )}
 
       {/* 🌟 5. BATTERY ACTIVITY HISTORY LEDGER */}
-      <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 sm:p-6 shadow-card space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+      <div className="rounded-3xl border border-[#DDE4DF] bg-white p-6 shadow-card space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#DDE4DF]">
           <div>
-            <h3 className="text-base font-bold text-[#102019]">
+            <h3 className="text-base font-bold text-[#142019]">
               Storage Dispatch & Activity History
             </h3>
-            <p className="text-xs text-[#5D6B64]">
+            <p className="text-xs text-[#5C6962]">
               Audit trail of charge and discharge injections
             </p>
           </div>
@@ -471,7 +478,7 @@ export default function BatteryView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-[#DDE5E0] bg-[#F5F7F6] text-[11px] font-bold uppercase tracking-wider text-[#5D6B64]">
+              <tr className="border-b border-[#DDE4DF] bg-[#F5F6F2] text-[11px] font-bold uppercase tracking-wider text-[#5C6962]">
                 <th className="px-3.5 py-2.5">Event ID</th>
                 <th className="px-3.5 py-2.5">Time</th>
                 <th className="px-3.5 py-2.5">Action</th>
@@ -481,21 +488,21 @@ export default function BatteryView() {
                 <th className="px-3.5 py-2.5 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F5F7F6] font-mono text-[12px]">
+            <tbody className="divide-y divide-[#F5F6F2] font-mono text-[12px]">
               {history.map((h) => (
-                <tr key={h.id} className="hover:bg-[#FBFCFB] transition">
-                  <td className="px-3.5 py-3 font-bold text-[#102019]">{h.id}</td>
-                  <td className="px-3.5 py-3 text-[#5D6B64] font-sans">{h.time}</td>
+                <tr key={h.id} className="hover:bg-[#F5F6F2]/30 transition">
+                  <td className="px-3.5 py-3 font-bold text-[#142019]">{h.id}</td>
+                  <td className="px-3.5 py-3 text-[#5C6962] font-sans">{h.time}</td>
                   <td className="px-3.5 py-3 font-sans">
                     <Badge variant={h.action === 'CHARGE' ? 'surplus' : 'warning'} size="xs">
                       {h.action}
                     </Badge>
                   </td>
-                  <td className="px-3.5 py-3 font-sans text-[#102019]">{h.source} ➔ {h.dest}</td>
-                  <td className="px-3.5 py-3 text-right font-bold text-[#102019]">{h.energyKwh.toFixed(1)} kWh</td>
-                  <td className="px-3.5 py-3 text-right text-[#5D6B64]">{h.socBefore}% ➔ <span className="font-bold text-[#168A5A]">{h.socAfter}%</span></td>
+                  <td className="px-3.5 py-3 font-sans text-[#142019]">{h.source} ➔ {h.dest}</td>
+                  <td className="px-3.5 py-3 text-right font-bold text-[#142019]">{h.energyKwh.toFixed(1)} kWh</td>
+                  <td className="px-3.5 py-3 text-right text-[#5C6962]">{h.socBefore}% ➔ <span className="font-bold text-[#1C9A67]">{h.socAfter}%</span></td>
                   <td className="px-3.5 py-3 text-right font-sans">
-                    <span className="text-[#168A5A] font-bold">COMPLETED ✓</span>
+                    <span className="text-[#1C9A67] font-bold">COMPLETED ✓</span>
                   </td>
                 </tr>
               ))}
