@@ -310,9 +310,8 @@ export default function CommunityView() {
                   </td>
                   <td className="px-3 py-2 font-bold text-slate-900">{e.household_id || 'Community'}</td>
                   <td className="px-3 py-2">
-                    <span className={`inline-flex rounded px-1.5 py-0.2 text-[10px] font-bold ${
-                      e.action_type === 'CONTRIBUTION' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-blue-50 text-blue-800 border border-blue-200'
-                    }`}>
+                    <span className={`inline-flex rounded px-1.5 py-0.2 text-[10px] font-bold ${e.action_type === 'CONTRIBUTION' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-blue-50 text-blue-800 border border-blue-200'
+                      }`}>
                       {e.action_type}
                     </span>
                   </td>

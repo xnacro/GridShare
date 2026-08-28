@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import {
   INITIAL_DEMO_STATE,
@@ -10,18 +11,26 @@ import {
   calculateMicrogridFlows,
 } from '../services/dashboardSimulationEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
-import PageHero from '../components/ui/PageHero';
-import HeroMetric from '../components/ui/HeroMetric';
-import GlassSurface from '../components/ui/GlassSurface';
-import SectionHeader from '../components/ui/SectionHeader';
-import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
+import OverviewHero3D from '../components/dashboard/OverviewHero3D';
 import LiveEnergyChart from '../components/LiveEnergyChart';
+import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
 import FaIcon from '../components/icons/FaIcon';
-import Badge from '../components/ui/Badge';
-import Button from '../components/ui/Button';
 
 export default function DashboardView({ onOpenDemoModal }) {
   const navigate = useNavigate();
+  const { user, profile, household } = useAuth();
+
+  // User Greeting Identity
+  const userName = profile?.display_name || user?.email?.split('@')[0] || 'Rahul';
+  const householdName = household?.name || 'My Home';
+
+  // Dynamic Time-of-Day Greeting
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour >= 17 || hour < 4) return 'Good evening';
+    if (hour >= 12) return 'Good afternoon';
+    return 'Good morning';
+  }, []);
 
   // Master Microgrid State
   const [households] = useState(INITIAL_DEMO_STATE.households);
@@ -34,8 +43,10 @@ export default function DashboardView({ onOpenDemoModal }) {
     buyOrders: [],
   });
   const [transactions, setTransactions] = useState([
-    { id: 'TX-GS-001', time: '12:30', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' },
-    { id: 'TX-GS-002', time: '11:45', sellerId: 'HOUSE_C', buyerId: 'HOUSE_D', energyKwh: 1.5, pricePerKwh: 4.8, totalValue: 7.2, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' }
+    { id: 'TX-GS-001', time: '10:20 AM', sellerName: 'My Home', buyerName: 'Eco House', energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, status: 'SETTLED', icon: 'home' },
+    { id: 'TX-GS-002', time: '10:15 AM', sellerName: 'Community Battery', buyerName: 'ESS Storage', energyKwh: 1.2, pricePerKwh: 4.5, totalValue: 5.4, status: 'STORED', icon: 'battery' },
+    { id: 'TX-GS-003', time: '10:10 AM', sellerName: 'Grid Export', buyerName: 'Utility Feed-in', energyKwh: 0.7, pricePerKwh: 3.5, totalValue: 2.45, status: 'EXPORTED', icon: 'grid' },
+    { id: 'TX-GS-004', time: '10:05 AM', sellerName: 'Sunshine Home', buyerName: 'Solar Generation', energyKwh: 1.6, pricePerKwh: 0.0, totalValue: 0.0, status: 'GENERATED', icon: 'solar' },
   ]);
 
   // Live Hornet AI Insights State
@@ -49,7 +60,7 @@ export default function DashboardView({ onOpenDemoModal }) {
   const [aiExecutionMessage, setAiExecutionMessage] = useState('');
 
   // Confirmation Modal
-  const [activePurchase] = useState(null);
+  const [activePurchase, setActivePurchase] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const sceneRef = useRef();
@@ -97,20 +108,19 @@ export default function DashboardView({ onOpenDemoModal }) {
   // Execute AI Recommendation trigger
   const handleExecuteRecommendation = () => {
     setIsAiExecuting(true);
-    setAiExecutionMessage('Connecting House A with House B for local peer exchange...');
+    setAiExecutionMessage('Routing 1.0 kWh local solar trade from My Home to Eco House @ ₹4.50/kWh...');
     setTimeout(() => {
       setTransactions((prev) => [
         {
           id: `TX-GS-00${prev.length + 1}`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          sellerId: 'HOUSE_A',
-          buyerId: 'HOUSE_B',
+          sellerName: 'My Home',
+          buyerName: 'Eco House',
           energyKwh: 1.0,
           pricePerKwh: 4.5,
           totalValue: 4.5,
-          paymentStatus: 'SETTLED',
-          energyFlowStatus: 'TRANSFERRED',
-          status: 'COMPLETED',
+          status: 'SETTLED',
+          icon: 'home',
         },
         ...prev,
       ]);
@@ -122,140 +132,242 @@ export default function DashboardView({ onOpenDemoModal }) {
 
   // AI Fallbacks
   const aiForecast = copilotData?.forecast || {
-    predicted_solar_kw: 5.84,
-    predicted_demand_kw: 4.21,
-    predicted_net_balance_kw: 1.63,
+    solar_kw: 5.84,
+    demand_kw: 4.21,
+    balance_kw: 1.63,
+    lower_ghi: 5.31,
+    upper_ghi: 6.28,
   };
-  const aiInterval = copilotData?.prediction_interval || {
-    solar_lower_kw: 5.31,
-    solar_upper_kw: 6.28,
-  };
-  const aiRec = copilotData?.recommendation || {
+  const aiInterval = copilotData?.risk_check?.forecast_range_solar_kw || [5.31, 6.28];
+  const aiDecision = copilotData?.decision || {
     action: 'LOCAL_TRADE',
-    headline: 'Trade 1.0 kWh locally (House A → House B)',
-    summary: 'Local prosumer surplus is available at House A while House B has active EV demand.',
+    action_label: 'Trade 1.0 kWh locally (My Home → Eco House)',
+    amount_kwh: 1.0,
   };
 
   return (
-    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+    <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. OVERVIEW HERO */}
-      <PageHero
-        category="COMMUNITY OVERVIEW"
-        statusBadge={isSurplus ? 'NET SURPLUS' : 'NET DEFICIT'}
-        statusVariant={isSurplus ? 'surplus' : 'deficit'}
-        title="Your community has"
-        highlightText={
-          isSurplus
-            ? `${netCommunity.toFixed(1)} kW of clean energy available to share.`
-            : `${Math.abs(netCommunity).toFixed(1)} kW drawn from community storage.`
-        }
-        subtitle="GridShare is balancing rooftop generation, community demand, and battery storage in real time."
-        supportingFacts={[
-          { label: 'Generation', value: `${totalGen.toFixed(1)} kW`, icon: 'solar' },
-          { label: 'Demand', value: `${totalCon.toFixed(1)} kW`, icon: 'home' },
-          { label: 'Storage', value: `${battery.soc.toFixed(0)}% (${battery.current_energy_kwh || 20} kWh)`, icon: 'battery' },
-        ]}
-        primaryAction={{
-          label: 'Ask Hornet AI',
-          icon: 'sparkles',
-          onClick: () => navigate('/ai'),
-        }}
-        secondaryAction={{
-          label: 'Open Energy Network',
-          icon: 'network',
-          onClick: () => navigate('/network'),
-        }}
-        tertiaryAction={{
-          label: 'View Marketplace →',
-          onClick: () => navigate('/marketplace'),
-        }}
-      />
+      {/* 🌟 1. EXPANDED HERO SECTION WITH LEFTWARD FADING 3D MICROGRID */}
+      <div className="relative overflow-hidden rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs">
+        
+        {/* Background Expanded 3D Scene anchored to the right with smooth leftward fade */}
+        <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[62%] pointer-events-auto">
+          <OverviewHero3D
+            generation={totalGen}
+            myHomeNet={4.7}
+            batterySoc={battery.soc}
+            heavyLoadNet={-2.8}
+            gridExchange={-0.8}
+          />
+        </div>
 
-      {/* 🌟 2. FOUR KEY METRIC SURFACES */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <HeroMetric
-          label="Generation"
-          value={totalGen.toFixed(1)}
-          unit="kW"
-          subtitle="4 Rooftop solar arrays active"
-          iconName="solar"
-          variant="solar"
-        />
+        {/* Foreground Content (Left side, layered over the gradient fade) */}
+        <div className="relative z-10 p-6 sm:p-8 lg:p-10 max-w-2xl pointer-events-auto space-y-4">
+          
+          {/* Category Tag */}
+          <div className="text-xs font-bold uppercase tracking-widest text-[#5E6963]">
+            COMMUNITY OVERVIEW
+          </div>
 
-        <HeroMetric
-          label="Community Load"
-          value={totalCon.toFixed(1)}
-          unit="kW"
-          subtitle="5 Active residential circuits"
-          iconName="home"
-          variant="default"
-        />
+          {/* Clean Greeting */}
+          <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#17221D]">
+            {greeting}, {userName} <span className="inline-block">👋</span>
+          </h2>
 
-        <HeroMetric
-          label="Net Balance"
-          value={`${isSurplus ? '+' : ''}${netCommunity.toFixed(1)}`}
-          unit="kW"
-          subtitle="Clean surplus ready for P2P trading"
-          iconName="network"
-          variant={isSurplus ? 'emerald' : 'deficit'}
-        />
+          {/* Redesigned Punchy, Non-Cluttered Headline */}
+          <div className="space-y-1">
+            <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-[44px] tracking-tight text-[#17221D] leading-[1.15]">
+              Your community has{' '}
+              <span className="text-[#1E9B68] font-black inline-flex items-center gap-1.5">
+                +{netCommunity.toFixed(1)} kW 🍃
+              </span>
+              <br />
+              of clean energy available to share.
+            </h1>
+          </div>
 
-        <HeroMetric
-          label="Battery Storage"
-          value={`${battery.soc.toFixed(0)}%`}
-          unit="SOC"
-          subtitle="8.0 / 20 kWh usable (20% reserve)"
-          iconName="battery"
-          variant="solar"
-        />
+          {/* Minimal, Spaced Subtitle Note */}
+          <p className="text-xs sm:text-sm text-[#5E6963] font-medium max-w-md pt-1">
+            Real-time renewable generation, shared battery buffering, and peer matching.
+          </p>
+
+          {/* Action Row */}
+          <div className="flex items-center space-x-3 pt-3 flex-wrap gap-y-2">
+            <button
+              type="button"
+              onClick={() => navigate('/ai')}
+              className="px-5 py-2.5 rounded-xl bg-[#12392B] hover:bg-[#174A37] text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center space-x-2 active:scale-98"
+            >
+              <FaIcon name="sparkles" className="text-[#43CB8C]" />
+              <span>Ask Hornet AI</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/network')}
+              className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#F6F7F4] text-[#17221D] text-xs sm:text-sm font-bold border border-[rgba(23,34,29,0.12)] shadow-xs transition flex items-center space-x-1.5 active:scale-98"
+            >
+              <FaIcon name="network" className="text-xs text-[#5E6963]" />
+              <span>Explore Energy Network</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/marketplace')}
+              className="px-3 py-2.5 text-xs sm:text-sm font-bold text-[#1E9B68] hover:underline"
+            >
+              View Marketplace →
+            </button>
+          </div>
+
+        </div>
       </div>
 
-      {/* Dynamic Action Notification */}
+      {/* 🌟 2. METRIC CARDS STRIP (White Unified Card with 4 Columns + Sparkline) */}
+      <div className="rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 sm:p-6 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-center">
+        
+        {/* Col 1: NET COMMUNITY BALANCE */}
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
+            NET COMMUNITY BALANCE
+          </div>
+          <div className="font-display text-2xl sm:text-3xl font-black text-[#1E9B68] mt-0.5">
+            +{netCommunity.toFixed(1)} kW
+          </div>
+          <div className="text-xs text-[#5E6963] font-medium mt-0.5">
+            Clean surplus
+          </div>
+        </div>
+
+        {/* Col 2: TOTAL GENERATION */}
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
+            TOTAL GENERATION
+          </div>
+          <div className="font-display text-2xl sm:text-3xl font-black text-[#17221D] mt-0.5">
+            {totalGen.toFixed(1)} kW
+          </div>
+          <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
+            <span>↑ 12%</span>
+            <span className="text-[#5E6963] font-normal">vs yesterday</span>
+          </div>
+        </div>
+
+        {/* Col 3: TOTAL DEMAND */}
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
+            TOTAL DEMAND
+          </div>
+          <div className="font-display text-2xl sm:text-3xl font-black text-[#17221D] mt-0.5">
+            {totalCon.toFixed(1)} kW
+          </div>
+          <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
+            <span>↑ 8%</span>
+            <span className="text-[#5E6963] font-normal">vs yesterday</span>
+          </div>
+        </div>
+
+        {/* Col 4: BATTERY STATE */}
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
+            BATTERY STATE
+          </div>
+          <div className="font-display text-2xl sm:text-3xl font-black text-[#1E9B68] mt-0.5">
+            {battery.soc.toFixed(0)}%
+          </div>
+          <div className="text-xs text-[#5E6963] font-medium mt-0.5">
+            8.0 / 20 kWh usable
+          </div>
+        </div>
+
+        {/* Col 5: Mini Sparkline & View Link */}
+        <div className="flex flex-col justify-between items-end space-y-2">
+          <svg className="w-full h-8 overflow-visible" viewBox="0 0 100 24" fill="none">
+            <path
+              d="M0 16 Q 15 8, 30 14 T 60 8 T 85 15 T 100 6"
+              stroke="#1E9B68"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d="M0 16 Q 15 8, 30 14 T 60 8 T 85 15 T 100 6 L 100 24 L 0 24 Z"
+              fill="url(#sparklineGrad)"
+              opacity="0.25"
+            />
+            <defs>
+              <linearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#1E9B68" />
+                <stop offset="100%" stopColor="#1E9B68" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+          </svg>
+
+          <button
+            type="button"
+            onClick={() => navigate('/network')}
+            className="text-xs font-bold text-[#1E9B68] hover:underline flex items-center gap-1"
+          >
+            <span>View Energy Flow</span>
+            <span>→</span>
+          </button>
+        </div>
+
+      </div>
+
+      {/* Dynamic Action Notification Banner */}
       {aiExecutionMessage && (
-        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E6F5EC] px-4 py-3 text-xs sm:text-sm text-[#12382A] font-bold shadow-sm animate-in fade-in">
+        <div className="flex items-center justify-between rounded-xl border border-[#1E9B68]/20 bg-[#E8F6EE] px-4 py-3 text-xs sm:text-sm text-[#12392B] font-bold shadow-xs animate-in fade-in">
           <div className="flex items-center gap-2">
-            <FaIcon name="check" className="text-[#1E9B67]" />
+            <FaIcon name="check" className="text-[#1E9B68]" />
             <span>{aiExecutionMessage}</span>
           </div>
-          <button type="button" onClick={() => setAiExecutionMessage('')} className="text-[#1E9B67] text-xs p-1 font-bold">
+          <button type="button" onClick={() => setAiExecutionMessage('')} className="text-[#1E9B68] text-xs p-1 font-bold">
             ✕
           </button>
         </div>
       )}
 
-      {/* 🌟 3. PRIMARY CONTENT: 3D DIGITAL TWIN + HORNET AI PREVIEW */}
+      {/* 🌟 3. THREE-PANEL CORE OPERATING SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* LEFT: 3D DIGITAL TWIN SPATIAL VIEWPORT (7 cols) */}
-        <div className="lg:col-span-7 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-[#E6F5EC] text-[#1E9B67] flex items-center justify-center text-xs">
-                <FaIcon name="network" />
-              </div>
-              <div>
-                <h3 className="text-base font-extrabold text-[#15221B]">
-                  Live Microgrid Spatial Twin
+        {/* Panel 1: LIVE MICROGRID FLOW (4 cols ~ 33%) */}
+        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
+          <div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="h-2 w-2 rounded-full bg-[#1E9B68]" />
+                <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+                  Live Microgrid Flow
                 </h3>
-                <p className="text-xs text-[#5E6B63]">
-                  Real-time power routing between prosumers, consumers, and 50 kWh ESS
-                </p>
+              </div>
+
+              <div className="flex items-center space-x-1">
+                <button
+                  type="button"
+                  onClick={() => sceneRef.current?.resetCamera?.()}
+                  className="px-2 py-0.5 text-[11px] font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-md border border-[rgba(23,34,29,0.08)] transition flex items-center gap-1"
+                >
+                  <span>↺</span>
+                  <span>Reset</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sceneRef.current?.setTopDownView?.()}
+                  className="px-2 py-0.5 text-[11px] font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-md border border-[rgba(23,34,29,0.08)] transition"
+                >
+                  Top-Down
+                </button>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={() => navigate('/network')}
-              className="text-xs font-bold text-[#1E9B67] hover:underline flex items-center gap-1"
-            >
-              <span>Explore Network</span>
-              <FaIcon name="chevronRight" className="text-[9px]" />
-            </button>
+            <p className="text-xs text-[#5E6963] mt-0.5">
+              Real-time energy routing in your community
+            </p>
           </div>
 
-          {/* 3D Canvas with sleek glass overlay controls */}
-          <div className="h-[380px] w-full relative rounded-2xl overflow-hidden bg-[#EEF2ED]/60 border border-[rgba(23,56,43,0.05)]">
+          {/* 3D Microgrid Viewport */}
+          <div className="h-52 sm:h-56 w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
             <MarketplaceScene3D
               ref={sceneRef}
               households={computedHouseholds}
@@ -265,228 +377,306 @@ export default function DashboardView({ onOpenDemoModal }) {
               selectedNode={selectedNode}
               onSelectNode={(node) => setSelectedNode(node.id)}
             />
+          </div>
 
-            {/* Floating Glass Control Overlay */}
-            <div className="absolute top-3 left-3 flex items-center gap-1.5 p-1 rounded-2xl gs-glass shadow-sm">
-              <button
-                type="button"
-                onClick={() => sceneRef.current?.resetCamera?.()}
-                className="px-2.5 py-1 text-[11px] font-bold text-[#15221B] hover:bg-white/80 rounded-xl transition"
-              >
-                Reset
-              </button>
-              <button
-                type="button"
-                onClick={() => sceneRef.current?.setTopDownView?.()}
-                className="px-2.5 py-1 text-[11px] font-bold text-[#15221B] hover:bg-white/80 rounded-xl transition"
-              >
-                Top-Down
-              </button>
-              <span className="w-px h-3 bg-[rgba(23,56,43,0.15)] mx-0.5" />
-              <div className="flex items-center gap-1 text-[10px] font-mono text-[#1E9B67] font-bold px-1">
-                <span>{activeFlows.length} ACTIVE FLOWS</span>
-              </div>
+          {/* Bottom 4-Dot Legend */}
+          <div className="grid grid-cols-4 gap-1 text-[10px] text-[#5E6963] text-center pt-1 border-t border-[rgba(23,34,29,0.06)]">
+            <div className="flex items-center justify-center space-x-1">
+              <span className="h-2 w-2 rounded-full bg-[#1E9B68]" />
+              <span>Surplus</span>
+            </div>
+            <div className="flex items-center justify-center space-x-1">
+              <span className="h-2 w-2 rounded-full bg-[#D45C5C]" />
+              <span>Deficit</span>
+            </div>
+            <div className="flex items-center justify-center space-x-1">
+              <span className="h-2 w-2 rounded-full bg-[#DDA12A]" />
+              <span>Battery</span>
+            </div>
+            <div className="flex items-center justify-center space-x-1">
+              <span className="h-2 w-2 rounded-full bg-[#3C78CC]" />
+              <span>Grid</span>
             </div>
           </div>
         </div>
 
-        {/* RIGHT: HORNET AI NEXT 15 MINUTES PANEL (5 cols) */}
-        <div className="lg:col-span-5 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#F1ECFF] text-[#7358C8] flex items-center justify-center text-xs">
-                <FaIcon name="sparkles" />
-              </div>
-              <div>
-                <h3 className="text-base font-extrabold text-[#15221B]">
-                  Hornet AI
-                </h3>
-                <p className="text-xs text-[#5E6B63]">
-                  Next 15-minute dispatch forecast & optimizer
-                </p>
-              </div>
-            </div>
-
-            <Badge variant="ai" size="xs">
-              NEXT 15 MIN
-            </Badge>
-          </div>
-
-          {/* Simple 3-Value Forecast Grid */}
-          <div className="grid grid-cols-3 gap-2.5 text-center p-3 rounded-2xl bg-[#F5F7F3] border border-[rgba(23,56,43,0.06)]">
-            <div className="p-2 space-y-0.5">
-              <div className="text-[10px] font-bold uppercase text-[#5E6B63]">Solar</div>
-              <div className="text-base font-extrabold text-[#E5A72D]">
-                {aiForecast.predicted_solar_kw.toFixed(2)} kW
-              </div>
-            </div>
-
-            <div className="p-2 space-y-0.5 border-x border-[rgba(23,56,43,0.08)]">
-              <div className="text-[10px] font-bold uppercase text-[#5E6B63]">Demand</div>
-              <div className="text-base font-extrabold text-[#15221B]">
-                {aiForecast.predicted_demand_kw.toFixed(2)} kW
-              </div>
-            </div>
-
-            <div className="p-2 space-y-0.5">
-              <div className="text-[10px] font-bold uppercase text-[#5E6B63]">Balance</div>
-              <div className="text-base font-extrabold text-[#1E9B67]">
-                +{aiForecast.predicted_net_balance_kw.toFixed(2)} kW
-              </div>
-            </div>
-          </div>
-
-          {/* Forecast Range Strip */}
-          <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#F1ECFF]/40 border border-[#7358C8]/20 text-xs">
-            <span className="text-[#5E6B63] font-medium">Solar Forecast Range:</span>
-            <span className="font-mono font-bold text-[#7358C8]">
-              {aiInterval.solar_lower_kw.toFixed(2)} – {aiInterval.solar_upper_kw.toFixed(2)} kW
-            </span>
-          </div>
-
-          {/* Recommended Action Card */}
-          <div className="p-4 rounded-2xl bg-[#E6F5EC]/60 border border-[#1E9B67]/20 space-y-2">
+        {/* Panel 2: HORNET AI — NEXT 15 MINUTES (4 cols ~ 33%) */}
+        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
+          <div>
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1E9B67]">
+              <div className="flex items-center space-x-2">
+                <span className="h-2 w-2 rounded-full bg-[#7358C7]" />
+                <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+                  Hornet AI — Next 15 Minutes
+                </h3>
+              </div>
+
+              <span className="text-[10px] font-bold text-[#7358C7] bg-[#F1EDFF] px-2 py-0.5 rounded-full border border-[#7358C7]/20">
+                Next 15 min
+              </span>
+            </div>
+            <p className="text-xs text-[#5E6963] mt-0.5">
+              Forecast, uncertainty & recommended action
+            </p>
+          </div>
+
+          {/* 3 Mini Forecast Boxes */}
+          <div className="grid grid-cols-3 gap-2 text-center p-2.5 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+                <FaIcon name="solar" className="text-[#DDA12A]" />
+                <span>SOLAR</span>
+              </div>
+              <div className="font-mono text-sm font-extrabold text-[#DDA12A]">
+                {aiForecast.solar_kw?.toFixed(2) || '5.84'} kW
+              </div>
+            </div>
+
+            <div className="space-y-0.5 border-x border-[rgba(23,34,29,0.08)]">
+              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+                <FaIcon name="home" className="text-[#17221D]" />
+                <span>DEMAND</span>
+              </div>
+              <div className="font-mono text-sm font-extrabold text-[#17221D]">
+                {aiForecast.demand_kw?.toFixed(2) || '4.21'} kW
+              </div>
+            </div>
+
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+                <FaIcon name="network" className="text-[#1E9B68]" />
+                <span>BALANCE</span>
+              </div>
+              <div className="font-mono text-sm font-extrabold text-[#1E9B68]">
+                +{aiForecast.balance_kw?.toFixed(2) || '1.63'} kW
+              </div>
+            </div>
+          </div>
+
+          {/* Forecast Range (Uncertainty) Slider Bar */}
+          <div className="space-y-1 px-1">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-[#5E6963] font-medium">Forecast Range (Uncertainty)</span>
+              <span className="font-mono font-bold text-[#7358C7]">
+                {Array.isArray(aiInterval) ? `${aiInterval[0]?.toFixed(2)} kW — ${aiInterval[1]?.toFixed(2)} kW` : '5.31 kW — 6.28 kW'}
+              </span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-gradient-to-r from-[#DDA12A]/30 via-[#7358C7] to-[#1E9B68]/40 relative">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#7358C7] shadow-xs" />
+            </div>
+          </div>
+
+          {/* Recommended Action Box */}
+          <div className="p-3 rounded-xl bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1E9B68]">
                 RECOMMENDED ACTION
               </span>
-              <span className="text-[11px] font-mono text-[#1E9B67] font-bold">₹4.50/kWh</span>
+              <span className="text-[10px] font-mono text-[#1E9B68] font-bold bg-white px-1.5 py-0.2 rounded border border-[#1E9B68]/20">
+                ₹4.50 / kWh
+              </span>
             </div>
-            <div className="text-xs sm:text-sm font-bold text-[#12382A]">
-              {aiRec.headline}
+            <div className="font-display text-xs sm:text-sm font-bold text-[#12392B]">
+              {aiDecision.action_label || 'Trade 1.0 kWh locally (My Home → Eco House)'}
             </div>
-            <p className="text-xs text-[#5E6B63] leading-snug">
-              {aiRec.summary}
+            <p className="text-[11px] text-[#5E6963] leading-snug">
+              Local surplus is available and nearby demand is active. This trade maximizes self-consumption and reduces grid dependence.
             </p>
           </div>
 
-          {/* Action CTAs */}
-          <div className="pt-2 flex items-center gap-3">
-            <Button
-              variant="primary"
-              size="sm"
-              className="flex-1 justify-center py-2 text-xs font-bold"
+          {/* CTAs */}
+          <div className="flex items-center gap-2 pt-1">
+            <button
+              type="button"
               onClick={handleExecuteRecommendation}
-              isLoading={isAiExecuting}
+              disabled={isAiExecuting}
+              className="flex-1 justify-center py-2 rounded-xl bg-[#1E9B68] hover:bg-[#168557] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50"
             >
-              Execute Match
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="py-2 text-xs font-bold"
+              {isAiExecuting ? 'Executing...' : 'Review Decision →'}
+            </button>
+            <button
+              type="button"
               onClick={() => navigate('/ai')}
+              className="py-2 px-3 rounded-xl bg-white hover:bg-[#F6F7F4] text-[#17221D] text-xs font-bold border border-[rgba(23,34,29,0.12)] transition"
             >
-              Review Decision
-            </Button>
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* 🌟 4. COMMUNITY IMPACT & TIME-SERIES PROFILE */}
-      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-6">
-        <SectionHeader
-          title="Community Renewable Impact & 24h Profile"
-          subtitle="Real-time diurnals, battery balancing, and grid reliance metrics for Guwahati cluster"
-          rightAction={
-            <div className="flex items-center gap-2">
-              {onOpenDemoModal && (
-                <Button variant="ghost" size="xs" onClick={onOpenDemoModal} icon={<FaIcon name="scenarios" className="text-[#E5A72D]" />}>
-                  Run Scenarios
-                </Button>
-              )}
-            </div>
-          }
-        />
-
-        {/* 3 Impact Metric Badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl bg-[#E6F5EC]/50 border border-[#1E9B67]/20 flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-white text-[#1E9B67] flex items-center justify-center text-sm shadow-xs flex-shrink-0">
-              <FaIcon name="leaf" />
-            </div>
-            <div>
-              <div className="text-xl font-black text-[#12382A]">84.2%</div>
-              <div className="text-xs text-[#5E6B63] font-medium">Renewable Self-Consumption</div>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[#FFF7E4]/50 border border-[#E5A72D]/20 flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-white text-[#E5A72D] flex items-center justify-center text-sm shadow-xs flex-shrink-0">
-              <FaIcon name="rupee" />
-            </div>
-            <div>
-              <div className="text-xl font-black text-[#12382A]">₹4.48 / kWh</div>
-              <div className="text-xs text-[#5E6B63] font-medium">Average P2P Peer Tariff</div>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[#EDF3FD]/50 border border-[#3979D0]/20 flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-white text-[#3979D0] flex items-center justify-center text-sm shadow-xs flex-shrink-0">
-              <FaIcon name="shield" />
-            </div>
-            <div>
-              <div className="text-xl font-black text-[#12382A]">-32.0%</div>
-              <div className="text-xs text-[#5E6B63] font-medium">Peak Grid Strain Reduction</div>
-            </div>
+              View Details
+            </button>
           </div>
         </div>
 
-        {/* Clean 24h Profile Chart */}
-        <div className="h-64 sm:h-72 w-full pt-2">
+        {/* Panel 3: COMMUNITY ENERGY FORECAST (4 cols ~ 33%) */}
+        <div className="lg:col-span-4">
           <LiveEnergyChart history={chartHistory} />
         </div>
+
       </div>
 
-      {/* 🌟 5. RECENT BILATERAL ACTIVITY (Progressive Disclosure) */}
-      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+      {/* 🌟 4. BOTTOM 3-CARD FOOTER SECTION */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        {/* Card 1: TODAY'S COMMUNITY IMPACT (4 cols ~ 33%) */}
+        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
           <div>
-            <h3 className="text-base font-extrabold text-[#15221B]">
-              Recent P2P Bilateral Settlements
+            <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+              Today's Community Impact
             </h3>
-            <p className="text-xs text-[#5E6A63]">
-              Executed local trades between community households
+            <p className="text-xs text-[#5E6963] mt-0.5">
+              Real impact of clean energy sharing today
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate('/transactions')}
-            className="text-xs font-bold text-[#1E9B67] hover:underline"
-          >
-            View Full Ledger →
-          </button>
-        </div>
 
-        <div className="space-y-2.5">
-          {transactions.slice(0, 3).map((tx) => (
-            <div
-              key={tx.id}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F5F7F3]/60 border border-[rgba(23,56,43,0.06)] hover:bg-white text-xs transition"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-xl bg-[#E6F5EC] text-[#1E9B67] flex items-center justify-center text-xs">
-                  <FaIcon name="marketplace" />
-                </div>
-                <div>
-                  <div className="font-bold text-[#15221B]">
-                    {tx.sellerId.replace('_', ' ')} ➔ {tx.buyerId.replace('_', ' ')}
-                  </div>
-                  <div className="text-[11px] text-[#5E6A63]">{tx.time} • Local Double-Auction Settlement</div>
-                </div>
+          <div className="grid grid-cols-4 gap-2 text-center py-2">
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5">
+                <FaIcon name="leaf" />
               </div>
-
-              <div className="text-right space-y-0.5">
-                <div className="font-mono font-bold text-[#1E9B67]">
-                  {tx.energyKwh.toFixed(1)} kWh @ ₹{tx.pricePerKwh.toFixed(2)}/kWh
-                </div>
-                <Badge variant="surplus" size="xs">SETTLED</Badge>
-              </div>
+              <div className="font-display text-base sm:text-lg font-black text-[#17221D]">84%</div>
+              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Renewable Self-Consumption</div>
             </div>
-          ))}
+
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5">
+                <FaIcon name="users" />
+              </div>
+              <div className="font-display text-base sm:text-lg font-black text-[#1E9B68]">2.0 kWh</div>
+              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Shared Locally</div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs mb-1.5">
+                <FaIcon name="rupee" />
+              </div>
+              <div className="font-display text-base sm:text-lg font-black text-[#17221D]">₹4.48</div>
+              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Estimated Savings</div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-xl bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs mb-1.5">
+                <FaIcon name="shield" />
+              </div>
+              <div className="font-display text-base sm:text-lg font-black text-[#17221D]">32%</div>
+              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Peak Grid Strain Reduction</div>
+            </div>
+          </div>
         </div>
+
+        {/* Card 2: RECENT COMMUNITY ACTIVITY (4 cols ~ 33%) */}
+        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+                Recent Community Activity
+              </h3>
+              <p className="text-xs text-[#5E6963] mt-0.5">
+                Live updates from your community
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/transactions')}
+              className="text-xs font-bold text-[#1E9B68] hover:underline"
+            >
+              View all activity →
+            </button>
+          </div>
+
+          <div className="space-y-1.5">
+            {transactions.slice(0, 4).map((tx) => (
+              <div
+                key={tx.id}
+                className="flex items-center justify-between p-2 rounded-xl bg-[#F6F7F4] text-xs"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-[10px]">
+                    <FaIcon name={tx.icon || 'marketplace'} />
+                  </div>
+                  <div>
+                    <div className="font-bold text-[#17221D] leading-tight">
+                      {tx.sellerName} {tx.buyerName ? `→ ${tx.buyerName}` : ''}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 text-right">
+                  <div className="font-mono font-bold text-[#17221D]">
+                    {tx.energyKwh.toFixed(1)} kWh
+                  </div>
+                  {tx.pricePerKwh > 0 && (
+                    <div className="text-[11px] font-mono text-[#5E6963]">
+                      ₹{tx.pricePerKwh.toFixed(2)}/kWh
+                    </div>
+                  )}
+                  <div className="text-[10px] text-[#89938D]">
+                    {tx.time}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Card 3: QUICK ACTIONS (4 cols ~ 33%) */}
+        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
+          <div>
+            <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+              Quick Actions
+            </h3>
+            <p className="text-xs text-[#5E6963] mt-0.5">
+              Shortcuts to key operations
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              onClick={() => navigate('/ai')}
+              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
+            >
+              <div className="w-7 h-7 rounded-lg bg-[#F1EDFF] text-[#7358C7] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
+                <FaIcon name="sparkles" />
+              </div>
+              <div className="text-xs font-bold text-[#17221D]">Ask Hornet AI</div>
+              <div className="text-[10px] text-[#5E6963]">Get AI recommendation</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/marketplace')}
+              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
+            >
+              <div className="w-7 h-7 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
+                <FaIcon name="marketplace" />
+              </div>
+              <div className="text-xs font-bold text-[#17221D]">Open Marketplace</div>
+              <div className="text-[10px] text-[#5E6963]">Trade clean energy</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/battery')}
+              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
+            >
+              <div className="w-7 h-7 rounded-lg bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
+                <FaIcon name="battery" />
+              </div>
+              <div className="text-xs font-bold text-[#17221D]">Battery Details</div>
+              <div className="text-[10px] text-[#5E6963]">View storage insights</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenDemoModal || (() => navigate('/network'))}
+              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
+            >
+              <div className="w-7 h-7 rounded-lg bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
+                <FaIcon name="play" />
+              </div>
+              <div className="text-xs font-bold text-[#17221D]">Run Scenario</div>
+              <div className="text-[10px] text-[#5E6963]">Test what-if conditions</div>
+            </button>
+          </div>
+        </div>
+
       </div>
 
       {/* Confirmation Modal */}
