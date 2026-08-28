@@ -31,7 +31,7 @@ export default function NavPill({
   const navItems = [
     { name: 'Overview', path: '/', iconName: 'overview', tooltip: 'Command center & community state' },
     { name: 'Energy Network', path: '/network', iconName: 'network', tooltip: '3D spatial microgrid digital twin' },
-    { name: 'AI Copilot', path: '/ai', iconName: 'ai', isAi: true, tooltip: 'Multi-horizon predictive dispatch' },
+    { name: 'Hornet AI', path: '/ai', iconName: 'ai', isAi: true, tooltip: 'Hornet AI predictive energy orchestration' },
     { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace', tooltip: 'AI-matched P2P energy exchange' },
     { name: 'Battery', path: '/battery', iconName: 'battery', tooltip: '50 kWh storage asset & reserve floor' },
     { name: 'My Home', path: '/my-home', iconName: 'home', tooltip: '3D residential energy cockpit' },

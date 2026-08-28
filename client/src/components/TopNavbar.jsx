@@ -23,7 +23,7 @@ export default function TopNavbar({
   const primaryNavItems = [
     { name: 'Overview', path: '/', iconName: 'overview' },
     { name: 'Network', path: '/network', iconName: 'network' },
-    { name: 'AI Copilot', path: '/ai', iconName: 'ai', highlight: true },
+    { name: 'Hornet AI', path: '/ai', iconName: 'ai', highlight: true },
     { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace' },
     { name: 'Battery', path: '/battery', iconName: 'battery' },
     { name: 'My Home', path: '/my-home', iconName: 'home' },

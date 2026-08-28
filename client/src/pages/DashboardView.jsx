@@ -149,7 +149,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               onClick={() => navigate('/ai')}
               icon={<FaIcon name="ai" />}
             >
-              Ask AI Copilot
+              Ask Hornet AI
             </Button>
             <Button
               variant="secondary"
@@ -323,11 +323,11 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* PREMIUM AI COPILOT OVERVIEW PANEL (35% width) */}
+        {/* PREMIUM HORNET AI OVERVIEW PANEL (35% width) */}
         <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
           <div className="flex flex-col h-full rounded-3xl border border-[#E2D9F8] bg-[#FDFCFE] p-5 sm:p-6 shadow-card space-y-4">
             
-            {/* AI Copilot Header */}
+            {/* Hornet AI Header */}
             <div className="flex items-start justify-between pb-3 border-b border-[#E2D9F8]">
               <div className="flex items-center space-x-2.5">
                 <div className="w-9 h-9 rounded-xl bg-[#F0ECFF] text-[#7357C8] flex items-center justify-center text-base flex-shrink-0">
@@ -335,10 +335,10 @@ export default function DashboardView({ onOpenDemoModal }) {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-[#142019]">
-                    GridShare AI Copilot
+                    GridShare Hornet AI
                   </h3>
                   <div className="text-xs text-[#7357C8] font-semibold">
-                    Forecast Horizon: 60 Minutes
+                    Forecast Horizon: 15–60 Minutes
                   </div>
                 </div>
               </div>

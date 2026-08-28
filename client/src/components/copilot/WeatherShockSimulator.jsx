@@ -87,7 +87,7 @@ export default function WeatherShockSimulator({ onShockApplied }) {
               </span>
             </div>
             <p className="text-[11px] text-slate-500 font-medium">
-              Stress-test AI Copilot real-time adaptation against rapid weather swings
+              Stress-test Hornet AI real-time adaptation against rapid weather swings
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function WeatherShockSimulator({ onShockApplied }) {
           <div className="flex items-center justify-between text-purple-900 font-bold">
             <span>⚡ {shockResult.summary}</span>
             <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-purple-200">
-              Copilot Adapted in 12ms
+              Hornet AI Adapted in 12ms
             </span>
           </div>
           <div className="text-[11px] text-purple-800">

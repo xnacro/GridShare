@@ -19,7 +19,7 @@ export default function AiDecisionPipeline({
         <div className="mx-auto h-8 w-8 rounded-full bg-[#E7F5EE] flex items-center justify-center text-[#1C9A67] mb-3">
           <FaIcon name="ai" className="animate-spin text-sm" />
         </div>
-        <p className="text-sm font-bold text-[#142019]">Synthesizing AI Copilot Pipeline...</p>
+        <p className="text-sm font-bold text-[#142019]">Synthesizing Hornet AI Pipeline...</p>
         <p className="text-xs text-slate-500 mt-1">Combining demand_v1 load + solar_v1 irradiance models</p>
       </div>
     );
@@ -60,7 +60,7 @@ export default function AiDecisionPipeline({
           <div>
             <div className="flex items-center space-x-2">
               <h2 className="text-base font-extrabold tracking-tight text-[#142019]">
-                GridShare AI Copilot Decision Pipeline
+                GridShare Hornet AI Decision Pipeline
               </h2>
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E7F5EE] text-[#1C9A67] border border-[#DDE4DF]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#1C9A67] animate-pulse mr-1" />
@@ -82,7 +82,7 @@ export default function AiDecisionPipeline({
             className="text-xs"
           >
             <FaIcon name="refresh" className={`mr-1.5 text-xs ${isLoading ? 'animate-spin' : ''}`} />
-            <span>{isLoading ? 'Re-evaluating...' : 'Refresh Copilot'}</span>
+            <span>{isLoading ? 'Re-evaluating...' : 'Refresh Hornet AI'}</span>
           </Button>
         </div>
       </div>

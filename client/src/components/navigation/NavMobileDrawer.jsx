@@ -26,9 +26,9 @@ export default function NavMobileDrawer({
       items: [
         { name: 'Overview', path: '/', iconName: 'overview' },
         { name: 'Energy Network', path: '/network', iconName: 'network' },
-        { name: 'AI Copilot', path: '/ai', iconName: 'ai', isAi: true },
+        { name: 'Hornet AI', path: '/ai', iconName: 'ai', isAi: true },
         { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace' },
-        { name: 'Battery Storage', path: '/battery', iconName: 'battery' },
+        { name: 'Battery', path: '/battery', iconName: 'battery' },
         { name: 'My Home', path: '/my-home', iconName: 'home' },
       ],
     },

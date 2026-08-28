@@ -64,7 +64,7 @@ export default function AiForecastView() {
       }
     } catch (err) {
       console.error('Error loading copilot insights:', err);
-      setError('Unable to connect to ML Copilot service. Please ensure backend is running.');
+      setError('Unable to connect to Hornet AI service. Please ensure backend is running.');
     } finally {
       setIsLoading(false);
     }
@@ -105,14 +105,14 @@ export default function AiForecastView() {
         <div>
           <div className="flex items-center space-x-2">
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#142019]">
-              AI Energy Copilot
+              Hornet AI
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#12251D] text-white">
-              Autonomous Dispatch
+              Autonomous Energy Orchestration
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-            Orchestrating real-time state, ML predictions (demand_v1 + solar_v1), and deterministic economic routing.
+            Hornet AI multi-horizon intelligence engine (demand_v1 + solar_v1 + deterministic dispatch).
           </p>
         </div>
 
