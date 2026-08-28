@@ -100,7 +100,7 @@ export default function TopNavbar({
         {/* LEFT SECTION: Brand & Live Database Indicator */}
         <div className="flex items-center space-x-3 flex-shrink-0 z-10">
           <NavLink to="/" className="flex items-center space-x-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-emerald-400 shadow-md group-hover:bg-slate-800 transition-all">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 group-hover:bg-emerald-700 transition-all">
               <FaIcon name="energy" className="text-base" />
             </div>
             <div className="flex flex-col">
@@ -133,19 +133,31 @@ export default function TopNavbar({
               <nav className="flex items-center space-x-1">
                 {primaryNavItems.map((item) => {
                   const isActive = isCurrentActive(item.path);
+                  const isAi = item.path === '/ai';
+
                   return (
                     <NavLink
                       key={item.path}
                       to={item.path}
-                      className={`flex items-center space-x-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+                      className={`flex items-center space-x-1.5 rounded-xl px-3.5 py-1.5 text-xs transition-all whitespace-nowrap ${
                         isActive
-                          ? 'bg-slate-900 text-emerald-400 shadow-sm'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-                      } ${item.highlight && !isActive ? 'text-purple-700 font-bold' : ''}`}
+                          ? isAi
+                            ? 'bg-purple-600 text-white font-bold shadow-xs shadow-purple-600/25'
+                            : 'bg-emerald-600 text-white font-bold shadow-xs shadow-emerald-600/25'
+                          : isAi
+                          ? 'text-purple-700 hover:text-purple-900 hover:bg-purple-50/80 font-semibold'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/80 font-semibold'
+                      }`}
                     >
                       <FaIcon
                         name={item.iconName}
-                        className={`text-xs ${isActive ? 'text-emerald-400' : 'text-slate-400'}`}
+                        className={`text-xs ${
+                          isActive
+                            ? 'text-white'
+                            : isAi
+                            ? 'text-purple-600'
+                            : 'text-slate-400'
+                        }`}
                       />
                       <span>{item.name}</span>
                     </NavLink>
@@ -157,6 +169,7 @@ export default function TopNavbar({
             {/* Collapsed Minimalist Active Pill Display */}
             {isNavCollapsed && (
               <div className="flex items-center space-x-2 px-3 py-1 text-xs font-bold text-slate-800">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 <FaIcon name={currentActiveItem?.iconName || 'overview'} className="text-emerald-600 text-xs" />
                 <span>{currentActiveItem?.name || 'Overview'}</span>
                 <span className="text-[10px] text-slate-400 font-normal">| Menu Collapsed</span>
@@ -168,14 +181,16 @@ export default function TopNavbar({
               <button
                 type="button"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`flex items-center space-x-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold transition-all ${
-                  isMenuOpen || isSecondaryActive
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-slate-700 hover:bg-white hover:text-slate-900'
+                className={`flex items-center space-x-1.5 rounded-xl px-2.5 py-1.5 text-xs transition-all ${
+                  isMenuOpen
+                    ? 'bg-slate-900 text-white font-bold shadow-xs'
+                    : isSecondaryActive
+                    ? 'bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold shadow-2xs'
+                    : 'text-slate-700 hover:bg-white hover:text-slate-900 font-semibold'
                 }`}
                 title="Toggle all 8 product views"
               >
-                <FaIcon name={isMenuOpen ? 'close' : 'bars'} className="text-xs" />
+                <FaIcon name={isMenuOpen ? 'close' : 'bars'} className={`text-xs ${isSecondaryActive && !isMenuOpen ? 'text-emerald-700' : ''}`} />
                 <span className="text-[11px]">{isNavCollapsed ? 'All Views' : 'More'}</span>
                 <FaIcon name={isMenuOpen ? 'chevronUp' : 'chevronDown'} className="text-[9px] opacity-75" />
               </button>
@@ -224,9 +239,9 @@ export default function TopNavbar({
                                 key={item.path}
                                 to={item.path}
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`flex flex-col p-2 rounded-xl transition text-left group border ${
+                                className={`flex flex-col p-2.5 rounded-xl transition text-left group border ${
                                   isActive
-                                    ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                                    ? 'bg-emerald-50/90 text-emerald-950 border-emerald-300 shadow-2xs font-bold'
                                     : 'hover:bg-slate-50 border-transparent text-slate-800'
                                 }`}
                               >
@@ -236,16 +251,19 @@ export default function TopNavbar({
                                       name={item.iconName}
                                       className={`text-xs ${
                                         isActive
-                                          ? 'text-emerald-400'
+                                          ? 'text-emerald-600'
                                           : item.highlight
                                           ? 'text-purple-600'
                                           : 'text-slate-500 group-hover:text-slate-900'
                                       }`}
                                     />
-                                    <span className={`text-xs font-bold ${isActive ? 'text-white' : 'text-slate-900'}`}>
+                                    <span className={`text-xs font-bold ${isActive ? 'text-emerald-950' : 'text-slate-900'}`}>
                                       {item.name}
                                     </span>
                                   </div>
+                                  {isActive && (
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                  )}
                                   {item.highlight && !isActive && (
                                     <span className="rounded bg-purple-100 px-1 py-0.2 text-[8px] font-bold text-purple-700">
                                       AI
@@ -254,7 +272,7 @@ export default function TopNavbar({
                                 </div>
                                 <span
                                   className={`text-[10px] mt-0.5 leading-tight line-clamp-1 ${
-                                    isActive ? 'text-slate-300' : 'text-slate-400'
+                                    isActive ? 'text-emerald-700 font-medium' : 'text-slate-400'
                                   }`}
                                 >
                                   {item.desc}
@@ -350,11 +368,11 @@ export default function TopNavbar({
                   onClick={() => setIsMenuOpen(false)}
                   className={`flex items-center space-x-2 rounded-xl px-3 py-2.5 text-xs font-bold transition ${
                     isActive
-                      ? 'bg-slate-900 text-emerald-400 shadow-sm'
+                      ? 'bg-emerald-600 text-white shadow-xs'
                       : 'text-slate-700 bg-slate-50 hover:bg-slate-100'
                   }`}
                 >
-                  <FaIcon name={item.iconName} className={isActive ? 'text-emerald-400' : 'text-slate-500'} />
+                  <FaIcon name={item.iconName} className={isActive ? 'text-white' : 'text-slate-500'} />
                   <span>{item.name}</span>
                 </NavLink>
               );
