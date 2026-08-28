@@ -82,7 +82,7 @@ export default function HackathonDemoModal({ isOpen, onClose, onScenarioExecuted
           <div>
             <div className="flex items-center space-x-2">
               <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-extrabold text-amber-900 border border-amber-300 uppercase tracking-wider">
-                DEMO MODE — SIMULATED DATA
+                DEMO MODE - SIMULATED DATA
               </span>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-300">
                 3-5 Min Pitch Controller

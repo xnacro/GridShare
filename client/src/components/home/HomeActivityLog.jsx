@@ -1,13 +1,13 @@
 import React from 'react';
-import { History, CheckCircle2, Clock } from 'lucide-react';
-import StatusBadge from '../StatusBadge';
+import FaIcon from '../icons/FaIcon';
+import Badge from '../ui/Badge';
 
 export default function HomeActivityLog({ activities = [] }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
         <div className="flex items-center space-x-2">
-          <History className="h-4 w-4 text-slate-700" />
+          <FaIcon name="history" className="text-slate-700 text-sm" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             My Home Energy Activity History
           </h3>
@@ -40,15 +40,14 @@ export default function HomeActivityLog({ activities = [] }) {
                     </span>
                   </td>
                   <td className="py-2 px-3 font-mono font-bold text-slate-900">
-                    {act.energy ? `${act.energy} kWh` : '—'}
+                    {act.energy ? `${act.energy} kWh` : '0.00 kWh'}
                   </td>
                   <td className="py-2 px-3 text-slate-600">{act.source}</td>
                   <td className="py-2 px-3 text-slate-600">{act.destination}</td>
                   <td className="py-2 px-3 text-right">
-                    <span className="inline-flex items-center space-x-1 rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
-                      <CheckCircle2 className="h-3 w-3" />
-                      <span>{act.status || 'COMPLETED'}</span>
-                    </span>
+                    <Badge variant="surplus" size="xs" icon={<FaIcon name="checkCircle" className="text-[10px]" />}>
+                      {act.status || 'COMPLETED'}
+                    </Badge>
                   </td>
                 </tr>
               ))

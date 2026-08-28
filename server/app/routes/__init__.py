@@ -9,6 +9,7 @@ from .dashboard_routes import dashboard_bp
 from .telemetry_routes import telemetry_bp
 from .market_routes import market_bp
 from .demo_routes import demo_bp
+from .device_routes import device_bp
 
 __all__ = [
     "health_bp",
@@ -22,4 +23,5 @@ __all__ = [
     "telemetry_bp",
     "market_bp",
     "demo_bp",
+    "device_bp",
 ]

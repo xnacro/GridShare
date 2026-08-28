@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import CameraControls from './CameraControls';
-import { RotateCcw } from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 function Bar3D({ position, height, color, label, val, isHovered, onHover, onUnhover }) {
   const meshRef = useRef();
@@ -121,10 +121,11 @@ export default function GenerationChart3D({ data = [] }) {
 
       <div className="absolute top-2.5 right-2.5 z-10 flex items-center space-x-1">
         <button
+          type="button"
           onClick={() => setCameraPreset(prev => prev === 'default' ? 'side' : 'default')}
           className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-white/95 px-2 py-0.8 text-[10px] font-bold text-slate-700 hover:bg-slate-50 transition active:scale-95 shadow-xs"
         >
-          <RotateCcw className="h-2.5 w-2.5 text-slate-500" />
+          <FaIcon name="camera" className="text-[10px] text-slate-500 mr-0.5" />
           <span>Angle</span>
         </button>
       </div>

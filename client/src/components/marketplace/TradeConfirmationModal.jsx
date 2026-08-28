@@ -1,17 +1,7 @@
 import React from 'react';
-import {
-  Sparkles,
-  ShoppingBag,
-  IndianRupee,
-  CheckCircle2,
-  XCircle,
-  ArrowRight,
-  ShieldCheck,
-  Building,
-  UserCheck,
-  Wallet,
-  Zap
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
+import Badge from '../ui/Badge';
+import Button from '../ui/Button';
 
 export default function TradeConfirmationModal({
   purchase,
@@ -42,16 +32,16 @@ export default function TradeConfirmationModal({
         <div className="flex items-start justify-between pb-3 border-b border-slate-100 mb-4">
           <div className="flex items-center space-x-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-              <ShoppingBag className="h-5 w-5" />
+              <FaIcon name="marketplace" className="text-sm" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="text-base font-extrabold text-slate-900">
                   Purchase Confirmation
                 </h3>
-                <span className="rounded-full bg-blue-100 px-2 py-0.2 text-[9.5px] font-bold text-blue-900 border border-blue-300 uppercase">
+                <Badge variant="ai" size="xs">
                   Pending Buyer Consent
-                </span>
+                </Badge>
               </div>
               <p className="text-[11px] text-slate-500 font-medium">
                 Verify energy quantity, pricing, and virtual wallet settlement
@@ -59,11 +49,12 @@ export default function TradeConfirmationModal({
             </div>
           </div>
           <button
+            type="button"
             onClick={onCancel}
             disabled={isSettling}
             className="text-slate-400 hover:text-slate-700 text-sm font-bold p-1"
           >
-            ✕
+            <FaIcon name="close" className="text-xs" />
           </button>
         </div>
 
@@ -115,17 +106,17 @@ export default function TradeConfirmationModal({
         {/* Verification Check Badges */}
         <div className="space-y-1.5 mb-4 text-xs">
           <div className="flex items-center space-x-2 text-emerald-800 text-[11px] font-semibold bg-emerald-50 border border-emerald-200 p-2 rounded-lg">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+            <FaIcon name="checkCircle" className="text-emerald-600 flex-shrink-0 text-sm" />
             <span>Buyer virtual wallet verified (₹{buyerWalletBefore.toFixed(2)} available ≥ ₹{totalAmount.toFixed(2)})</span>
           </div>
           <div className="flex items-center space-x-2 text-emerald-800 text-[11px] font-semibold bg-emerald-50 border border-emerald-200 p-2 rounded-lg">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+            <FaIcon name="checkCircle" className="text-emerald-600 flex-shrink-0 text-sm" />
             <span>Seller energy listing confirmed ({qty.toFixed(1)} kWh available for transfer)</span>
           </div>
         </div>
 
         <div className="rounded-lg bg-amber-50 border border-amber-200 p-2 text-[10.5px] text-amber-900 mb-5 flex items-start space-x-2">
-          <ShieldCheck className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <FaIcon name="shield" className="text-amber-600 flex-shrink-0 mt-0.5 text-sm" />
           <span>
             <strong>Simulated Software Settlement:</strong> Virtual wallet balances will be adjusted and 3D energy routing particles will be triggered upon confirmation.
           </span>
@@ -133,21 +124,23 @@ export default function TradeConfirmationModal({
 
         {/* Action Controls */}
         <div className="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-100">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onCancel}
             disabled={isSettling}
-            className="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 text-xs font-semibold transition active:scale-95 disabled:opacity-50"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
             onClick={onConfirm}
             disabled={isSettling}
-            className="flex items-center space-x-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-5 py-2 text-xs font-bold shadow-sm transition active:scale-95 disabled:opacity-50"
+            icon={<FaIcon name="checkCircle" />}
           >
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{isSettling ? 'Settling Payment & Transfer...' : 'CONFIRM PURCHASE'}</span>
-          </button>
+            {isSettling ? 'Settling Payment & Transfer...' : 'Confirm Purchase'}
+          </Button>
         </div>
       </div>
     </div>

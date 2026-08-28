@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  BatteryCharging,
-  ShieldCheck,
-  Zap,
-  ArrowUpRight,
-  ArrowDownLeft,
-  AlertTriangle,
-  CheckCircle2,
-  Lock
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function HomeBatteryManager({
   capacity = 10.0,
@@ -73,7 +64,7 @@ export default function HomeBatteryManager({
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
         <div className="flex items-center space-x-2">
-          <BatteryCharging className="h-4 w-4 text-emerald-600" />
+          <FaIcon name="battery" className="text-emerald-600 text-sm" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             Home Energy Storage System (ESS)
           </h3>
@@ -147,7 +138,7 @@ export default function HomeBatteryManager({
       <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 mb-3">
         <div className="flex items-center justify-between text-xs mb-1.5">
           <div className="flex items-center space-x-1.5 text-slate-700 font-bold">
-            <Lock className="h-3.5 w-3.5 text-slate-500" />
+            <FaIcon name="shield" className="text-slate-500 text-xs" />
             <span>Emergency Reserve Protection:</span>
           </div>
           <span className="font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
@@ -164,8 +155,8 @@ export default function HomeBatteryManager({
           className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-600"
         />
         <div className="flex items-center space-x-1 mt-1 text-[10.5px] text-slate-500 font-medium">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-          <span>RESERVE PROTECTED ✓ (Discharge will stop automatically at {reservePercent}%)</span>
+          <FaIcon name="shield" className="text-emerald-600 text-xs" />
+          <span>RESERVE PROTECTED (Discharge will stop automatically at {reservePercent}%)</span>
         </div>
       </div>
 
@@ -185,10 +176,11 @@ export default function HomeBatteryManager({
               className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:outline-emerald-500"
             />
             <button
+              type="button"
               onClick={handleManualCharge}
               className="flex items-center justify-center space-x-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition shadow-xs whitespace-nowrap"
             >
-              <ArrowDownLeft className="h-3.5 w-3.5" />
+              <FaIcon name="arrowDown" className="text-xs" />
               <span>Charge</span>
             </button>
           </div>
@@ -208,10 +200,11 @@ export default function HomeBatteryManager({
               className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:outline-amber-500"
             />
             <button
+              type="button"
               onClick={handleManualDischarge}
               className="flex items-center justify-center space-x-1 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-700 transition shadow-xs whitespace-nowrap"
             >
-              <ArrowUpRight className="h-3.5 w-3.5" />
+              <FaIcon name="arrowUp" className="text-xs" />
               <span>Discharge</span>
             </button>
           </div>
@@ -221,14 +214,14 @@ export default function HomeBatteryManager({
       {/* Error or Success Feedback Alert */}
       {errorMsg && (
         <div className="mt-3 flex items-start space-x-2 rounded-lg bg-rose-50 p-2.5 border border-rose-200 text-xs text-rose-800">
-          <AlertTriangle className="h-4 w-4 text-rose-600 flex-shrink-0 mt-0.5" />
+          <FaIcon name="warning" className="text-rose-600 text-sm flex-shrink-0 mt-0.5" />
           <span className="font-medium">{errorMsg}</span>
         </div>
       )}
 
       {successMsg && (
         <div className="mt-3 flex items-start space-x-2 rounded-lg bg-emerald-50 p-2.5 border border-emerald-200 text-xs text-emerald-800">
-          <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+          <FaIcon name="checkCircle" className="text-emerald-600 text-sm flex-shrink-0 mt-0.5" />
           <span className="font-medium">{successMsg}</span>
         </div>
       )}

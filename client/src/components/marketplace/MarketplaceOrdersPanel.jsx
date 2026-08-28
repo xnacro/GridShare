@@ -1,14 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  ShoppingBag,
-  UserCheck,
-  Trash2,
-  Zap,
-  CheckCircle2,
-  Filter,
-  ArrowUpDown,
-  AlertTriangle
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function MarketplaceOrdersPanel({
   computedHouseholds = [],
@@ -68,7 +59,7 @@ export default function MarketplaceOrdersPanel({
       <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
         <div className="flex items-center space-x-1.5">
           <div className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-600 text-white shadow-2xs">
-            <ShoppingBag className="h-3 w-3" />
+            <FaIcon name="marketplace" className="text-xs" />
           </div>
           <span className="font-extrabold text-[11px] uppercase tracking-wide text-slate-900">
             Available Orders
@@ -83,7 +74,7 @@ export default function MarketplaceOrdersPanel({
       <div className="rounded-lg bg-slate-50 border border-slate-200 p-2 space-y-1">
         <div className="flex items-center justify-between text-[10px] font-bold text-slate-700">
           <span className="flex items-center space-x-1">
-            <UserCheck className="h-3 w-3 text-blue-600" />
+            <FaIcon name="home" className="text-blue-600 text-xs" />
             <span>Buyer Persona:</span>
           </span>
           {currentBuyer && (
@@ -178,12 +169,13 @@ export default function MarketplaceOrdersPanel({
 
                   {isOwn && (
                     <button
+                      type="button"
                       onClick={() => onCancelListing(order.id)}
                       disabled={disabled}
                       className="text-slate-400 hover:text-rose-600 p-1 text-[10px] font-bold flex items-center space-x-0.5 border border-slate-200 rounded px-1.5 py-0.5"
                       title="Cancel listing"
                     >
-                      <Trash2 className="h-3 w-3 text-rose-500" />
+                      <FaIcon name="trash" className="text-rose-500 text-xs" />
                       <span>Cancel</span>
                     </button>
                   )}
@@ -218,6 +210,7 @@ export default function MarketplaceOrdersPanel({
                   </div>
                 ) : (
                   <button
+                    type="button"
                     onClick={() =>
                       onInitiatePurchase({
                         buyerId: activeBuyerId,
@@ -232,7 +225,7 @@ export default function MarketplaceOrdersPanel({
                         : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                     }`}
                   >
-                    <ShoppingBag className="h-3.5 w-3.5" />
+                    <FaIcon name="cart" className="text-xs" />
                     <span>
                       {hasFunds
                         ? `PURCHASE ${clampedQty.toFixed(1)} kWh (₹${totalCost.toFixed(2)})`

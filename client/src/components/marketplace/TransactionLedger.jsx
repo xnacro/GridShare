@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
-import {
-  ReceiptText,
-  Wallet,
-  Zap,
-  CheckCircle2,
-  Users,
-  ChevronDown,
-  ChevronUp,
-  ArrowRight,
-  TrendingUp,
-  Clock,
-  ShieldCheck
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
+import Badge from '../ui/Badge';
 
 export default function TransactionLedger({
   transactions = [],
@@ -26,20 +15,21 @@ export default function TransactionLedger({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-100 gap-2">
         <div className="flex items-center space-x-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-xs">
-            <ReceiptText className="h-4 w-4" />
+            <FaIcon name="receipt" className="text-xs" />
           </div>
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
               Live Settlement & Energy Ledger
             </h3>
             <p className="text-[10.5px] text-slate-500 font-medium">
-              Immutable bilateral trade records, simulated wallet balances & energy flows
+              Immutable bilateral trade records, simulated wallet balances and energy flows
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-xl text-xs font-bold">
           <button
+            type="button"
             onClick={() => setActiveSubTab('TRANSACTIONS')}
             className={`px-3 py-1 rounded-lg transition ${
               activeSubTab === 'TRANSACTIONS' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
@@ -48,6 +38,7 @@ export default function TransactionLedger({
             Trades ({transactions.length})
           </button>
           <button
+            type="button"
             onClick={() => setActiveSubTab('WALLETS')}
             className={`px-3 py-1 rounded-lg transition ${
               activeSubTab === 'WALLETS' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
@@ -56,6 +47,7 @@ export default function TransactionLedger({
             Wallets
           </button>
           <button
+            type="button"
             onClick={() => setActiveSubTab('ENERGY_LEDGER')}
             className={`px-3 py-1 rounded-lg transition ${
               activeSubTab === 'ENERGY_LEDGER' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
@@ -64,6 +56,7 @@ export default function TransactionLedger({
             Energy Ledger
           </button>
           <button
+            type="button"
             onClick={() => setActiveSubTab('OWNERSHIP')}
             className={`px-3 py-1 rounded-lg transition ${
               activeSubTab === 'OWNERSHIP' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
@@ -109,20 +102,19 @@ export default function TransactionLedger({
                       <td className="py-2 px-2 text-slate-700">₹{tx.pricePerKwh.toFixed(2)}</td>
                       <td className="py-2 px-2 font-bold text-emerald-800">₹{tx.totalValue.toFixed(2)}</td>
                       <td className="py-2 px-2">
-                        <span className="rounded bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-bold text-emerald-800">
+                        <Badge variant="surplus" size="xs">
                           {tx.paymentStatus}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="py-2 px-2">
-                        <span className="rounded bg-blue-50 border border-blue-200 px-1.5 py-0.2 text-[9px] font-bold text-blue-800">
+                        <Badge variant="ai" size="xs">
                           {tx.energyFlowStatus}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="py-2 px-3 text-right">
-                        <span className="flex items-center justify-end space-x-1 text-emerald-700 font-bold font-sans text-[10.5px]">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                          <span>{tx.status}</span>
-                        </span>
+                        <Badge variant="surplus" size="xs" icon={<FaIcon name="checkCircle" className="text-[10px]" />}>
+                          {tx.status}
+                        </Badge>
                       </td>
                     </tr>
                   ))}
@@ -211,7 +203,7 @@ export default function TransactionLedger({
         <div className="rounded-xl border border-teal-200 bg-teal-50/40 p-4 text-xs space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-teal-200">
             <div className="flex items-center space-x-2">
-              <Users className="h-4 w-4 text-teal-700" />
+              <FaIcon name="home" className="text-teal-700 text-sm" />
               <span className="font-bold text-slate-900">Community Battery Shared Ownership Ledger</span>
             </div>
             <span className="rounded-full bg-teal-100 px-2.5 py-0.5 font-mono text-[10px] font-bold text-teal-800">

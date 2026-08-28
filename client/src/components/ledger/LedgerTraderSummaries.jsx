@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight, ArrowDownLeft, Scale, IndianRupee, Zap, ShieldCheck } from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function LedgerTraderSummaries({
   sellerKwh = 14.2,
@@ -20,7 +20,7 @@ export default function LedgerTraderSummaries({
         <div>
           <div className="flex items-center justify-between pb-2 border-b border-amber-100 mb-3">
             <div className="flex items-center space-x-1.5 font-bold text-xs text-amber-900 uppercase tracking-wider">
-              <ArrowUpRight className="h-4 w-4 text-amber-600" />
+              <FaIcon name="arrowUpRight" className="text-amber-600 text-xs" />
               <span>Prosumer Seller Summary</span>
             </div>
             <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
@@ -59,7 +59,7 @@ export default function LedgerTraderSummaries({
         <div>
           <div className="flex items-center justify-between pb-2 border-b border-blue-100 mb-3">
             <div className="flex items-center space-x-1.5 font-bold text-xs text-blue-900 uppercase tracking-wider">
-              <ArrowDownLeft className="h-4 w-4 text-blue-600" />
+              <FaIcon name="arrowDown" className="text-blue-600 text-xs" />
               <span>Consumer Buyer Summary</span>
             </div>
             <span className="rounded bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800">
@@ -98,7 +98,7 @@ export default function LedgerTraderSummaries({
         <div>
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
             <div className="flex items-center space-x-1.5 font-bold text-xs text-slate-800 uppercase tracking-wider">
-              <Scale className="h-4 w-4 text-emerald-600" />
+              <FaIcon name="sliders" className="text-emerald-600 text-xs" />
               <span>Net Community Ledger Balance</span>
             </div>
             <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">

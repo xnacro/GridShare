@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import ResidentialHouse3D from './ResidentialHouse3D';
-import { X, Sparkles, Sun, BatteryCharging, Gauge, Wind, Tv, Refrigerator, Shirt } from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 /**
  * 3D Residential House Canvas
@@ -22,11 +22,11 @@ export default function ResidentialHouseCanvas3D({
   selectedElement = null,
   onSelectElement = () => {},
 }) {
-  // Compute sun elevation and ambient light based on time of day (0 to 24 hours)
-  const isNight = timeHour < 6 || timeHour > 19;
-  const isTwilight = (timeHour >= 5 && timeHour < 7) || (timeHour >= 18 && timeHour <= 20);
-
+  // Day / Night Sun Angle & Color
   const sunAngle = ((timeHour - 6) / 12) * Math.PI;
+  const isNight = timeHour < 6 || timeHour > 18;
+  const isTwilight = (timeHour >= 5 && timeHour <= 7) || (timeHour >= 17 && timeHour <= 19);
+
   const sunX = Math.cos(sunAngle) * 14;
   const sunY = Math.max(0.5, Math.sin(sunAngle) * 15);
   const sunZ = 9;
@@ -39,7 +39,7 @@ export default function ResidentialHouseCanvas3D({
   const INSPECT_INFO = {
     solar: {
       title: 'Rooftop Solar PV Array',
-      icon: Sun,
+      iconName: 'solar',
       color: 'text-amber-400',
       stats: [
         { label: 'Current Output', value: `${solarKw.toFixed(2)} kW` },
@@ -49,7 +49,7 @@ export default function ResidentialHouseCanvas3D({
     },
     battery: {
       title: 'Home Wall Battery (ESS)',
-      icon: BatteryCharging,
+      iconName: 'battery',
       color: 'text-emerald-400',
       stats: [
         { label: 'State of Charge', value: `${batterySoc.toFixed(1)}%` },
@@ -59,7 +59,7 @@ export default function ResidentialHouseCanvas3D({
     },
     meter: {
       title: 'Smart Bi-Directional Meter',
-      icon: Gauge,
+      iconName: 'overview',
       color: 'text-blue-400',
       stats: [
         { label: 'Active Power', value: gridPowerKw > 0 ? `Exporting +${gridPowerKw.toFixed(2)} kW` : gridPowerKw < 0 ? `Importing ${Math.abs(gridPowerKw).toFixed(2)} kW` : 'Balanced 0 kW' },
@@ -69,7 +69,7 @@ export default function ResidentialHouseCanvas3D({
     },
     load: {
       title: 'Active Household Load',
-      icon: Sparkles,
+      iconName: 'sparkles',
       color: 'text-cyan-400',
       stats: [
         { label: 'Total Demand', value: `${loadKw.toFixed(2)} kW` },
@@ -79,7 +79,7 @@ export default function ResidentialHouseCanvas3D({
     },
     ac: {
       title: 'Air Conditioner (AC)',
-      icon: Wind,
+      iconName: 'fan',
       color: 'text-cyan-400',
       stats: [
         { label: 'Rated Power', value: '1.2 kW' },
@@ -89,7 +89,7 @@ export default function ResidentialHouseCanvas3D({
     },
     fridge: {
       title: 'Smart Refrigerator',
-      icon: Refrigerator,
+      iconName: 'home',
       color: 'text-emerald-400',
       stats: [
         { label: 'Rated Power', value: '0.2 kW' },
@@ -99,7 +99,7 @@ export default function ResidentialHouseCanvas3D({
     },
     livingRoom: {
       title: 'Living Room & Entertainment',
-      icon: Tv,
+      iconName: 'tv',
       color: 'text-indigo-400',
       stats: [
         { label: 'Rated Power', value: '0.4 kW' },
@@ -109,7 +109,7 @@ export default function ResidentialHouseCanvas3D({
     },
     washingMachine: {
       title: 'Smart Washing Machine',
-      icon: Shirt,
+      iconName: 'sliders',
       color: 'text-blue-400',
       stats: [
         { label: 'Rated Power', value: '0.3 kW' },
@@ -197,15 +197,16 @@ export default function ResidentialHouseCanvas3D({
         <div className="absolute top-3 right-3 max-w-[240px] rounded-xl border border-white/15 bg-slate-950/80 p-3 backdrop-blur-md shadow-xl transition-all animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-2">
             <div className="flex items-center space-x-1.5">
-              <selectedInfo.icon className={`h-4 w-4 ${selectedInfo.color}`} />
+              <FaIcon name={selectedInfo.iconName} className={`text-sm ${selectedInfo.color}`} />
               <span className="font-bold text-xs text-white truncate">{selectedInfo.title}</span>
             </div>
             <button
+              type="button"
               onClick={() => onSelectElement(null)}
               className="text-slate-400 hover:text-white p-0.5 rounded transition"
               aria-label="Close details"
             >
-              <X className="h-3.5 w-3.5" />
+              <FaIcon name="close" className="text-xs" />
             </button>
           </div>
 

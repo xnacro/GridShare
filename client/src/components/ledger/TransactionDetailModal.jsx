@@ -1,21 +1,7 @@
 import React from 'react';
-import {
-  X,
-  CheckCircle2,
-  Zap,
-  IndianRupee,
-  ShieldCheck,
-  Clock,
-  ArrowRight,
-  User,
-  ShoppingBag,
-  Building,
-  Radio,
-  BatteryCharging,
-  Layers,
-  Sparkles
-} from 'lucide-react';
-import StatusBadge from '../StatusBadge';
+import FaIcon from '../icons/FaIcon';
+import Badge from '../ui/Badge';
+import Button from '../ui/Button';
 
 export default function TransactionDetailModal({
   transaction,
@@ -57,10 +43,12 @@ export default function TransactionDetailModal({
               <span className="font-mono text-sm font-bold text-slate-400">
                 #TXN-{transaction.id}
               </span>
-              <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10.5px] font-bold text-emerald-800 border border-emerald-200">
+              <Badge variant="surplus" size="xs">
                 {transaction.type || 'P2P Bilateral Trade'}
-              </span>
-              <StatusBadge status={transaction.status || 'SETTLED'} />
+              </Badge>
+              <Badge variant={transaction.status === 'SETTLED' ? 'surplus' : 'warning'} size="xs">
+                {transaction.status || 'SETTLED'}
+              </Badge>
             </div>
             <h3 className="text-base font-bold text-slate-900 mt-1">
               {sellerName} ➔ {buyerName}
@@ -71,11 +59,12 @@ export default function TransactionDetailModal({
           </div>
 
           <button
+            type="button"
             onClick={onClose}
             className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
             aria-label="Close modal"
           >
-            <X className="h-5 w-5" />
+            <FaIcon name="close" className="text-base" />
           </button>
         </div>
 
@@ -106,14 +95,14 @@ export default function TransactionDetailModal({
         {/* Visual Energy Flow Diagram */}
         <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-4">
           <div className="flex items-center space-x-1.5 text-xs font-bold text-blue-900 mb-3">
-            <Zap className="h-4 w-4 text-blue-600" />
+            <FaIcon name="energy" className="text-blue-600 text-sm" />
             <span>PHYSICAL ENERGY ROUTING PATH</span>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center text-xs">
             <div className="bg-white p-2.5 rounded-lg border border-blue-200 shadow-xs w-full sm:w-auto flex-1">
               <span className="text-[10.5px] text-slate-400 block font-medium">Energy Origin</span>
-              <span className="font-bold text-amber-700 block text-xs mt-0.5">☀ {sellerName} Solar Array</span>
+              <span className="font-bold text-amber-700 block text-xs mt-0.5">{sellerName} Solar Array</span>
               <span className="font-mono text-[11px] text-slate-600 mt-0.5 block">+{energyKwh.toFixed(2)} kWh</span>
             </div>
 
@@ -124,7 +113,7 @@ export default function TransactionDetailModal({
 
             <div className="bg-white p-2.5 rounded-lg border border-blue-200 shadow-xs w-full sm:w-auto flex-1">
               <span className="text-[10.5px] text-slate-400 block font-medium">Energy Destination</span>
-              <span className="font-bold text-blue-700 block text-xs mt-0.5">🏠 {buyerName} Load Circuit</span>
+              <span className="font-bold text-blue-700 block text-xs mt-0.5">{buyerName} Load Circuit</span>
               <span className="font-mono text-[11px] text-slate-600 mt-0.5 block">-{energyKwh.toFixed(2)} kWh</span>
             </div>
           </div>
@@ -133,7 +122,7 @@ export default function TransactionDetailModal({
         {/* Financial Payment Flow Diagram */}
         <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
           <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-900 mb-3">
-            <IndianRupee className="h-4 w-4 text-emerald-600" />
+            <FaIcon name="rupee" className="text-emerald-600 text-sm" />
             <span>FINANCIAL SETTLEMENT & WALLET BALANCES</span>
           </div>
 
@@ -175,7 +164,7 @@ export default function TransactionDetailModal({
         {/* 6-Step Transaction Lifecycle */}
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3 flex items-center space-x-1.5">
-            <Layers className="h-4 w-4 text-purple-600" />
+            <FaIcon name="network" className="text-purple-600 text-xs" />
             <span>Transaction Verification Lifecycle</span>
           </h4>
 
@@ -185,7 +174,7 @@ export default function TransactionDetailModal({
                 key={step.id}
                 className="flex items-start space-x-2 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5"
               >
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <FaIcon name="checkCircle" className="text-emerald-600 text-sm flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold text-slate-800 text-[11px] block">{step.title}</span>
                   <span className="text-[10px] text-slate-500 leading-tight block">{step.desc}</span>
@@ -198,16 +187,17 @@ export default function TransactionDetailModal({
         {/* Modal Footer */}
         <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
           <div className="flex items-center space-x-1.5 text-slate-500 font-medium">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <FaIcon name="shield" className="text-emerald-600 text-sm" />
             <span>Cryptographically signed by GridShare Local Consensus Engine</span>
           </div>
 
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onClose}
-            className="rounded-lg bg-slate-900 px-4 py-1.5 font-bold text-xs text-white hover:bg-slate-800 transition shadow-xs"
           >
             Close Detail
-          </button>
+          </Button>
         </div>
       </div>
     </div>

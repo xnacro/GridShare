@@ -11,17 +11,9 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  Legend
+  Legend,
 } from 'recharts';
-import {
-  TrendingUp,
-  BatteryCharging,
-  Zap,
-  Activity,
-  ArrowRight,
-  Sun,
-  Layers
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function DashboardAnalyticsSection({
   chartHistory = [],
@@ -36,20 +28,21 @@ export default function DashboardAnalyticsSection({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2 border-b border-slate-100 gap-2">
         <div className="flex items-center space-x-2">
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-800 text-white shadow-2xs">
-            <Activity className="h-3.5 w-3.5" />
+            <FaIcon name="analytics" className="text-xs" />
           </div>
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
               Interactive Microgrid Analytics
             </h3>
             <p className="text-[10px] text-slate-500 font-medium">
-              Continuous time-series telemetry & energy balance curves
+              Continuous time-series telemetry and energy balance curves
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-lg text-xs font-bold">
           <button
+            type="button"
             onClick={() => setActiveTab('GEN_CON')}
             className={`px-2.5 py-1 rounded-md transition text-[11px] ${
               activeTab === 'GEN_CON' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
@@ -58,6 +51,7 @@ export default function DashboardAnalyticsSection({
             Generation vs Load
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('BATTERY_SOC')}
             className={`px-2.5 py-1 rounded-md transition text-[11px] ${
               activeTab === 'BATTERY_SOC' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
@@ -66,6 +60,7 @@ export default function DashboardAnalyticsSection({
             Battery SOC Curve
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('ENERGY_FLOWS')}
             className={`px-2.5 py-1 rounded-md transition text-[11px] ${
               activeTab === 'ENERGY_FLOWS' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
@@ -179,7 +174,7 @@ export default function DashboardAnalyticsSection({
           </div>
 
           <p className="text-[10px] text-slate-400 font-medium">
-            Flows are calculated using the deterministic multi-tier rule engine: Solar Self-Supply ➔ Local P2P Sharing ➔ Central ESS Storage Buffer ➔ Utility Grid Export.
+            Flows are calculated using the deterministic multi-tier rule engine: Solar Self-Supply to Local P2P Sharing to Central ESS Storage Buffer to Utility Grid Export.
           </p>
         </div>
       )}

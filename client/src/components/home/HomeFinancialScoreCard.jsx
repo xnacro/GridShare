@@ -1,5 +1,6 @@
 import React from 'react';
-import { IndianRupee, Award, CheckCircle2, TrendingUp, Sun, ShoppingBag, Radio } from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
+import Badge from '../ui/Badge';
 
 export default function HomeFinancialScoreCard({
   solarSavings = 112.24,
@@ -24,20 +25,20 @@ export default function HomeFinancialScoreCard({
         <div>
           <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
             <div className="flex items-center space-x-2">
-              <IndianRupee className="h-4 w-4 text-emerald-600" />
+              <FaIcon name="rupee" className="text-emerald-600 text-sm" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                 Today's Energy Cost & Savings
               </h3>
             </div>
-            <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10.5px] font-bold font-mono text-emerald-800 border border-emerald-200">
+            <Badge variant="surplus" size="xs">
               Net Savings: +₹{netFinancialBenefit.toFixed(2)}
-            </span>
+            </Badge>
           </div>
 
           <div className="space-y-2 text-xs">
             <div className="flex justify-between items-center py-1 border-b border-slate-50">
               <span className="text-slate-600 flex items-center space-x-1.5">
-                <Sun className="h-3.5 w-3.5 text-amber-500" />
+                <FaIcon name="solar" className="text-amber-500 text-xs" />
                 <span>Solar Self-Consumption Savings:</span>
               </span>
               <span className="font-mono font-bold text-emerald-700">+₹{solarSavings.toFixed(2)}</span>
@@ -45,7 +46,7 @@ export default function HomeFinancialScoreCard({
 
             <div className="flex justify-between items-center py-1 border-b border-slate-50">
               <span className="text-slate-600 flex items-center space-x-1.5">
-                <ShoppingBag className="h-3.5 w-3.5 text-purple-500" />
+                <FaIcon name="marketplace" className="text-purple-500 text-xs" />
                 <span>P2P Marketplace Sales:</span>
               </span>
               <span className="font-mono font-bold text-emerald-700">+₹{p2pEarnings.toFixed(2)}</span>
@@ -53,7 +54,7 @@ export default function HomeFinancialScoreCard({
 
             <div className="flex justify-between items-center py-1 border-b border-slate-50">
               <span className="text-slate-600 flex items-center space-x-1.5">
-                <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
+                <FaIcon name="cart" className="text-blue-500 text-xs" />
                 <span>P2P Green Purchases:</span>
               </span>
               <span className="font-mono font-bold text-slate-800">-₹{p2pPurchases.toFixed(2)}</span>
@@ -61,7 +62,7 @@ export default function HomeFinancialScoreCard({
 
             <div className="flex justify-between items-center py-1 border-b border-slate-50">
               <span className="text-slate-600 flex items-center space-x-1.5">
-                <Radio className="h-3.5 w-3.5 text-slate-500" />
+                <FaIcon name="grid" className="text-slate-500 text-xs" />
                 <span>Utility Grid Import Cost:</span>
               </span>
               <span className="font-mono font-bold text-rose-600">-₹{gridCost.toFixed(2)}</span>
@@ -82,14 +83,14 @@ export default function HomeFinancialScoreCard({
         <div>
           <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
             <div className="flex items-center space-x-2">
-              <Award className="h-4 w-4 text-purple-600" />
+              <FaIcon name="shield" className="text-purple-600 text-sm" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                 Home Energy Efficiency Score
               </h3>
             </div>
-            <span className="rounded bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-700 border border-purple-200">
+            <Badge variant="ai" size="xs">
               OPTIMAL
-            </span>
+            </Badge>
           </div>
 
           <div className="flex items-center space-x-4 mb-3">
@@ -113,7 +114,7 @@ export default function HomeFinancialScoreCard({
           <div className="space-y-1 text-[11px] text-slate-700">
             {scoreReasons.map((reason, idx) => (
               <div key={idx} className="flex items-start space-x-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <FaIcon name="checkCircle" className="text-emerald-600 text-xs flex-shrink-0 mt-0.5" />
                 <span>{reason}</span>
               </div>
             ))}

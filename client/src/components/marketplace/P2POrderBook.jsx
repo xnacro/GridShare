@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-  Layers,
-  Sparkles,
-  ArrowRight,
-  Trash2,
-  CheckCircle2,
-  Clock,
-  Zap,
-  TrendingDown,
-  TrendingUp
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function P2POrderBook({
   sellOrders = [],
@@ -27,7 +17,7 @@ export default function P2POrderBook({
       {/* Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <div className="flex items-center space-x-2">
-          <Layers className="h-4 w-4 text-emerald-600" />
+          <FaIcon name="marketplace" className="text-emerald-600 text-sm" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
             Live P2P Energy Order Book
           </h3>
@@ -59,10 +49,11 @@ export default function P2POrderBook({
           </p>
 
           <button
+            type="button"
             onClick={onReviewMatch}
             className="flex w-full items-center justify-center space-x-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white py-1.5 text-xs font-bold shadow-xs transition active:scale-95"
           >
-            <Sparkles className="h-3.5 w-3.5" />
+            <FaIcon name="sparkles" className="text-xs" />
             <span>REVIEW & CONFIRM TRADE</span>
           </button>
         </div>
@@ -74,7 +65,7 @@ export default function P2POrderBook({
         <div>
           <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-700 mb-1">
             <span className="text-emerald-700 uppercase flex items-center space-x-1">
-              <TrendingUp className="h-3 w-3" />
+              <FaIcon name="trendingUp" className="text-xs" />
               <span>Sell Asks (Prosumer Supply)</span>
             </span>
             <span className="font-mono text-[10px] text-slate-400">{openSells.length} Active</span>
@@ -108,11 +99,12 @@ export default function P2POrderBook({
                       <td className="py-1 px-1.5 text-right">
                         {order.status === 'OPEN' || order.status === 'PARTIALLY_FILLED' ? (
                           <button
+                            type="button"
                             onClick={() => onCancelSell(order.id)}
                             className="text-slate-400 hover:text-rose-600 p-0.5"
                             title="Cancel open sell order"
                           >
-                            <Trash2 className="h-3 w-3 inline" />
+                            <FaIcon name="trash" className="text-xs inline" />
                           </button>
                         ) : (
                           <span className="text-[9px] font-bold text-emerald-600 uppercase font-sans">
@@ -132,7 +124,7 @@ export default function P2POrderBook({
         <div>
           <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-700 mb-1">
             <span className="text-blue-700 uppercase flex items-center space-x-1">
-              <TrendingDown className="h-3 w-3" />
+              <FaIcon name="arrowDown" className="text-xs" />
               <span>Buy Bids (Consumer Demand)</span>
             </span>
             <span className="font-mono text-[10px] text-slate-400">{openBuys.length} Active</span>
@@ -164,11 +156,12 @@ export default function P2POrderBook({
                       <td className="py-1 px-1.5 text-right">
                         {order.status === 'OPEN' || order.status === 'PARTIALLY_FILLED' ? (
                           <button
+                            type="button"
                             onClick={() => onCancelBuy(order.id)}
                             className="text-slate-400 hover:text-rose-600 p-0.5"
                             title="Cancel open buy request"
                           >
-                            <Trash2 className="h-3 w-3 inline" />
+                            <FaIcon name="trash" className="text-xs inline" />
                           </button>
                         ) : (
                           <span className="text-[9px] font-bold text-blue-600 uppercase font-sans">

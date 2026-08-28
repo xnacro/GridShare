@@ -1,12 +1,12 @@
 import React from 'react';
-import { Network, Home, BatteryCharging, Radio, Zap } from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function LedgerNetworkGraph({ activeTradesCount = 4 }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
       <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
         <div className="flex items-center space-x-1.5 font-bold text-xs text-slate-800 uppercase tracking-wider">
-          <Network className="h-4 w-4 text-emerald-600" />
+          <FaIcon name="network" className="text-emerald-600 text-xs" />
           <span>Active Peer-to-Peer Energy Settlement Topology</span>
         </div>
         <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
@@ -58,22 +58,6 @@ export default function LedgerNetworkGraph({ activeTradesCount = 4 }) {
             <text y="26" textAnchor="middle" fill="#94a3b8" fontSize="8.5">Utility</text>
           </g>
         </svg>
-
-        {/* Small Overlay Legend */}
-        <div className="absolute bottom-1.5 right-3 flex items-center space-x-3 text-[9.5px] font-mono text-slate-400">
-          <span className="flex items-center space-x-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-            <span>Solar P2P</span>
-          </span>
-          <span className="flex items-center space-x-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            <span>ESS Storage</span>
-          </span>
-          <span className="flex items-center space-x-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-            <span>Grid Feed</span>
-          </span>
-        </div>
       </div>
     </div>
   );

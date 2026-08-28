@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Tag,
-  ShoppingBag,
-  PlusCircle,
-  IndianRupee,
-  Zap,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  ShieldCheck,
-  UserCheck,
-  Layers,
-  Sparkles,
-  Trash2,
-  Info
-} from 'lucide-react';
-import { validateSellOrder, validatePurchaseOrder } from '../../services/marketEngine';
+import FaIcon from '../icons/FaIcon';
+import { validateSellOrder } from '../../services/marketEngine';
 
 export default function ManualOrderForms({
   computedHouseholds = [],
@@ -101,7 +86,7 @@ export default function ManualOrderForms({
       <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/30 p-3 space-y-2.5">
         <div className="flex items-center justify-between pb-1.5 border-b border-emerald-100">
           <div className="flex items-center space-x-1.5">
-            <Tag className="h-3.5 w-3.5 text-emerald-600" />
+            <FaIcon name="tag" className="text-emerald-600 text-xs" />
             <span className="font-extrabold text-xs text-slate-900 uppercase tracking-wide">
               1. Seller: List Energy in Marketplace
             </span>
@@ -132,7 +117,7 @@ export default function ManualOrderForms({
                   .filter((h) => h.availableSurplus > 0.001)
                   .map((h) => (
                     <option key={h.id} value={h.id}>
-                      {h.name} ({h.type}) — Surplus: +{h.availableSurplus.toFixed(1)} kWh | Wallet: ₹{h.wallet.toFixed(0)}
+                      {h.name} ({h.type}) - Surplus: +{h.availableSurplus.toFixed(1)} kWh | Wallet: ₹{h.wallet.toFixed(0)}
                     </option>
                   ))}
               </optgroup>
@@ -141,7 +126,7 @@ export default function ManualOrderForms({
                   .filter((h) => h.availableSurplus <= 0.001)
                   .map((h) => (
                     <option key={h.id} value={h.id}>
-                      {h.name} ({h.type}) — Deficit: -{h.remainingDeficit.toFixed(1)} kWh (Surplus: 0.0 kWh)
+                      {h.name} ({h.type}) - Deficit: -{h.remainingDeficit.toFixed(1)} kWh (Surplus: 0.0 kWh)
                     </option>
                   ))}
               </optgroup>
@@ -151,7 +136,7 @@ export default function ManualOrderForms({
           {/* Warning banner when seller has 0 surplus */}
           {!hasSurplusToSell && (
             <div className="flex items-start space-x-1.5 rounded-lg bg-amber-50 border border-amber-200 p-2 text-[10.5px] text-amber-900">
-              <AlertCircle className="h-3.5 w-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <FaIcon name="warning" className="text-amber-600 flex-shrink-0 mt-0.5 text-xs" />
               <div>
                 <strong>{currentSeller?.name}</strong> has 0.0 kWh surplus (Net: {currentSeller?.netEnergy.toFixed(1)} kW).
                 Please select <strong>House A (+4.7 kWh)</strong> or <strong>House C (+1.0 kWh)</strong> above to list energy.
@@ -236,7 +221,7 @@ export default function ManualOrderForms({
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            <PlusCircle className="h-3.5 w-3.5" />
+            <FaIcon name="plus" className="text-xs" />
             <span>{hasSurplusToSell ? 'LIST ENERGY FOR SALE' : 'NO SURPLUS TO SELL (SELECT HOUSE A / C)'}</span>
           </button>
         </form>
@@ -246,7 +231,7 @@ export default function ManualOrderForms({
       <div className="rounded-xl border border-blue-200/80 bg-blue-50/30 p-3 space-y-2.5">
         <div className="flex items-center justify-between pb-1.5 border-b border-blue-100">
           <div className="flex items-center space-x-1.5">
-            <ShoppingBag className="h-3.5 w-3.5 text-blue-600" />
+            <FaIcon name="cart" className="text-blue-600 text-xs" />
             <span className="font-extrabold text-xs text-slate-900 uppercase tracking-wide">
               2. Available Energy Marketplace
             </span>
@@ -260,7 +245,7 @@ export default function ManualOrderForms({
         <div className="rounded-lg bg-white border border-blue-200 p-2 text-xs">
           <label className="flex items-center justify-between text-[10px] font-bold text-slate-700 mb-1">
             <span className="flex items-center space-x-1">
-              <UserCheck className="h-3 w-3 text-blue-600" />
+              <FaIcon name="home" className="text-blue-600 text-xs" />
               <span>Browsing as Buyer:</span>
             </span>
             {currentBuyer && (
@@ -277,7 +262,7 @@ export default function ManualOrderForms({
           >
             {computedHouseholds.map((h) => (
               <option key={h.id} value={h.id}>
-                {h.name} ({h.type}) — Deficit: -{h.remainingDeficit?.toFixed(1) || 0} kWh | Wallet: ₹{h.wallet.toFixed(0)}
+                {h.name} ({h.type}) - Deficit: -{h.remainingDeficit?.toFixed(1) || 0} kWh | Wallet: ₹{h.wallet.toFixed(0)}
               </option>
             ))}
           </select>
@@ -321,12 +306,13 @@ export default function ManualOrderForms({
 
                     {order.household_id === activeBuyerId ? (
                       <button
+                        type="button"
                         onClick={() => onCancelListing(order.id)}
                         disabled={disabled}
                         className="text-slate-400 hover:text-rose-600 p-1"
                         title="Cancel your listing"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <FaIcon name="trash" className="text-xs" />
                       </button>
                     ) : null}
                   </div>
@@ -338,6 +324,7 @@ export default function ManualOrderForms({
                     </div>
                   ) : (
                     <button
+                      type="button"
                       onClick={() =>
                         onInitiatePurchase({
                           buyerId: activeBuyerId,
@@ -352,7 +339,7 @@ export default function ManualOrderForms({
                           : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                       }`}
                     >
-                      <ShoppingBag className="h-3.5 w-3.5" />
+                      <FaIcon name="cart" className="text-xs" />
                       <span>
                         {hasSufficientFunds
                           ? `PURCHASE ${order.remaining_kwh.toFixed(1)} kWh (₹${totalCost.toFixed(2)})`

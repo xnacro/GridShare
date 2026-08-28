@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Tag,
-  PlusCircle,
-  IndianRupee,
-  Zap,
-  CheckCircle2,
-  AlertCircle
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 import { validateSellOrder } from '../../services/marketEngine';
 
 export default function CompactSellCard({
@@ -77,7 +70,7 @@ export default function CompactSellCard({
       <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
         <div className="flex items-center space-x-1.5">
           <div className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-600 text-white shadow-2xs">
-            <Tag className="h-3 w-3" />
+            <FaIcon name="tag" className="text-xs" />
           </div>
           <span className="font-extrabold text-[11px] uppercase tracking-wide text-slate-900">
             Sell Energy
@@ -201,7 +194,7 @@ export default function CompactSellCard({
               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
           }`}
         >
-          <PlusCircle className="h-3 w-3" />
+          <FaIcon name="plus" className="text-xs" />
           <span>{hasSurplus ? 'SELL' : 'NO SURPLUS (SELECT HOUSE A/C)'}</span>
         </button>
       </form>

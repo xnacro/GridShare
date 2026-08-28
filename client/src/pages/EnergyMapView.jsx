@@ -3,26 +3,9 @@ import { api } from '../services/api';
 import CommunityScene3D, { NODE_3D_POSITIONS } from '../components/energy-map-3d/CommunityScene3D';
 import StatusBadge from '../components/StatusBadge';
 import { LoadingState, ErrorState } from '../components/StateFeedback';
-import {
-  Sun,
-  Home,
-  BatteryCharging,
-  Zap,
-  RefreshCw,
-  Info,
-  Layers,
-  ArrowRight,
-  ShieldCheck,
-  Power,
-  RotateCcw,
-  Play,
-  Eye,
-  Sparkles,
-  Compass,
-  X,
-  TrendingUp,
-  CheckCircle2
-} from 'lucide-react';
+import FaIcon from '../components/icons/FaIcon';
+import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 
 export default function EnergyMapView() {
   const [observeData, setObserveData] = useState(null);
@@ -48,95 +31,101 @@ export default function EnergyMapView() {
     demoTimersRef.current = [];
   };
 
+  // Fetch live microgrid telemetry and state from backend
   const fetchMapTelemetry = async (isManual = false) => {
-    if (isManual) setIsRefreshing(true);
     try {
-      setError(null);
-      const [obsRes, tradeRes, decRes, predRes] = await Promise.all([
-        api.getCommunityState(),
-        api.getMarketTransactions(10),
-        api.getLatestOptimization(10),
-        api.getPredictions(),
+      if (isManual) setIsRefreshing(true);
+      const [sumRes, batRes, tradeRes, decRes, predRes] = await Promise.all([
+        api.getEnergySummary(),
+        api.getBattery(),
+        api.getP2PTrades(),
+        api.getDecisions(),
+        api.getMLPredictions(),
       ]);
 
-      if (obsRes.data?.status === 'SUCCESS') setObserveData(obsRes.data.data);
-      if (tradeRes.data?.status === 'SUCCESS') setTrades(tradeRes.data.transactions || []);
-      if (decRes.data?.status === 'SUCCESS') setDecisions(decRes.data.decisions || []);
-      if (predRes.data?.status === 'SUCCESS') setPredictions(predRes.data.predictions || []);
+      if (sumRes.data?.status === 'SUCCESS') {
+        setObserveData({
+          summary: sumRes.data.summary,
+          households: sumRes.data.households || [],
+          battery: batRes.data?.battery || { current_soc: 40.0, capacity_kwh: 50.0 },
+        });
+      }
+
+      if (tradeRes.data?.status === 'SUCCESS') {
+        setTrades(tradeRes.data.trades || []);
+      }
+
+      if (decRes.data?.status === 'SUCCESS') {
+        setDecisions(decRes.data.decisions || []);
+      }
+
+      if (predRes.data?.status === 'SUCCESS') {
+        setPredictions(predRes.data.predictions || []);
+      }
+
+      setError(null);
     } catch (err) {
-      console.error(err);
-      setError('Unable to load microgrid 3D topology.');
+      console.error('Failed to load live map telemetry:', err);
+      if (!observeData) setError('Failed to connect to backend microgrid telemetry.');
     } finally {
       setLoading(false);
-      if (isManual) setTimeout(() => setIsRefreshing(false), 300);
+      if (isManual) setTimeout(() => setIsRefreshing(false), 500);
     }
   };
 
   useEffect(() => {
     fetchMapTelemetry();
     const interval = setInterval(() => {
-      if (!isDemoRunning) fetchMapTelemetry(false);
-    }, 4000);
+      if (!isDemoRunning) fetchMapTelemetry();
+    }, 6000);
     return () => {
       clearInterval(interval);
       clearAllDemoTimers();
     };
   }, [isDemoRunning]);
 
-  // Handle Interactive Demo Mode Execution
+  // Demo sequence execution
   const handleRunDemo = async () => {
     clearAllDemoTimers();
+    setIsDemoRunning(true);
+    setDemoStage(1);
+    setDemoStatusText('Step 1: House A (Surplus) sells 2.80 kW to House B (Deficit) @ ₹4.50/kWh');
+
     try {
-      setIsDemoRunning(true);
-      setSelectedNode('house_a');
-
-      // Phase 1 (Immediate, 0s): Local P2P Trade particles start running immediately
-      setDemoStage(1);
-      setDemoStatusText('⚡ Phase 1: Local P2P Trade — House A (+4.7 kW Surplus) routing 2.80 kW to House B (-2.8 kW Deficit) @ ₹4.50/kWh');
-
-      // Execute deterministic demo backend scenario
       await api.runDemoScenario();
-      await fetchMapTelemetry(false);
+      await fetchMapTelemetry();
 
-      // Phase 2 (4s): Battery Storage Injection
       const t1 = setTimeout(() => {
         setDemoStage(2);
-        setDemoStatusText('🔋 Phase 2: Storage Buffering — 1.20 kW remaining solar surplus buffering Community Battery (40% SOC)');
+        setDemoStatusText('Step 2: Residual 1.20 kW prosumer surplus routed into Central Battery');
       }, 4000);
-      demoTimersRef.current.push(t1);
 
-      // Phase 3 (8s): Grid Export
       const t2 = setTimeout(() => {
         setDemoStage(3);
-        setDemoStatusText('🌐 Phase 3: Grid Feed-in — 0.70 kW residual exported to Utility Grid Substation @ ₹6.10/kWh');
+        setDemoStatusText('Step 3: 0.70 kW excess exported to Utility Substation Grid @ ₹6.10/kWh');
       }, 8000);
-      demoTimersRef.current.push(t2);
 
-      // Phase 4 (13s): Full Equilibrium Balance
       const t3 = setTimeout(() => {
         setDemoStage(4);
-        setDemoStatusText('✅ Microgrid Fully Balanced — 2.80 kW P2P Trade | 1.20 kW Storage | 0.70 kW Grid Export');
-      }, 13000);
-      demoTimersRef.current.push(t3);
+        setDemoStatusText('Multi-node community energy balance complete. All active links energized.');
+        setIsDemoRunning(false);
+      }, 12000);
 
+      demoTimersRef.current.push(t1, t2, t3);
     } catch (err) {
       console.error(err);
       setIsDemoRunning(false);
-      setDemoStage(0);
-      setDemoStatusText('');
     }
   };
 
   const handleResetDemo = async () => {
     clearAllDemoTimers();
+    setIsResetting(true);
+    setDemoStatusText('');
+    setDemoStage(0);
     try {
-      setIsResetting(true);
-      setIsDemoRunning(false);
-      setDemoStage(0);
-      setDemoStatusText('');
       await api.resetDemo();
-      await fetchMapTelemetry(true);
-      if (sceneRef.current) sceneRef.current.resetCamera();
+      await fetchMapTelemetry();
     } catch (err) {
       console.error(err);
     } finally {
@@ -150,38 +139,49 @@ export default function EnergyMapView() {
     }
   };
 
-  if (loading && !observeData) return <LoadingState message="Initializing 3D Interactive Microgrid Canvas..." />;
-  if (error && !observeData) return <ErrorState message={error} onRetry={() => fetchMapTelemetry(true)} />;
+  if (loading && !observeData) {
+    return <LoadingState message="Connecting to 3D Digital Twin & Sensor Mesh..." />;
+  }
 
-  const households = observeData?.households || [];
-  const summary = observeData?.summary || {};
-  const totalGen = summary.total_generation_kw || 0;
-  const totalCon = summary.total_consumption_kw || 0;
-  const netBalance = summary.net_community_balance_kw || 0;
-  const batterySoc = summary.community_battery_soc || 40.0;
-  const gridPrice = summary.current_grid_price || 6.10;
+  if (error && !observeData) {
+    return <ErrorState message={error} onRetry={() => fetchMapTelemetry(true)} />;
+  }
 
-  // Build telemetry lookup
-  const nodeStats = {};
-  households.forEach((h) => {
-    nodeStats[h.household_id] = h;
-  });
+  // Derive household telemetry
+  const households = observeData?.households || [
+    { id: 'house_a', name: 'House A (Solar)', generation: 6.8, consumption: 2.1, status: 'SURPLUS' },
+    { id: 'house_b', name: 'House B (Consumer)', generation: 1.2, consumption: 4.0, status: 'DEFICIT' },
+    { id: 'house_c', name: 'House C (Prosumer)', generation: 3.5, consumption: 2.5, status: 'SURPLUS' },
+    { id: 'house_d', name: 'House D (Apartment)', generation: 0.8, consumption: 2.0, status: 'DEFICIT' },
+    { id: 'house_e', name: 'House E (Villa)', generation: 4.2, consumption: 3.1, status: 'SURPLUS' },
+  ];
 
-  // Build 3D Active Flow Lines based on live telemetry / optimization / demo stage
+  const batterySoc = observeData?.battery?.current_soc ?? 40.0;
+  const gridPrice = observeData?.summary?.base_grid_price ?? 6.10;
+  const totalGen = observeData?.summary?.total_generation_kw ?? households.reduce((sum, h) => sum + (h.generation || 0), 0);
+  const totalCon = observeData?.summary?.total_consumption_kw ?? households.reduce((sum, h) => sum + (h.consumption || 0), 0);
+  const netBalance = totalGen - totalCon;
+
+  // Node lookup map for inspector
+  const nodeStats = households.reduce((acc, h) => {
+    acc[h.id] = {
+      ...h,
+      net_energy_kw: (h.generation || 0) - (h.consumption || 0),
+      generation_kw: h.generation || 0,
+      consumption_kw: h.consumption || 0,
+    };
+    return acc;
+  }, {});
+
+  // Compute active 3D flow conduits
   const active3DFlows = [];
 
-  const houseAPos = NODE_3D_POSITIONS['house_a'];
-  const houseBPos = NODE_3D_POSITIONS['house_b'];
-  const batteryPos = NODE_3D_POSITIONS['COMMUNITY_BATTERY'];
-  const gridPos = NODE_3D_POSITIONS['MAIN_UTILITY_GRID'];
-
-  if (isDemoRunning) {
-    // Stage 1+: Local Trade (House A -> House B)
+  if (isDemoRunning || demoStage > 0) {
     if (demoStage >= 1) {
       active3DFlows.push({
         id: 'demo-p2p',
-        start: houseAPos,
-        end: houseBPos,
+        start: NODE_3D_POSITIONS['house_a'],
+        end: NODE_3D_POSITIONS['house_b'],
         kw: 2.80,
         tariff: '₹4.50/kWh',
         type: 'P2P_TRADE',
@@ -189,53 +189,53 @@ export default function EnergyMapView() {
         isActive: true,
       });
     }
-    // Stage 2+: Storage Injection (House A -> Battery)
     if (demoStage >= 2) {
       active3DFlows.push({
         id: 'demo-storage',
-        start: houseAPos,
-        end: batteryPos,
+        start: NODE_3D_POSITIONS['house_a'],
+        end: NODE_3D_POSITIONS['COMMUNITY_BATTERY'],
         kw: 1.20,
-        tariff: 'Buffer',
+        tariff: 'Storage Buffer',
         type: 'STORAGE_INJECT',
         color: '#0d9488', // Teal
         isActive: true,
       });
     }
-    // Stage 3+: Grid Export (House A -> Grid)
     if (demoStage >= 3) {
       active3DFlows.push({
-        id: 'demo-export',
-        start: houseAPos,
-        end: gridPos,
+        id: 'demo-grid',
+        start: NODE_3D_POSITIONS['house_a'],
+        end: NODE_3D_POSITIONS['MAIN_UTILITY_GRID'],
         kw: 0.70,
-        tariff: 'Feed-in',
+        tariff: 'Grid Export',
         type: 'GRID_EXPORT',
         color: '#d97706', // Amber
         isActive: true,
       });
     }
   } else {
-    // Live Backend Decisions & Trades
-    // 1. P2P Trades
-    trades.slice(0, 3).forEach((t) => {
-      const startPos = NODE_3D_POSITIONS[t.seller_household_id];
-      const endPos = NODE_3D_POSITIONS[t.buyer_household_id];
-      if (startPos && endPos) {
-        active3DFlows.push({
-          id: `trade-${t.id}`,
-          start: startPos,
-          end: endPos,
-          kw: t.energy_kwh,
-          tariff: `₹${t.price_per_kwh?.toFixed(2)}/kWh`,
-          type: 'P2P_TRADE',
-          color: '#059669', // Emerald
-          isActive: true,
-        });
-      }
-    });
+    // 1. Bilateral P2P Trade Flows
+    trades
+      .filter((t) => t.status === 'COMPLETED' || t.status === 'MATCHED')
+      .slice(0, 3)
+      .forEach((t) => {
+        const startPos = NODE_3D_POSITIONS[t.seller_id];
+        const endPos = NODE_3D_POSITIONS[t.buyer_id];
+        if (startPos && endPos) {
+          active3DFlows.push({
+            id: `trade-${t.id}`,
+            start: startPos,
+            end: endPos,
+            kw: t.energy_kwh,
+            tariff: `₹${t.price_per_kwh?.toFixed(2)}/kWh`,
+            type: 'P2P_TRADE',
+            color: '#059669', // Emerald
+            isActive: true,
+          });
+        }
+      });
 
-    // 2. Battery Storage Actions
+    // 2. Battery Storage Injections
     decisions
       .filter((d) => d.action === 'STORE' || d.action === 'BATTERY_CHARGE')
       .slice(0, 2)
@@ -350,9 +350,9 @@ export default function EnergyMapView() {
             <div className="flex items-center space-x-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
               <h2 className="text-sm font-extrabold tracking-tight text-slate-900">LIVE ENERGY MAP</h2>
-              <span className="rounded bg-amber-50 px-1.5 py-0.2 text-[9.5px] font-bold text-amber-800 border border-amber-200 uppercase">
+              <Badge variant="surplus" size="xs">
                 SIMULATED COMMUNITY DATA
-              </span>
+              </Badge>
             </div>
             <p className="text-[11px] text-slate-500 font-medium mt-0.5">
               Interactive 3D spatial microgrid energy-flow topology
@@ -364,39 +364,43 @@ export default function EnergyMapView() {
         <div className="absolute top-4 right-4 z-10 flex flex-wrap items-center gap-2 select-none">
           <div className="flex items-center rounded-xl border border-slate-200/90 bg-white/95 p-1 shadow-md backdrop-blur-md space-x-1.5">
             <button
+              type="button"
               onClick={handleResetView}
               className="flex items-center space-x-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition active:scale-95"
               title="Reset 3D camera to default orientation"
             >
-              <Compass className="h-3.5 w-3.5 text-slate-500" />
+              <FaIcon name="camera" className="text-xs text-slate-500 mr-1" />
               <span>Reset View</span>
             </button>
 
             <button
+              type="button"
               onClick={() => fetchMapTelemetry(true)}
               disabled={isRefreshing}
               className="flex items-center space-x-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition active:scale-95 disabled:opacity-50"
               title="Sync live telemetry"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <FaIcon name="refresh" className={`text-xs ${isRefreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Sync</span>
             </button>
 
             <button
+              type="button"
               onClick={handleResetDemo}
               disabled={isResetting}
               className="flex items-center space-x-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition active:scale-95 disabled:opacity-50"
             >
-              <RotateCcw className={`h-3.5 w-3.5 ${isResetting ? 'animate-spin' : ''}`} />
+              <FaIcon name="refresh" className={`text-xs ${isResetting ? 'animate-spin' : ''}`} />
               <span>Reset Demo</span>
             </button>
 
             <button
+              type="button"
               onClick={handleRunDemo}
               disabled={isDemoRunning}
               className="flex items-center space-x-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition active:scale-95 disabled:opacity-50"
             >
-              <Play className="h-3.5 w-3.5 fill-current" />
+              <FaIcon name={isDemoRunning ? "refresh" : "play"} className={`text-xs ${isDemoRunning ? "animate-spin" : ""}`} />
               <span>{isDemoRunning ? 'Running Demo...' : 'Run Demo'}</span>
             </button>
           </div>
@@ -477,10 +481,11 @@ export default function EnergyMapView() {
                   <h4 className="text-xs font-bold text-slate-900">{selectedNodeInfo.name}</h4>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setSelectedNode(null)}
                   className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition text-xs font-bold"
                 >
-                  <X className="h-4 w-4" />
+                  <FaIcon name="close" className="text-xs" />
                 </button>
               </div>
 
@@ -531,14 +536,14 @@ export default function EnergyMapView() {
       <div className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-card">
         <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-2.5">
           <div className="flex items-center space-x-2">
-            <Zap className="h-4 w-4 text-emerald-600" />
+            <FaIcon name="solar" className="text-emerald-600 text-sm" />
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
               Active 3D Energy Routing Conduits
             </h3>
           </div>
-          <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+          <Badge variant="surplus" size="xs">
             {active3DFlows.length} Active Conduits
-          </span>
+          </Badge>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

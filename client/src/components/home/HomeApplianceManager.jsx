@@ -1,21 +1,12 @@
 import React from 'react';
-import {
-  Tv,
-  Utensils,
-  Wind,
-  Refrigerator,
-  Shirt,
-  Power,
-  Zap,
-  Sliders
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export const APPLIANCE_DEFAULTS = [
   {
     id: 'livingRoom',
     name: 'Living Room & TV',
     powerKw: 0.4,
-    icon: Tv,
+    iconName: 'tv',
     zone: 'Ground Floor',
     description: 'Smart LED ambient lights & OLED TV',
   },
@@ -23,7 +14,7 @@ export const APPLIANCE_DEFAULTS = [
     id: 'kitchen',
     name: 'Kitchen & Induction',
     powerKw: 0.8,
-    icon: Utensils,
+    iconName: 'plug',
     zone: 'Ground Floor',
     description: 'Induction hob, microwave & ventilation',
   },
@@ -31,7 +22,7 @@ export const APPLIANCE_DEFAULTS = [
     id: 'ac',
     name: 'Air Conditioner (AC)',
     powerKw: 1.2,
-    icon: Wind,
+    iconName: 'fan',
     zone: 'Master Bedroom',
     description: 'Inverter Dual-Cool Heat Pump HVAC',
   },
@@ -39,7 +30,7 @@ export const APPLIANCE_DEFAULTS = [
     id: 'fridge',
     name: 'Smart Refrigerator',
     powerKw: 0.2,
-    icon: Refrigerator,
+    iconName: 'home',
     zone: 'Kitchen Area',
     description: 'Continuous Eco-Inverter Compressor',
   },
@@ -47,7 +38,7 @@ export const APPLIANCE_DEFAULTS = [
     id: 'washingMachine',
     name: 'Smart Washing Machine',
     powerKw: 0.3,
-    icon: Shirt,
+    iconName: 'sliders',
     zone: 'Utility Room',
     description: 'Scheduled Eco-Drum Wash Cycle',
   },
@@ -68,7 +59,7 @@ export default function HomeApplianceManager({
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
         <div className="flex items-center space-x-2">
-          <Power className="h-4 w-4 text-blue-600" />
+          <FaIcon name="powerOff" className="text-blue-600 text-sm" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             Household Appliances & Active Loads
           </h3>
@@ -81,7 +72,6 @@ export default function HomeApplianceManager({
 
       <div className="space-y-2">
         {APPLIANCE_DEFAULTS.map((app) => {
-          const Icon = app.icon;
           const isOn = !!appliances[app.id];
 
           return (
@@ -99,7 +89,7 @@ export default function HomeApplianceManager({
                     isOn ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-200 text-slate-500'
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <FaIcon name={app.iconName} className="text-xs" />
                 </div>
                 <div>
                   <div className="flex items-center space-x-2">
@@ -137,7 +127,7 @@ export default function HomeApplianceManager({
       </div>
 
       <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
-        <span>💡 Toggling appliances updates 3D house lighting, load & energy flows in real time.</span>
+        <span>Toggling appliances updates 3D house lighting, load and energy flows in real time.</span>
       </div>
     </div>
   );

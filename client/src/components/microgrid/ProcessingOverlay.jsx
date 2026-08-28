@@ -1,20 +1,12 @@
 import React from 'react';
-import {
-  Zap,
-  Search,
-  Cpu,
-  RefreshCw,
-  CheckCircle2,
-  Sparkles,
-  ArrowRight
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 const STEPS = [
-  { id: 1, label: 'Reading Community Energy', icon: Zap },
-  { id: 2, label: 'Detecting Surplus & Deficit', icon: Search },
-  { id: 3, label: 'Optimizing Allocation', icon: Cpu },
-  { id: 4, label: 'Matching Local Demand', icon: RefreshCw },
-  { id: 5, label: 'Energy Flow Ready', icon: CheckCircle2 },
+  { id: 1, label: 'Reading Community Energy', iconName: 'solar' },
+  { id: 2, label: 'Detecting Surplus & Deficit', iconName: 'search' },
+  { id: 3, label: 'Optimizing Allocation', iconName: 'ai' },
+  { id: 4, label: 'Matching Local Demand', iconName: 'trade' },
+  { id: 5, label: 'Energy Flow Ready', iconName: 'checkCircle' },
 ];
 
 export default function ProcessingOverlay({ currentStep = 1, currentStatus = '' }) {
@@ -23,7 +15,7 @@ export default function ProcessingOverlay({ currentStep = 1, currentStatus = '' 
       <div className="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3">
         <div className="flex items-center space-x-2">
           <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 animate-pulse">
-            <Sparkles className="h-3.5 w-3.5" />
+            <FaIcon name="sparkles" className="text-xs text-slate-950" />
           </div>
           <span className="font-extrabold text-xs uppercase tracking-wider text-emerald-400">
             GridShare Optimization Pipeline
@@ -37,7 +29,6 @@ export default function ProcessingOverlay({ currentStep = 1, currentStatus = '' 
       {/* Stepper Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
         {STEPS.map((step) => {
-          const Icon = step.icon;
           const isDone = currentStep > step.id;
           const isCurrent = currentStep === step.id;
 
@@ -61,23 +52,20 @@ export default function ProcessingOverlay({ currentStep = 1, currentStatus = '' 
                     : 'bg-slate-700 text-slate-300'
                 }`}
               >
-                {isDone ? <CheckCircle2 className="h-3.5 w-3.5" /> : step.id}
+                <FaIcon name={step.iconName} className="text-[10px]" />
               </div>
-              <span className="truncate text-[11px] leading-tight">{step.label}</span>
+              <span className="truncate text-[10.5px]">{step.label}</span>
             </div>
           );
         })}
       </div>
 
-      {/* Dynamic Status Narrative Box */}
-      <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/50 px-3.5 py-2.5 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-xs font-semibold text-emerald-100">
-            {currentStatus || 'Processing microgrid optimization hierarchy...'}
-          </span>
+      {/* Status Progress text */}
+      {currentStatus && (
+        <div className="rounded-lg bg-emerald-950/60 border border-emerald-500/30 p-2 text-center text-xs font-mono text-emerald-200">
+          {currentStatus}
         </div>
-      </div>
+      )}
     </div>
   );
 }

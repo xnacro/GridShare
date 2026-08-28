@@ -3,15 +3,12 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
-  Legend
 } from 'recharts';
-import { TrendingUp, ShoppingBag, Zap, IndianRupee } from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function MarketplaceTradeChart({ transactions = [] }) {
   // Aggregate transactions by time / chronological index
@@ -38,7 +35,7 @@ export default function MarketplaceTradeChart({ transactions = [] }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2 border-b border-slate-100 gap-2">
         <div className="flex items-center space-x-2">
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-purple-600 text-white shadow-2xs">
-            <TrendingUp className="h-3.5 w-3.5" />
+            <FaIcon name="trendingUp" className="text-xs" />
           </div>
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">

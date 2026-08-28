@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sliders, Sun, Power, BatteryCharging, Cloud, RefreshCw, Check, Sparkles } from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function HomeManualControlPanel({
   solarKw = 4.8,
@@ -46,7 +46,7 @@ export default function HomeManualControlPanel({
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
         <div className="flex items-center space-x-2">
-          <Sliders className="h-4 w-4 text-indigo-600" />
+          <FaIcon name="sliders" className="text-indigo-600 text-sm" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             Manual Energy Override & Simulation
           </h3>
@@ -54,6 +54,7 @@ export default function HomeManualControlPanel({
 
         {/* Cloud Cover Simulation Toggle */}
         <button
+          type="button"
           onClick={onToggleCloudCover}
           className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition border ${
             cloudCover
@@ -61,7 +62,7 @@ export default function HomeManualControlPanel({
               : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100'
           }`}
         >
-          <Cloud className={`h-3.5 w-3.5 ${cloudCover ? 'text-blue-300' : 'text-amber-600'}`} />
+          <FaIcon name="cloudSun" className={`text-xs ${cloudCover ? 'text-blue-300' : 'text-amber-600'}`} />
           <span>{cloudCover ? 'Cloud Cover Active' : 'Simulate Cloud'}</span>
         </button>
       </div>
@@ -71,7 +72,7 @@ export default function HomeManualControlPanel({
           {/* Solar Generation Input */}
           <div>
             <label className="flex items-center space-x-1 text-[11px] font-bold text-slate-700 mb-1">
-              <Sun className="h-3.5 w-3.5 text-amber-500" />
+              <FaIcon name="solar" className="text-amber-500 text-xs" />
               <span>Solar Gen (kW):</span>
             </label>
             <input
@@ -88,7 +89,7 @@ export default function HomeManualControlPanel({
           {/* Home Consumption Input */}
           <div>
             <label className="flex items-center space-x-1 text-[11px] font-bold text-slate-700 mb-1">
-              <Power className="h-3.5 w-3.5 text-blue-500" />
+              <FaIcon name="powerOff" className="text-blue-500 text-xs" />
               <span>Home Load (kW):</span>
             </label>
             <input
@@ -105,7 +106,7 @@ export default function HomeManualControlPanel({
           {/* Battery SOC Input */}
           <div>
             <label className="flex items-center space-x-1 text-[11px] font-bold text-slate-700 mb-1">
-              <BatteryCharging className="h-3.5 w-3.5 text-emerald-500" />
+              <FaIcon name="battery" className="text-emerald-500 text-xs" />
               <span>Battery SOC (%):</span>
             </label>
             <input
@@ -122,7 +123,7 @@ export default function HomeManualControlPanel({
           {/* Battery Capacity Input */}
           <div>
             <label className="flex items-center space-x-1 text-[11px] font-bold text-slate-700 mb-1">
-              <BatteryCharging className="h-3.5 w-3.5 text-teal-500" />
+              <FaIcon name="batteryFull" className="text-teal-500 text-xs" />
               <span>Capacity (kWh):</span>
             </label>
             <input
@@ -146,12 +147,12 @@ export default function HomeManualControlPanel({
         >
           {isApplied ? (
             <>
-              <Check className="h-3.5 w-3.5" />
+              <FaIcon name="check" className="text-xs" />
               <span>Values Applied & Recalculated!</span>
             </>
           ) : (
             <>
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <FaIcon name="sparkles" className="text-amber-400 text-xs" />
               <span>APPLY ENERGY OVERRIDE</span>
             </>
           )}

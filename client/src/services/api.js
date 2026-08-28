@@ -26,6 +26,11 @@ export const api = {
   getEnergyHistory: (params) => apiClient.get('/energy/history', { params }),
   getCommunityMetrics: () => apiClient.get('/community/metrics'),
 
+  // Devices & Hardware Telemetry
+  getDevices: () => apiClient.get('/devices'),
+  getDeviceMode: () => apiClient.get('/devices/mode'),
+  setDeviceMode: (mode) => apiClient.post('/devices/mode', { mode }),
+
   // Community Battery & Ownership Accounting
   getBattery: () => apiClient.get('/battery'),
   getBatteryOwnership: () => apiClient.get('/battery/ownership'),
@@ -41,7 +46,7 @@ export const api = {
   runPredictionPipeline: () => apiClient.post('/predictions/run'),
   getOptimizations: (limit = 50) => apiClient.get('/optimizations', { params: { limit } }),
   getLatestOptimization: (limit = 10) => apiClient.get('/optimization/latest', { params: { limit } }),
-  runOptimization: (data) => apiClient.post('/optimize', data),
+  runOptimization: (data = {}) => apiClient.post('/optimize', data),
 
   // P2P Double-Auction Marketplace
   getMarketOffers: (params) => apiClient.get('/market/offers', { params }),
@@ -57,6 +62,7 @@ export const api = {
 
   // Demo Mode Endpoints
   runDemoScenario: () => apiClient.post('/demo/run-scenario'),
+  runPptScenario: () => apiClient.post('/demo/ppt-scenario'),
   resetDemo: () => apiClient.post('/demo/reset'),
 };
 

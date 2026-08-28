@@ -2,21 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import TopNavbar from './components/TopNavbar';
 import DemoModal from './components/DemoModal';
-import InteractiveMicrogridView from './pages/InteractiveMicrogridView';
-import Optimization from './pages/Optimization';
 import DashboardView from './pages/DashboardView';
-import BatteryView from './pages/BatteryView';
+import InteractiveMicrogridView from './pages/InteractiveMicrogridView';
 import EnergyMapView from './pages/EnergyMapView';
-import MarketplaceView from './pages/MarketplaceView';
 import AiForecastView from './pages/AiForecastView';
+import MarketplaceView from './pages/MarketplaceView';
+import BatteryView from './pages/BatteryView';
 import MyHomeView from './pages/MyHomeView';
+import DevicesView from './pages/DevicesView';
 import TransactionsView from './pages/TransactionsView';
+import Optimization from './pages/Optimization';
 import { api } from './services/api';
 
 function MainLayout() {
   const location = useLocation();
   const [isOnline, setIsOnline] = useState(true);
-  const [batterySoc, setBatterySoc] = useState(60);
+  const [batterySoc, setBatterySoc] = useState(40);
   const [gridPrice, setGridPrice] = useState(6.10);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -33,7 +34,7 @@ function MainLayout() {
       }
       const batRes = await api.getBattery();
       if (batRes.data?.status === 'SUCCESS') {
-        setBatterySoc(batRes.data.battery.current_soc || 60);
+        setBatterySoc(batRes.data.battery.current_soc || 40);
       }
     } catch (e) {
       setIsOnline(false);
@@ -50,7 +51,7 @@ function MainLayout() {
     setIsRefreshing(true);
     await fetchGlobalState();
     setRefreshKey((prev) => prev + 1);
-    setTimeout(() => setIsRefreshing(false), 500);
+    setTimeout(() => setIsRefreshing(false), 400);
   };
 
   const handleTriggerOptimization = async () => {
@@ -60,7 +61,7 @@ function MainLayout() {
       await fetchGlobalState();
       setRefreshKey((prev) => prev + 1);
     } catch (e) {
-      console.error(e);
+      console.error('Optimization error:', e);
     } finally {
       setIsOptimizing(false);
     }
@@ -72,8 +73,8 @@ function MainLayout() {
   };
 
   return (
-    <div className="flex min-h-screen w-screen flex-col bg-slate-50 text-slate-900 overflow-x-hidden antialiased">
-      {/* 🌟 Compact Horizontal Top Navigation Bar */}
+    <div className="flex min-h-screen w-screen flex-col bg-slate-100/70 text-slate-900 overflow-x-hidden antialiased font-sans">
+      {/* ⚡ Top Navigation Bar */}
       <TopNavbar
         isOnline={isOnline}
         batterySoc={batterySoc}
@@ -85,25 +86,28 @@ function MainLayout() {
         isOptimizing={isOptimizing}
       />
 
-      {/* Main Content Area with full viewport space */}
-      <main className="flex-1 w-full px-3 py-3 sm:px-4 sm:py-3.5 max-w-[1680px] mx-auto" key={refreshKey}>
+      {/* Main Content Viewport */}
+      <main className="flex-1 w-full px-3 py-3 sm:px-5 sm:py-4 max-w-[1680px] mx-auto" key={refreshKey}>
         <Routes>
-          <Route path="/" element={<InteractiveMicrogridView />} />
-          <Route path="/simulation" element={<InteractiveMicrogridView />} />
+          <Route path="/" element={<DashboardView />} />
           <Route path="/dashboard" element={<DashboardView />} />
+          <Route path="/network" element={<InteractiveMicrogridView />} />
+          <Route path="/simulation" element={<InteractiveMicrogridView />} />
+          <Route path="/energy-map" element={<EnergyMapView />} />
+          <Route path="/ai" element={<AiForecastView />} />
+          <Route path="/copilot" element={<AiForecastView />} />
+          <Route path="/marketplace" element={<MarketplaceView />} />
           <Route path="/battery" element={<BatteryView />} />
           <Route path="/community" element={<BatteryView />} />
-          <Route path="/energy-map" element={<EnergyMapView />} />
-          <Route path="/optimize" element={<Optimization />} />
-          <Route path="/marketplace" element={<MarketplaceView />} />
-          <Route path="/ai" element={<AiForecastView />} />
           <Route path="/my-home" element={<MyHomeView />} />
+          <Route path="/devices" element={<DevicesView />} />
           <Route path="/transactions" element={<TransactionsView />} />
-          <Route path="*" element={<Navigate to="/simulation" replace />} />
+          <Route path="/optimize" element={<Optimization />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
-      {/* Global Demo Modal Controller */}
+      {/* Global Hackathon Demo Scenario Modal */}
       <DemoModal
         isOpen={isDemoModalOpen}
         onClose={() => setIsDemoModalOpen(false)}

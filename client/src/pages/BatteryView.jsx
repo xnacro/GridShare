@@ -1,25 +1,9 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import InteractiveBatteryTwin3D, { BATTERY_VIEW_POSITIONS } from '../components/battery/InteractiveBatteryTwin3D';
-import {
-  BatteryCharging,
-  Zap,
-  ShieldCheck,
-  RotateCcw,
-  Sparkles,
-  Play,
-  Pause,
-  Camera,
-  Activity,
-  ArrowRight,
-  TrendingUp,
-  Sliders,
-  Settings,
-  AlertTriangle,
-  CheckCircle2,
-  Layers,
-  IndianRupee,
-  Clock
-} from 'lucide-react';
+import MetricCard from '../components/ui/MetricCard';
+import Badge from '../components/ui/Badge';
+import Button, { IconButton } from '../components/ui/Button';
+import FaIcon from '../components/icons/FaIcon';
 
 export default function BatteryView() {
   // Battery State (Single Source of Truth)
@@ -332,107 +316,125 @@ export default function BatteryView() {
   };
 
   return (
-    <div className="space-y-2.5 max-w-[1680px] mx-auto pb-6 select-none">
+    <div className="space-y-4 max-w-[1680px] mx-auto pb-6 select-none">
+      {/* Header bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
+        <div className="flex items-center space-x-3.5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-teal-400 shadow-md">
+            <FaIcon name="battery" className="text-lg" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">Community Battery ESS</h2>
+              <Badge variant="battery" size="xs">
+                {battery.capacity} kWh Buffer
+              </Badge>
+              <Badge variant={status === 'CHARGING' || status === 'DISCHARGING' ? 'surplus' : 'default'} size="xs">
+                {status}
+              </Badge>
+            </div>
+            <p className="text-xs text-slate-500 font-normal">
+              Centralized lithium-iron phosphate storage for community peak shaving and microgrid balancing.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleLoadDemo}
+            icon={<FaIcon name="sparkles" />}
+          >
+            Load Demo
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            icon={<FaIcon name="refresh" />}
+          >
+            Reset
+          </Button>
+        </div>
+      </div>
+
       {/* 🌟 1. SECOND ROW: LIVE BATTERY KPI CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        {/* SOC */}
-        <div className="rounded-xl border border-teal-200 bg-teal-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-teal-800 font-bold uppercase">
-            <span>Battery SOC</span>
-            <BatteryCharging className="h-3 w-3 text-teal-600" />
-          </div>
-          <div className="font-mono font-extrabold text-teal-900 text-base mt-0.5">
-            {battery.soc?.toFixed(0)}% <span className="text-xs text-slate-500 font-sans font-normal">({battery.storedKwh?.toFixed(1)} / {battery.capacity} kWh)</span>
-          </div>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <MetricCard
+          title="Battery SOC"
+          value={`${battery.soc?.toFixed(0)}%`}
+          subtitle={`${battery.storedKwh?.toFixed(1)} / ${battery.capacity} kWh`}
+          iconName="battery"
+          variant="battery"
+        />
 
-        {/* Operating Status */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-slate-700 font-bold uppercase">
-            <span>Operating State</span>
-            <Activity className="h-3 w-3 text-slate-500" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-sm mt-1">
-            <span className={`rounded px-1.5 py-0.5 text-[10px] uppercase ${
-              status === 'CHARGING'
-                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                : status === 'DISCHARGING'
-                ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                : 'bg-slate-100 text-slate-800'
-            }`}>
-              {status}
-            </span>
-          </div>
-        </div>
+        <MetricCard
+          title="Operating State"
+          value={status}
+          subtitle="BMS Active"
+          iconName="activity"
+          variant={status === 'CHARGING' ? 'surplus' : status === 'DISCHARGING' ? 'ai' : 'default'}
+        />
 
-        {/* Available Headroom */}
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-emerald-800 font-bold uppercase">
-            <span>Charge Headroom</span>
-            <TrendingUp className="h-3 w-3 text-emerald-600" />
-          </div>
-          <div className="font-mono font-extrabold text-emerald-900 text-base mt-0.5">
-            {availableHeadroom.toFixed(1)} <span className="text-xs text-slate-500 font-sans">kWh</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Charge Headroom"
+          value={availableHeadroom.toFixed(1)}
+          unit="kWh"
+          subtitle="Buffer Space"
+          iconName="trendingUp"
+          variant="surplus"
+        />
 
-        {/* Round-Trip Efficiency */}
-        <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-blue-800 font-bold uppercase">
-            <span>Efficiency (η)</span>
-            <Zap className="h-3 w-3 text-blue-600" />
-          </div>
-          <div className="font-mono font-extrabold text-blue-900 text-base mt-0.5">
-            {battery.efficiency}% <span className="text-xs text-slate-500 font-sans font-normal">(8% thermal)</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Round-Trip η"
+          value={`${battery.efficiency}%`}
+          subtitle="8% Thermal Loss"
+          iconName="energy"
+          variant="default"
+        />
 
-        {/* State of Health */}
-        <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-purple-800 font-bold uppercase">
-            <span>Battery Health (SOH)</span>
-            <ShieldCheck className="h-3 w-3 text-purple-600" />
-          </div>
-          <div className="font-mono font-extrabold text-purple-900 text-base mt-0.5">
-            {battery.health}% <span className="text-xs text-slate-500 font-sans font-normal">({battery.cycleCount} Cyc)</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Health (SOH)"
+          value={`${battery.health}%`}
+          subtitle={`${battery.cycleCount} Cycles`}
+          iconName="shield"
+          variant="ai"
+        />
 
-        {/* Temperature */}
-        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-amber-800 font-bold uppercase">
-            <span>Core Temperature</span>
-            <Sparkles className="h-3 w-3 text-amber-600" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-base mt-0.5">
-            {battery.tempC}°C <span className="text-xs text-emerald-700 font-bold font-sans">Normal ✓</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Core Temp"
+          value={`${battery.tempC}°C`}
+          subtitle="Normal Cooling"
+          iconName="temperatureHalf"
+          variant="default"
+        />
       </div>
 
       {/* Dynamic Status / Narrative Banner */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-lg border border-teal-300 bg-teal-50/95 px-3 py-1 text-[11.5px] text-teal-950 shadow-2xs">
-          <div className="flex items-center space-x-1.5">
+        <div className="flex items-center justify-between rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs text-teal-950 shadow-2xs">
+          <div className="flex items-center space-x-2">
             <span className="h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
             <span className="font-semibold">{statusMessage}</span>
           </div>
-          <button onClick={() => setStatusMessage('')} className="text-teal-700 hover:text-teal-950 font-bold text-xs p-0.5">
+          <button type="button" onClick={() => setStatusMessage('')} className="text-teal-700 hover:text-teal-950 font-bold text-xs p-0.5">
             ✕
           </button>
         </div>
       )}
 
       {/* 🌟 2. MAIN 3-COLUMN WORKSPACE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
         {/* LEFT COLUMN: Manual Charge & Discharge Controls (~22%) */}
-        <div className="lg:col-span-3 space-y-2.5">
+        <div className="lg:col-span-3 space-y-3">
           {/* CHARGE CONTROL CARD */}
-          <div className="rounded-xl border border-emerald-200 bg-white p-3 shadow-card space-y-2 text-xs">
+          <div className="rounded-xl border border-emerald-200 bg-white p-3.5 shadow-card space-y-2.5 text-xs">
             <div className="flex items-center justify-between pb-1.5 border-b border-emerald-100">
               <div className="flex items-center space-x-1.5">
                 <div className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-600 text-white shadow-2xs">
-                  <Zap className="h-3 w-3" />
+                  <FaIcon name="solar" className="text-xs" />
                 </div>
                 <span className="font-extrabold text-[11px] uppercase tracking-wide text-emerald-950">
                   Charge Battery
@@ -495,12 +497,13 @@ export default function BatteryView() {
             </div>
 
             <button
+              type="button"
               onClick={handleCharge}
               disabled={status === 'CHARGING' || status === 'DISCHARGING' || battery.soc >= 100}
               className="flex w-full items-center justify-center space-x-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white py-1.5 text-xs font-bold shadow-2xs transition active:scale-95 disabled:opacity-40"
             >
-              <Zap className="h-3.5 w-3.5 fill-current" />
-              <span>{status === 'CHARGING' ? 'CHARGING ESS...' : '⚡ CHARGE BATTERY'}</span>
+              <FaIcon name="arrowDown" className="text-xs" />
+              <span>{status === 'CHARGING' ? 'CHARGING ESS...' : 'CHARGE BATTERY'}</span>
             </button>
           </div>
 
@@ -509,7 +512,7 @@ export default function BatteryView() {
             <div className="flex items-center justify-between pb-1.5 border-b border-blue-100">
               <div className="flex items-center space-x-1.5">
                 <div className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-600 text-white shadow-2xs">
-                  <BatteryCharging className="h-3 w-3" />
+                  <FaIcon name="battery" className="text-xs" />
                 </div>
                 <span className="font-extrabold text-[11px] uppercase tracking-wide text-blue-950">
                   Discharge Battery
@@ -573,30 +576,13 @@ export default function BatteryView() {
             </div>
 
             <button
+              type="button"
               onClick={handleDischarge}
               disabled={status === 'CHARGING' || status === 'DISCHARGING' || availableStored <= 0.1}
               className="flex w-full items-center justify-center space-x-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs font-bold shadow-2xs transition active:scale-95 disabled:opacity-40"
             >
-              <BatteryCharging className="h-3.5 w-3.5" />
-              <span>{status === 'DISCHARGING' ? 'DISCHARGING ESS...' : '⚡ DISCHARGE BATTERY'}</span>
-            </button>
-          </div>
-
-          {/* Quick Demo Triggers */}
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              onClick={handleLoadDemo}
-              className="flex items-center justify-center space-x-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white py-1.5 text-[10.5px] font-bold shadow-2xs transition active:scale-95 border border-amber-600"
-            >
-              <Sparkles className="h-3 w-3" />
-              <span>LOAD DEMO</span>
-            </button>
-            <button
-              onClick={handleReset}
-              className="flex items-center justify-center space-x-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 py-1.5 text-[10.5px] font-semibold transition active:scale-95"
-            >
-              <RotateCcw className="h-3 w-3 text-slate-500" />
-              <span>RESET</span>
+              <FaIcon name="arrowUp" className="text-xs" />
+              <span>{status === 'DISCHARGING' ? 'DISCHARGING ESS...' : 'DISCHARGE BATTERY'}</span>
             </button>
           </div>
         </div>
@@ -615,14 +601,16 @@ export default function BatteryView() {
 
               <div className="flex items-center space-x-1 text-[10px] font-semibold">
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.resetCamera()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition"
                   title="Default View"
                 >
-                  <Camera className="h-3 w-3 inline mr-1 text-slate-500" />
+                  <FaIcon name="camera" className="mr-1 text-slate-500 text-xs" />
                   Reset View
                 </button>
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.moduleCloseUp()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
                   title="Rack Modules View"
@@ -630,6 +618,7 @@ export default function BatteryView() {
                   Module View
                 </button>
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.topView()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
                   title="Overhead View"
@@ -761,7 +750,7 @@ export default function BatteryView() {
       <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-card space-y-2 text-xs">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-teal-700" />
+            <FaIcon name="history" className="text-teal-700 text-sm" />
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
               Battery Activity History & Storage Ledger
             </h3>

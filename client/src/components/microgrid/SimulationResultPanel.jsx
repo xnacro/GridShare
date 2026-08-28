@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Zap,
-  TrendingUp,
-  BatteryCharging,
-  ArrowRight,
-  ShieldCheck,
-  Scale,
-  ChevronDown,
-  ChevronUp,
-  Award,
-  Users,
-  CheckCircle2
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
+import Badge from '../ui/Badge';
 
 export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
   const [showOwnership, setShowOwnership] = useState(false);
@@ -42,15 +31,15 @@ export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
             </h3>
           </div>
           <p className="text-[10.5px] text-slate-500 font-medium mt-0.5">
-            Deterministic energy dispatch & multi-tier allocation summary
+            Deterministic energy dispatch and multi-tier allocation summary
           </p>
         </div>
 
         <div className="flex items-center space-x-1.5">
           <span className="text-[10.5px] font-bold text-slate-500 uppercase">Decision:</span>
-          <span className="rounded-full bg-emerald-50 border border-emerald-300 px-3 py-0.5 text-xs font-mono font-extrabold text-emerald-800 shadow-xs">
+          <Badge variant="surplus" size="sm">
             {decisionTitle}
-          </span>
+          </Badge>
         </div>
       </div>
 
@@ -60,7 +49,7 @@ export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
         <div className="rounded-xl border border-amber-200/80 bg-amber-50/50 p-2.5">
           <div className="flex items-center justify-between text-slate-500 text-[10px] font-medium">
             <span>Community Surplus</span>
-            <span className="text-amber-600 font-bold">☀️</span>
+            <FaIcon name="solar" className="text-amber-600 text-xs" />
           </div>
           <div className="mt-1 font-mono text-base font-extrabold text-amber-900">
             +{totalSurplus.toFixed(1)} <span className="text-[11px] font-normal text-slate-500">kW</span>
@@ -74,13 +63,13 @@ export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
         <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-2.5">
           <div className="flex items-center justify-between text-slate-500 text-[10px] font-medium">
             <span>Local P2P Trade</span>
-            <span className="text-emerald-600 font-bold">🤝</span>
+            <FaIcon name="trade" className="text-emerald-600 text-xs" />
           </div>
           <div className="mt-1 font-mono text-base font-extrabold text-emerald-800">
             {localTrade.toFixed(1)} <span className="text-[11px] font-normal text-slate-500">kW</span>
           </div>
           <span className="text-[9.5px] text-emerald-700 font-medium">
-            House A → House B @ ₹4.50
+            House A ➔ House B @ ₹4.50
           </span>
         </div>
 
@@ -88,13 +77,13 @@ export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
         <div className="rounded-xl border border-teal-200/80 bg-teal-50/50 p-2.5">
           <div className="flex items-center justify-between text-slate-500 text-[10px] font-medium">
             <span>Battery Storage</span>
-            <span className="text-teal-600 font-bold">🔋</span>
+            <FaIcon name="battery" className="text-teal-600 text-xs" />
           </div>
           <div className="mt-1 font-mono text-base font-extrabold text-teal-800">
             {batteryAlloc.toFixed(1)} <span className="text-[11px] font-normal text-slate-500">kW</span>
           </div>
           <span className="text-[9.5px] text-teal-700 font-medium">
-            SOC {initialSoc}% → {finalSoc}%
+            SOC {initialSoc}% ➔ {finalSoc}%
           </span>
         </div>
 
@@ -102,7 +91,7 @@ export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
         <div className="rounded-xl border border-blue-200/80 bg-blue-50/50 p-2.5">
           <div className="flex items-center justify-between text-slate-500 text-[10px] font-medium">
             <span>Grid Export</span>
-            <span className="text-blue-600 font-bold">🌐</span>
+            <FaIcon name="grid" className="text-blue-600 text-xs" />
           </div>
           <div className="mt-1 font-mono text-base font-extrabold text-blue-900">
             {gridExport.toFixed(1)} <span className="text-[11px] font-normal text-slate-500">kW</span>
@@ -117,13 +106,13 @@ export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
       <div className="rounded-xl border border-slate-200 bg-slate-50/90 p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-1.5">
-            <Scale className="h-3.5 w-3.5 text-slate-700" />
+            <FaIcon name="sparkles" className="text-slate-700 text-xs" />
             <span className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wide">
               Energy Balance Equation
             </span>
           </div>
           <span className="flex items-center space-x-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-300 rounded-full px-2 py-0.2">
-            <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+            <FaIcon name="checkCircle" className="text-emerald-600 text-xs" />
             <span>100% Balanced</span>
           </span>
         </div>
@@ -162,17 +151,18 @@ export default function SimulationResultPanel({ metrics = {}, houses = [] }) {
       {/* Expandable Community Battery Ownership Section */}
       <div className="rounded-xl border border-slate-200 bg-white">
         <button
+          type="button"
           onClick={() => setShowOwnership(!showOwnership)}
           className="flex w-full items-center justify-between p-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition rounded-xl"
         >
           <div className="flex items-center space-x-2">
-            <Users className="h-3.5 w-3.5 text-teal-600" />
+            <FaIcon name="home" className="text-teal-600 text-xs" />
             <span>Community Battery Ownership & Fair Share Accounting</span>
             <span className="rounded-full bg-teal-50 border border-teal-200 px-2 py-0.2 text-[9.5px] font-bold text-teal-800">
               90% Round-Trip Accounting
             </span>
           </div>
-          {showOwnership ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          <FaIcon name={showOwnership ? "chevronUp" : "chevronDown"} className="text-xs text-slate-500" />
         </button>
 
         {showOwnership && (

@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Home,
-  Sliders,
-  Sparkles,
-  RotateCcw,
-  Wallet,
-  BatteryCharging,
-  Zap
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function CommunityHouseholdInput({
   computedHouseholds = [],
@@ -26,7 +18,7 @@ export default function CommunityHouseholdInput({
       <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
         <div className="flex items-center space-x-1.5">
           <div className="flex h-5 w-5 items-center justify-center rounded-md bg-slate-800 text-white shadow-2xs">
-            <Sliders className="h-3 w-3" />
+            <FaIcon name="sliders" className="text-xs" />
           </div>
           <span className="font-extrabold text-[11px] uppercase tracking-wide text-slate-900">
             Community Nodes
@@ -34,12 +26,13 @@ export default function CommunityHouseholdInput({
         </div>
 
         <button
+          type="button"
           onClick={onLoadDemo}
           disabled={disabled}
           className="flex items-center space-x-1 rounded bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9.5px] font-bold text-amber-800 hover:bg-amber-100 transition active:scale-95 disabled:opacity-50"
           title="Reset to default demo data"
         >
-          <Sparkles className="h-2.5 w-2.5 text-amber-600" />
+          <FaIcon name="sparkles" className="text-amber-600 text-xs" />
           <span>Demo Data</span>
         </button>
       </div>
@@ -124,6 +117,7 @@ export default function CommunityHouseholdInput({
                   </span>
                   <div className="flex items-center space-x-1">
                     <button
+                      type="button"
                       onClick={() => onStoreSurplus(h.id)}
                       disabled={disabled}
                       className="rounded bg-teal-600 hover:bg-teal-700 text-white px-1.5 py-0.5 font-bold transition active:scale-95 disabled:opacity-50"
@@ -132,6 +126,7 @@ export default function CommunityHouseholdInput({
                       Store
                     </button>
                     <button
+                      type="button"
                       onClick={() => onExportSurplus(h.id)}
                       disabled={disabled}
                       className="rounded bg-blue-600 hover:bg-blue-700 text-white px-1.5 py-0.5 font-bold transition active:scale-95 disabled:opacity-50"
@@ -150,7 +145,7 @@ export default function CommunityHouseholdInput({
       {/* Battery & Grid Status summary */}
       <div className="rounded-lg border border-teal-200 bg-teal-50/40 p-1.5 text-xs flex items-center justify-between">
         <div className="flex items-center space-x-1 text-[10px]">
-          <BatteryCharging className="h-3 w-3 text-teal-600" />
+          <FaIcon name="battery" className="text-teal-600 text-xs" />
           <span className="font-bold text-slate-800">Battery:</span>
           <span className="font-mono font-bold text-teal-900">{battery.soc?.toFixed(0)}% SOC</span>
         </div>

@@ -11,23 +11,10 @@ import MarketplaceOrdersPanel from '../components/marketplace/MarketplaceOrdersP
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
 import TransactionLedger from '../components/marketplace/TransactionLedger';
 import MarketplaceTradeChart from '../components/marketplace/MarketplaceTradeChart';
-import {
-  ShoppingBag,
-  Zap,
-  IndianRupee,
-  Sparkles,
-  RotateCcw,
-  Camera,
-  CheckCircle2,
-  TrendingUp,
-  UserCheck,
-  Building,
-  Tag,
-  ArrowRight,
-  ShieldCheck,
-  Layers,
-  BarChart3
-} from 'lucide-react';
+import MetricCard from '../components/ui/MetricCard';
+import Badge from '../components/ui/Badge';
+import Button, { IconButton } from '../components/ui/Button';
+import FaIcon from '../components/icons/FaIcon';
 
 export default function MarketplaceView() {
   // Master P2P Trading State
@@ -282,119 +269,125 @@ export default function MarketplaceView() {
   const activeSeller = computedHouseholds.find((h) => h.id === activePurchase?.sellOrder?.household_id) || computedHouseholds[0];
 
   return (
-    <div className="space-y-2.5 max-w-[1680px] mx-auto pb-6 select-none">
+    <div className="space-y-4 max-w-[1680px] mx-auto pb-6 select-none">
+      {/* Header bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
+        <div className="flex items-center space-x-3.5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-blue-400 shadow-md">
+            <FaIcon name="marketplace" className="text-lg" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">Peer-to-Peer Energy Marketplace</h2>
+              <Badge variant="surplus" size="xs">
+                {openSellOrders.length} Listings Active
+              </Badge>
+            </div>
+            <p className="text-xs text-slate-500 font-normal">
+              Continuous double-auction exchange allowing prosumers to sell excess clean solar to neighbors.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleLoadDemoMarket}
+            icon={<FaIcon name="sparkles" />}
+          >
+            Load Market Demo
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleResetMarket}
+            icon={<FaIcon name="refresh" />}
+          >
+            Reset
+          </Button>
+        </div>
+      </div>
+
       {/* 🌟 1. SECOND ROW: MARKETPLACE KPI CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        {/* Active Sell Orders */}
-        <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-blue-800 font-bold uppercase">
-            <span>Active Orders</span>
-            <ShoppingBag className="h-3 w-3 text-blue-600" />
-          </div>
-          <div className="font-mono font-extrabold text-blue-900 text-base mt-0.5">
-            {openSellOrders.length} <span className="text-xs text-slate-500 font-sans font-normal">Listings</span>
-          </div>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <MetricCard
+          title="Active Listings"
+          value={openSellOrders.length}
+          subtitle="Orders in Book"
+          iconName="marketplace"
+          variant="ai"
+        />
 
-        {/* Available Energy */}
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-emerald-800 font-bold uppercase">
-            <span>Available Energy</span>
-            <Zap className="h-3 w-3 text-emerald-600" />
-          </div>
-          <div className="font-mono font-extrabold text-emerald-900 text-base mt-0.5">
-            {totalAvailableEnergy.toFixed(1)} <span className="text-xs text-slate-500 font-sans">kWh</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Available Energy"
+          value={totalAvailableEnergy.toFixed(1)}
+          unit="kWh"
+          subtitle="Ready to Route"
+          iconName="solar"
+          variant="surplus"
+        />
 
-        {/* Today's Trades */}
-        <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-purple-800 font-bold uppercase">
-            <span>Trades Executed</span>
-            <CheckCircle2 className="h-3 w-3 text-purple-600" />
-          </div>
-          <div className="font-mono font-extrabold text-purple-900 text-base mt-0.5">
-            {transactions.length} <span className="text-xs text-slate-500 font-sans font-normal">Settled</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Trades Executed"
+          value={transactions.length}
+          subtitle="100% Cleared"
+          iconName="checkCircle"
+          variant="surplus"
+        />
 
-        {/* Energy Traded Volume */}
-        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-amber-800 font-bold uppercase">
-            <span>Energy Traded</span>
-            <TrendingUp className="h-3 w-3 text-amber-600" />
-          </div>
-          <div className="font-mono font-extrabold text-amber-900 text-base mt-0.5">
-            {totalEnergyTraded.toFixed(1)} <span className="text-xs text-slate-500 font-sans">kWh</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Energy Traded"
+          value={totalEnergyTraded.toFixed(1)}
+          unit="kWh"
+          subtitle="Cumulative P2P"
+          iconName="trendingUp"
+          variant="default"
+        />
 
-        {/* Trade Value */}
-        <div className="rounded-xl border border-teal-200 bg-teal-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-teal-800 font-bold uppercase">
-            <span>Trade Value</span>
-            <IndianRupee className="h-3 w-3 text-teal-600" />
-          </div>
-          <div className="font-mono font-extrabold text-teal-900 text-base mt-0.5">
-            ₹{totalTradeValue.toFixed(2)}
-          </div>
-        </div>
+        <MetricCard
+          title="Trade Value"
+          value={`₹${totalTradeValue.toFixed(2)}`}
+          subtitle="Simulated INR"
+          iconName="rupee"
+          variant="ai"
+        />
 
-        {/* Market Price Range */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-slate-700 font-bold uppercase">
-            <span>Price Spread</span>
-            <Tag className="h-3 w-3 text-slate-500" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-xs mt-1">
-            ₹{lowestPrice.toFixed(1)} – ₹{highestPrice.toFixed(1)} <span className="text-[10px] text-slate-500 font-normal font-sans">(Avg: ₹{avgPrice.toFixed(1)})</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Price Spread"
+          value={`₹${lowestPrice.toFixed(1)} - ₹${highestPrice.toFixed(1)}`}
+          subtitle={`Avg: ₹${avgPrice.toFixed(1)}/kWh`}
+          iconName="tag"
+          variant="default"
+        />
       </div>
 
       {/* Dynamic Status / Narrative Banner */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-lg border border-emerald-300 bg-emerald-50/95 px-3 py-1 text-[11.5px] text-emerald-950 shadow-2xs">
-          <div className="flex items-center space-x-1.5">
+        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs text-emerald-950 shadow-2xs">
+          <div className="flex items-center space-x-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-semibold">{statusMessage}</span>
           </div>
-          <button onClick={() => setStatusMessage('')} className="text-emerald-700 hover:text-emerald-950 font-bold text-xs p-0.5">
+          <button type="button" onClick={() => setStatusMessage('')} className="text-emerald-700 hover:text-emerald-950 font-bold text-xs p-0.5">
             ✕
           </button>
         </div>
       )}
 
       {/* 🌟 2. MAIN 3-COLUMN WORKSPACE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
         {/* LEFT COLUMN: Seller Panel & Wallet Summary (~22%) */}
-        <div className="lg:col-span-3 space-y-2.5">
+        <div className="lg:col-span-3 space-y-3">
           {/* Sell Energy Form Card */}
           <CompactSellCard
             computedHouseholds={computedHouseholds}
             onCreateSellListing={handleCreateSellListing}
           />
 
-          {/* Quick Demo Market Triggers */}
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              onClick={handleLoadDemoMarket}
-              className="flex items-center justify-center space-x-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white py-1.5 text-[10.5px] font-bold shadow-2xs transition active:scale-95 border border-amber-600"
-            >
-              <Sparkles className="h-3 w-3" />
-              <span>LOAD DEMO</span>
-            </button>
-            <button
-              onClick={handleResetMarket}
-              className="flex items-center justify-center space-x-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 py-1.5 text-[10.5px] font-semibold transition active:scale-95"
-            >
-              <RotateCcw className="h-3 w-3 text-slate-500" />
-              <span>RESET</span>
-            </button>
-          </div>
-
           {/* Selected Household Wallet & Trading Profile */}
-          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-card space-y-2 text-xs">
+          <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-card space-y-2 text-xs">
             <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
               <span className="font-extrabold text-[11px] text-slate-900">
                 {selectedHousehold.name} Wallet Profile
@@ -439,14 +432,16 @@ export default function MarketplaceView() {
 
               <div className="flex items-center space-x-1 text-[10px] font-semibold">
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.resetCamera()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition"
                   title="Default Perspective"
                 >
-                  <Camera className="h-3 w-3 inline mr-1 text-slate-500" />
+                  <FaIcon name="camera" className="mr-1 text-slate-500 text-xs" />
                   Reset View
                 </button>
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.topView()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
                   title="Top-Down Overhead Angle"
@@ -454,6 +449,7 @@ export default function MarketplaceView() {
                   Top View
                 </button>
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.marketView()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
                   title="Market Arena Angle"
@@ -467,7 +463,7 @@ export default function MarketplaceView() {
             {tradeStep > 0 && (
               <div className="flex items-center justify-between rounded-lg bg-purple-50/90 border border-purple-200 px-2.5 py-1 text-[10px] font-bold text-purple-950 animate-in fade-in duration-150">
                 <span className="flex items-center space-x-1">
-                  <Sparkles className="h-3 w-3 text-purple-600" />
+                  <FaIcon name="sparkles" className="text-purple-600 text-xs" />
                   <span>Trade Lifecycle:</span>
                 </span>
                 <div className="flex items-center space-x-2 text-[9.5px]">

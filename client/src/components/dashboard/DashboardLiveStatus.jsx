@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  Zap,
-  Tag,
-  BatteryCharging,
-  ArrowDownUp,
-  ShoppingBag,
-  IndianRupee,
-  ShieldCheck,
-  TrendingUp,
-  PlusCircle,
-  Play
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function DashboardLiveStatus({
   selectedHousehold = {},
@@ -44,7 +33,7 @@ export default function DashboardLiveStatus({
       <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
         <div className="flex items-center space-x-1.5">
           <div className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-600 text-white shadow-2xs">
-            <Zap className="h-3 w-3" />
+            <FaIcon name="energy" className="text-xs" />
           </div>
           <span className="font-extrabold text-[11px] uppercase tracking-wide text-slate-900">
             Control & Status
@@ -114,7 +103,7 @@ export default function DashboardLiveStatus({
       <div className="rounded-lg border border-teal-200 bg-teal-50/40 p-2 space-y-1.5">
         <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-900">
           <div className="flex items-center space-x-1">
-            <BatteryCharging className="h-3 w-3 text-teal-600" />
+            <FaIcon name="battery" className="text-teal-600 text-xs" />
             <span>Battery Control</span>
           </div>
           <span className="font-mono text-teal-900 font-bold">{battery.soc?.toFixed(0)}% ({storedKwh.toFixed(1)} / {battery.capacity || 20} kWh)</span>
@@ -142,7 +131,7 @@ export default function DashboardLiveStatus({
       <div className="rounded-lg border border-slate-200 bg-slate-50 p-2 space-y-1.5">
         <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-900">
           <div className="flex items-center space-x-1">
-            <IndianRupee className="h-3 w-3 text-slate-600" />
+            <FaIcon name="grid" className="text-slate-600 text-xs" />
             <span>Grid Interconnect</span>
           </div>
           <span className="font-mono text-slate-900 font-bold">₹{grid.exportPrice?.toFixed(1)}/kWh</span>
@@ -170,7 +159,7 @@ export default function DashboardLiveStatus({
       <div className="rounded-lg border border-purple-200 bg-purple-50/30 p-2 space-y-1.5">
         <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-900">
           <div className="flex items-center space-x-1">
-            <ShoppingBag className="h-3 w-3 text-purple-600" />
+            <FaIcon name="marketplace" className="text-purple-600 text-xs" />
             <span>P2P Marketplace</span>
           </div>
           <span className="font-mono text-purple-900 font-bold">{openSellListings.length} Active Orders</span>

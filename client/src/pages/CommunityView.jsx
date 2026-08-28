@@ -306,7 +306,7 @@ export default function CommunityView() {
               {ledgerEntries.map((e) => (
                 <tr key={e.id} className="hover:bg-slate-50/60 transition">
                   <td className="px-3 py-2 font-mono text-[11px] text-slate-500">
-                    {e.timestamp ? new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '—'}
+                    {e.timestamp ? new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-'}
                   </td>
                   <td className="px-3 py-2 font-bold text-slate-900">{e.household_id || 'Community'}</td>
                   <td className="px-3 py-2">

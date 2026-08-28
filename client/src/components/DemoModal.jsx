@@ -1,21 +1,8 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
-import {
-  Zap,
-  Play,
-  RotateCcw,
-  CheckCircle2,
-  Sun,
-  Power,
-  BatteryCharging,
-  Network,
-  ArrowRight,
-  ShieldCheck,
-  Cpu,
-  Clock,
-  Sparkles,
-  Layers
-} from 'lucide-react';
+import FaIcon from './icons/FaIcon';
+import Badge from './ui/Badge';
+import Button from './ui/Button';
 
 export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
   const [isRunning, setIsRunning] = useState(false);
@@ -60,7 +47,7 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
     try {
       setIsResetting(true);
       await api.resetDemo();
-      setResetMessage('✅ Demo data reset to clean baseline.');
+      setResetMessage('Demo data reset to clean baseline.');
       setDemoResult(null);
       setCurrentStep(0);
       if (onScenarioExecuted) onScenarioExecuted();
@@ -80,11 +67,11 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
           <div>
             <div className="flex items-center space-x-2">
               <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-extrabold text-amber-900 border border-amber-300 uppercase tracking-wider">
-                DEMO MODE — SIMULATED DATA
+                DEMO MODE - SIMULATED DATA
               </span>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-300">
+              <Badge variant="surplus" size="xs">
                 Interactive Controller
-              </span>
+              </Badge>
             </div>
             <h3 className="text-lg font-extrabold text-slate-900 mt-1.5">
               Sunny Afternoon Community Scenario
@@ -93,7 +80,7 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
               Deterministic, reproducible live demo presentation controller
             </p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-sm font-bold p-1">
+          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-700 text-sm font-bold p-1">
             ✕
           </button>
         </div>
@@ -146,7 +133,7 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
                 <span className="font-bold">1. Observe & Classify:</span>
                 <span>House A (Surplus +4.7 kW) & House B (Deficit -2.8 kW)</span>
               </div>
-              {currentStep >= 1 && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+              {currentStep >= 1 && <FaIcon name="checkCircle" className="text-emerald-600 text-sm" />}
             </div>
 
             <div className={`flex items-center justify-between p-2.5 rounded-lg border transition ${
@@ -156,7 +143,7 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
                 <span className="font-bold">2. ML Demand Forecast:</span>
                 <span>Random Forest predicted short-term household loads</span>
               </div>
-              {currentStep >= 2 && <CheckCircle2 className="h-4 w-4 text-purple-600" />}
+              {currentStep >= 2 && <FaIcon name="checkCircle" className="text-purple-600 text-sm" />}
             </div>
 
             <div className={`flex items-center justify-between p-2.5 rounded-lg border transition ${
@@ -166,7 +153,7 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
                 <span className="font-bold">3. GridShare Optimizer Allocation:</span>
                 <span className="font-mono font-bold">2.8kW Local Trade | 1.2kW Battery | 0.7kW Export</span>
               </div>
-              {currentStep >= 3 && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+              {currentStep >= 3 && <FaIcon name="checkCircle" className="text-emerald-600 text-sm" />}
             </div>
 
             <div className={`flex items-center justify-between p-2.5 rounded-lg border transition ${
@@ -176,7 +163,7 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
                 <span className="font-bold">4. Bilateral Transaction Settlement:</span>
                 <span>House A ➔ House B (2.80 kWh @ ₹4.50/kWh = ₹12.60)</span>
               </div>
-              {currentStep >= 4 && <CheckCircle2 className="h-4 w-4 text-blue-600" />}
+              {currentStep >= 4 && <FaIcon name="checkCircle" className="text-blue-600 text-sm" />}
             </div>
 
             <div className={`flex items-center justify-between p-2.5 rounded-lg border transition ${
@@ -186,37 +173,40 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
                 <span className="font-bold">5. Telemetry & Energy Map Updated:</span>
                 <span>Real-time power vectors energized across all views</span>
               </div>
-              {currentStep >= 5 && <CheckCircle2 className="h-4 w-4 text-emerald-700" />}
+              {currentStep >= 5 && <FaIcon name="checkCircle" className="text-emerald-700 text-sm" />}
             </div>
           </div>
         </div>
 
         {/* Action Controls */}
         <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleReset}
             disabled={isResetting || isRunning}
-            className="flex items-center justify-center space-x-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition active:scale-95 disabled:opacity-50"
+            icon={<FaIcon name="refresh" className={isResetting ? "animate-spin" : ""} />}
           >
-            <RotateCcw className={`h-3.5 w-3.5 ${isResetting ? 'animate-spin' : ''}`} />
-            <span>Reset Demo Data</span>
-          </button>
+            Reset Demo Data
+          </Button>
 
           <div className="flex items-center space-x-2">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onClose}
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"
             >
               Close
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               onClick={handleRunDemo}
               disabled={isRunning}
-              className="flex items-center space-x-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition active:scale-95 disabled:opacity-50"
+              icon={<FaIcon name={isRunning ? "refresh" : "play"} className={isRunning ? "animate-spin" : ""} />}
             >
-              <Play className="h-3.5 w-3.5 fill-current" />
-              <span>{isRunning ? 'Running Demo...' : 'Execute Demo Scenario'}</span>
-            </button>
+              {isRunning ? 'Running Demo...' : 'Execute Demo Scenario'}
+            </Button>
           </div>
         </div>
 

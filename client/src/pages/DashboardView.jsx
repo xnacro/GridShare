@@ -18,22 +18,10 @@ import DashboardAnalyticsSection from '../components/dashboard/DashboardAnalytic
 import TransactionLedger from '../components/marketplace/TransactionLedger';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
 import { api } from '../services/api';
-import {
-  Sun,
-  Power,
-  BatteryCharging,
-  Zap,
-  IndianRupee,
-  Layers,
-  Sparkles,
-  RotateCcw,
-  Play,
-  Pause,
-  Camera,
-  Activity,
-  ArrowDownUp,
-  FastForward
-} from 'lucide-react';
+import FaIcon from '../components/icons/FaIcon';
+import MetricCard from '../components/ui/MetricCard';
+import Badge, { StatusIndicator } from '../components/ui/Badge';
+import Button, { IconButton } from '../components/ui/Button';
 
 export default function DashboardView() {
   // Master Microgrid Control State
@@ -365,91 +353,79 @@ export default function DashboardView() {
 
   return (
     <div className="space-y-2.5 max-w-[1680px] mx-auto pb-6">
-      {/* 🌟 1. SECOND ROW: LIVE COMPACT KPI CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        {/* Gen */}
-        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-amber-800 font-bold uppercase">
-            <span>Total Generation</span>
-            <Sun className="h-3 w-3 text-amber-600" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-base mt-0.5">
-            {totalGen.toFixed(1)} <span className="text-xs text-slate-500 font-sans">kW</span>
-          </div>
-        </div>
-
-        {/* Load */}
-        <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-blue-800 font-bold uppercase">
-            <span>Total Load</span>
-            <Power className="h-3 w-3 text-blue-600" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-base mt-0.5">
-            {totalCon.toFixed(1)} <span className="text-xs text-slate-500 font-sans">kW</span>
-          </div>
-        </div>
-
-        {/* Net */}
-        <div className={`rounded-xl border p-2.5 shadow-2xs ${isSurplus ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/50'}`}>
-          <div className="flex items-center justify-between text-[10px] font-bold uppercase">
-            <span className={isSurplus ? 'text-emerald-800' : 'text-rose-800'}>Community Balance</span>
-            <ArrowDownUp className={`h-3 w-3 ${isSurplus ? 'text-emerald-600' : 'text-rose-600'}`} />
-          </div>
-          <div className={`font-mono font-extrabold text-base mt-0.5 ${isSurplus ? 'text-emerald-900' : 'text-rose-900'}`}>
-            {isSurplus ? `+${netCommunity.toFixed(1)}` : netCommunity.toFixed(1)} <span className="text-xs font-sans">kW</span>
-          </div>
-        </div>
-
-        {/* Battery SOC */}
-        <div className="rounded-xl border border-teal-200 bg-teal-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-teal-800 font-bold uppercase">
-            <span>Battery SOC</span>
-            <BatteryCharging className="h-3 w-3 text-teal-600" />
-          </div>
-          <div className="font-mono font-extrabold text-teal-900 text-base mt-0.5">
-            {battery.soc?.toFixed(0)}% <span className="text-xs text-slate-500 font-sans font-normal">({((battery.soc / 100) * (battery.capacity || 20)).toFixed(1)} kWh)</span>
-          </div>
-        </div>
-
-        {/* P2P Trades */}
-        <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-purple-800 font-bold uppercase">
-            <span>P2P Trades</span>
-            <Zap className="h-3 w-3 text-purple-600" />
-          </div>
-          <div className="font-mono font-extrabold text-purple-900 text-base mt-0.5">
-            {transactions.length} <span className="text-xs text-slate-500 font-sans font-normal">Executed</span>
-          </div>
-        </div>
-
-        {/* Grid Export */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-slate-700 font-bold uppercase">
-            <span>Grid Export</span>
-            <IndianRupee className="h-3 w-3 text-slate-500" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-base mt-0.5">
-            {isSurplus && netCommunity > 1.5 ? (netCommunity - 1.5).toFixed(1) : '0.0'} <span className="text-xs text-slate-500 font-sans">kW</span>
-          </div>
-        </div>
+      {/* 🌟 1. EXECUTIVE KPI SUMMARY METRICS */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+        <MetricCard
+          title="Generation"
+          value={totalGen.toFixed(1)}
+          unit="kW"
+          iconName="solar"
+          variant="surplus"
+          subtitle="Solar PV"
+        />
+        <MetricCard
+          title="Total Load"
+          value={totalCon.toFixed(1)}
+          unit="kW"
+          iconName="powerOff"
+          variant="default"
+          subtitle="Community"
+        />
+        <MetricCard
+          title="Net Balance"
+          value={(isSurplus ? '+' : '') + netCommunity.toFixed(1)}
+          unit="kW"
+          iconName="energy"
+          variant={isSurplus ? 'surplus' : 'deficit'}
+          subtitle={isSurplus ? 'Surplus' : 'Deficit'}
+        />
+        <MetricCard
+          title="Battery SOC"
+          value={battery.soc?.toFixed(0)}
+          unit="%"
+          iconName="battery"
+          variant="battery"
+          subtitle={`${((battery.soc / 100) * (battery.capacity || 50)).toFixed(1)} kWh`}
+        />
+        <MetricCard
+          title="P2P Trades"
+          value={transactions.length}
+          unit="Orders"
+          iconName="trade"
+          variant="ai"
+          subtitle="Cleared"
+        />
+        <MetricCard
+          title="Grid Export"
+          value={isSurplus && netCommunity > 1.5 ? (netCommunity - 1.5).toFixed(1) : '0.0'}
+          unit="kW"
+          iconName="grid"
+          variant="grid"
+          subtitle={isSurplus ? 'Active' : 'Standby'}
+        />
       </div>
 
       {/* Dynamic Status / Narrative Banner */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-lg border border-emerald-300 bg-emerald-50/95 px-3 py-1 text-[11.5px] text-emerald-950 shadow-2xs">
-          <div className="flex items-center space-x-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/95 px-3.5 py-2 text-xs text-emerald-950 shadow-xs">
+          <div className="flex items-center space-x-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
             <span className="font-semibold">{statusMessage}</span>
           </div>
-          <button onClick={() => setStatusMessage('')} className="text-emerald-700 hover:text-emerald-950 font-bold text-xs p-0.5">
+          <button
+            type="button"
+            onClick={() => setStatusMessage('')}
+            className="text-emerald-700 hover:text-emerald-950 font-bold text-xs p-1"
+            aria-label="Dismiss status message"
+          >
             ✕
           </button>
         </div>
       )}
 
       {/* 🌟 2. MAIN AREA (3 COLUMNS: LEFT CONTROLS, CENTER 3D MAP, RIGHT ACTIONS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
-        {/* LEFT COLUMN: Simulation & Community Controls (~22%) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+        {/* LEFT COLUMN: Simulation & Community Controls */}
         <div className="lg:col-span-3">
           <DashboardControlPanel
             households={computedHouseholds}
@@ -471,24 +447,25 @@ export default function DashboardView() {
           />
         </div>
 
-        {/* CENTER COLUMN: Large 3D Virtual Microgrid Digital Twin (~58%) */}
+        {/* CENTER COLUMN: Large 3D Virtual Microgrid Digital Twin */}
         <div className="lg:col-span-6 xl:col-span-6">
-          <div className="flex flex-col h-full rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-card space-y-2">
+          <div className="flex flex-col h-full rounded-2xl border border-slate-200 bg-white p-3 shadow-card space-y-2.5">
             {/* 3D Scene Controls Bar */}
             <div className="flex items-center justify-between px-1 text-xs">
-              <div className="flex items-center space-x-1.5">
+              <div className="flex items-center space-x-2">
                 <button
+                  type="button"
                   onClick={() => {
                     setIsLiveSimulating(!isLiveSimulating);
                     setStatusMessage(isLiveSimulating ? 'Simulation Paused.' : 'Simulation Active.');
                   }}
-                  className={`flex items-center space-x-1 rounded-lg px-2.5 py-1 text-xs font-bold shadow-2xs transition active:scale-95 ${
+                  className={`flex items-center space-x-1.5 rounded-lg px-3 py-1 text-xs font-bold shadow-xs transition active:scale-95 ${
                     isLiveSimulating
                       ? 'bg-rose-600 hover:bg-rose-700 text-white'
                       : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                   }`}
                 >
-                  {isLiveSimulating ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3 fill-current" />}
+                  <FaIcon name={isLiveSimulating ? 'pause' : 'play'} className="text-xs" />
                   <span>{isLiveSimulating ? 'PAUSE' : 'START LIVE'}</span>
                 </button>
 
@@ -497,9 +474,10 @@ export default function DashboardView() {
                   {[1, 2, 4].map((spd) => (
                     <button
                       key={spd}
+                      type="button"
                       onClick={() => setSimSpeed(spd)}
-                      className={`px-1.5 py-0.5 rounded transition ${
-                        simSpeed === spd ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
+                      className={`px-2 py-0.5 rounded-md transition ${
+                        simSpeed === spd ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
                       }`}
                     >
                       {spd}x
@@ -510,11 +488,12 @@ export default function DashboardView() {
 
               <div className="flex items-center space-x-1">
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.resetCamera()}
-                  className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10.5px] font-semibold text-slate-700 hover:bg-slate-100"
+                  className="flex items-center space-x-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
                   title="Reset 3D Camera View"
                 >
-                  <Camera className="h-3 w-3 text-slate-500" />
+                  <FaIcon name="rotate" className="text-slate-500 text-xs" />
                   <span className="hidden sm:inline">Reset View</span>
                 </button>
               </div>

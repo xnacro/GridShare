@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Search,
-  Filter,
-  ArrowUpDown,
-  Download,
-  Calendar,
-  RotateCcw,
-  Sparkles
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export const TYPE_FILTERS = [
   { id: 'ALL', label: 'ALL' },
@@ -64,7 +56,7 @@ export default function LedgerFilterBar({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         {/* Search Bar */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <FaIcon name="search" className="absolute left-3 top-3 text-xs text-slate-400" />
           <input
             type="text"
             placeholder="Search transaction ID, seller, buyer, or node..."
@@ -76,10 +68,11 @@ export default function LedgerFilterBar({
 
         {/* Date Range Selector */}
         <div className="flex items-center space-x-1.5 bg-slate-50 p-1 rounded-lg border border-slate-200">
-          <Calendar className="h-3.5 w-3.5 text-slate-400 ml-1.5" />
+          <FaIcon name="clock" className="text-xs text-slate-400 ml-1.5" />
           {DATE_RANGES.map((dr) => (
             <button
               key={dr.id}
+              type="button"
               onClick={() => onDateRangeChange(dr.id)}
               className={`px-2 py-1 rounded text-[11px] font-bold transition ${
                 dateRange === dr.id
@@ -94,7 +87,7 @@ export default function LedgerFilterBar({
 
         {/* Sorting Dropdown */}
         <div className="flex items-center space-x-2">
-          <ArrowUpDown className="h-3.5 w-3.5 text-slate-500" />
+          <FaIcon name="filter" className="text-xs text-slate-500" />
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
@@ -110,11 +103,12 @@ export default function LedgerFilterBar({
 
         {/* Export CSV Button */}
         <button
+          type="button"
           onClick={onExportCSV}
           className="flex items-center space-x-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition"
           title="Export transactions report as CSV"
         >
-          <Download className="h-3.5 w-3.5 text-emerald-600" />
+          <FaIcon name="export" className="text-xs text-emerald-600" />
           <span>Export CSV</span>
         </button>
       </div>
@@ -127,6 +121,7 @@ export default function LedgerFilterBar({
           {TYPE_FILTERS.map((tf) => (
             <button
               key={tf.id}
+              type="button"
               onClick={() => onTypeChange(tf.id)}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
                 activeType === tf.id
@@ -145,6 +140,7 @@ export default function LedgerFilterBar({
           {STATUS_FILTERS.map((sf) => (
             <button
               key={sf.id}
+              type="button"
               onClick={() => onStatusChange(sf.id)}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
                 activeStatus === sf.id
@@ -161,10 +157,11 @@ export default function LedgerFilterBar({
           {/* Reset Filters button */}
           {(activeType !== 'ALL' || activeStatus !== 'ALL' || searchQuery || dateRange !== 'all') && (
             <button
+              type="button"
               onClick={onResetFilters}
               className="flex items-center space-x-1 text-[11px] text-slate-500 hover:text-rose-600 font-semibold ml-2 underline"
             >
-              <RotateCcw className="h-3 w-3" />
+              <FaIcon name="refresh" className="text-xs" />
               <span>Reset</span>
             </button>
           )}

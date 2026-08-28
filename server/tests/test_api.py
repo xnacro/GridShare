@@ -329,5 +329,22 @@ class GridShareAPITestCase(unittest.TestCase):
         res = self.client.post("/api/telemetry", json=payload)
         self.assertEqual(res.status_code, 201)
 
+    def test_device_endpoints(self):
+        res = self.client.get("/api/devices")
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertEqual(data["status"], "SUCCESS")
+        self.assertGreaterEqual(data["device_count"], 2)
+        self.assertIn("devices", data)
+        self.assertTrue(any(d["id"] == "ESP32-A" for d in data["devices"]))
+
+    def test_device_mode_toggle(self):
+        res = self.client.post("/api/devices/mode", json={"mode": "LIVE_HARDWARE"})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.get_json()["mode"], "LIVE_HARDWARE")
+
+        res_invalid = self.client.post("/api/devices/mode", json={"mode": "INVALID_MODE"})
+        self.assertEqual(res_invalid.status_code, 400)
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import {
-  ShoppingBag,
-  Zap,
-  IndianRupee,
-  Radio,
-  ArrowUpRight,
-  ArrowDownLeft,
-  CheckCircle2,
-  AlertCircle,
-  Tag,
-  Sparkles,
-  Gauge
-} from 'lucide-react';
+import FaIcon from '../icons/FaIcon';
 
 export default function HomeP2PTradingCard({
   surplusKw = 2.2,
@@ -97,7 +85,7 @@ export default function HomeP2PTradingCard({
       <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50/70 via-slate-50 to-emerald-50/40 p-3.5 shadow-xs">
         <div className="flex items-center justify-between pb-2 border-b border-blue-100 mb-2.5">
           <div className="flex items-center space-x-2">
-            <Gauge className="h-4 w-4 text-blue-600" />
+            <FaIcon name="overview" className="text-blue-600 text-sm" />
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
               Smart Bi-Directional Meter
             </h4>
@@ -138,7 +126,7 @@ export default function HomeP2PTradingCard({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Sparkles className="h-4 w-4 text-amber-500" />
+              <FaIcon name="sparkles" className="text-amber-500 text-sm" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                 Surplus Energy Routing & P2P Selling
               </h3>
@@ -189,7 +177,7 @@ export default function HomeP2PTradingCard({
                 type="submit"
                 className="flex items-center justify-center space-x-1.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition"
               >
-                <ShoppingBag className="h-3.5 w-3.5" />
+                <FaIcon name="marketplace" className="text-xs" />
                 <span>LIST ON P2P</span>
               </button>
 
@@ -198,7 +186,7 @@ export default function HomeP2PTradingCard({
                 onClick={() => onExportToGrid(parseFloat(sellAmount) || 1.0)}
                 className="flex items-center justify-center space-x-1.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition"
               >
-                <Radio className="h-3.5 w-3.5" />
+                <FaIcon name="grid" className="text-xs" />
                 <span>EXPORT TO GRID</span>
               </button>
             </div>
@@ -206,14 +194,14 @@ export default function HomeP2PTradingCard({
 
           {sellError && (
             <div className="flex items-start space-x-2 rounded-lg bg-rose-50 p-2.5 border border-rose-200 text-xs text-rose-800">
-              <AlertCircle className="h-4 w-4 text-rose-600 flex-shrink-0 mt-0.5" />
+              <FaIcon name="error" className="text-rose-600 text-sm flex-shrink-0 mt-0.5" />
               <span className="font-medium">{sellError}</span>
             </div>
           )}
 
           {sellStatus && (
             <div className="flex items-start space-x-2 rounded-lg bg-emerald-50 p-2.5 border border-emerald-200 text-xs text-emerald-800">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+              <FaIcon name="checkCircle" className="text-emerald-600 text-sm flex-shrink-0 mt-0.5" />
               <span className="font-medium">{sellStatus}</span>
             </div>
           )}
@@ -222,7 +210,7 @@ export default function HomeP2PTradingCard({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Zap className="h-4 w-4 text-amber-500" />
+              <FaIcon name="energy" className="text-amber-500 text-sm" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                 Energy Deficit & Green Sourcing
               </h3>
@@ -267,7 +255,7 @@ export default function HomeP2PTradingCard({
                 type="submit"
                 className="flex items-center justify-center space-x-1.5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition"
               >
-                <ShoppingBag className="h-3.5 w-3.5" />
+                <FaIcon name="marketplace" className="text-xs" />
                 <span>BUY P2P GREEN</span>
               </button>
 
@@ -276,7 +264,7 @@ export default function HomeP2PTradingCard({
                 onClick={() => onImportFromGrid(parseFloat(buyAmount) || 1.0)}
                 className="flex items-center justify-center space-x-1.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-xs transition"
               >
-                <Radio className="h-3.5 w-3.5" />
+                <FaIcon name="grid" className="text-xs" />
                 <span>DRAW FROM GRID</span>
               </button>
             </div>
@@ -284,14 +272,14 @@ export default function HomeP2PTradingCard({
 
           {buyError && (
             <div className="flex items-start space-x-2 rounded-lg bg-rose-50 p-2.5 border border-rose-200 text-xs text-rose-800">
-              <AlertCircle className="h-4 w-4 text-rose-600 flex-shrink-0 mt-0.5" />
+              <FaIcon name="error" className="text-rose-600 text-sm flex-shrink-0 mt-0.5" />
               <span className="font-medium">{buyError}</span>
             </div>
           )}
 
           {buyStatus && (
             <div className="flex items-start space-x-2 rounded-lg bg-purple-50 p-2.5 border border-purple-200 text-xs text-purple-800">
-              <CheckCircle2 className="h-4 w-4 text-purple-600 flex-shrink-0 mt-0.5" />
+              <FaIcon name="checkCircle" className="text-purple-600 text-sm flex-shrink-0 mt-0.5" />
               <span className="font-medium">{buyStatus}</span>
             </div>
           )}

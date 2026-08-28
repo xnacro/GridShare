@@ -9,31 +9,12 @@ import HomeP2PTradingCard from '../components/home/HomeP2PTradingCard';
 import HomeFinancialScoreCard from '../components/home/HomeFinancialScoreCard';
 import HomeTimelineSimulator from '../components/home/HomeTimelineSimulator';
 import HomeActivityLog from '../components/home/HomeActivityLog';
-import StatCard from '../components/StatCard';
 import ChartCard from '../components/ChartCard';
-import StatusBadge from '../components/StatusBadge';
-import { LoadingState, ErrorState } from '../components/StateFeedback';
-import {
-  Home,
-  Sun,
-  Power,
-  BatteryCharging,
-  Zap,
-  IndianRupee,
-  ShieldCheck,
-  Cpu,
-  Clock,
-  Lightbulb,
-  ArrowRight,
-  RefreshCw,
-  Lock,
-  RotateCcw,
-  Sparkles,
-  Cloud,
-  CheckCircle2,
-  Sliders,
-  Maximize2
-} from 'lucide-react';
+import MetricCard from '../components/ui/MetricCard';
+import Badge from '../components/ui/Badge';
+import Button, { IconButton } from '../components/ui/Button';
+import { LoadingState, ErrorState } from '../components/ui/FeedbackStates';
+import FaIcon from '../components/icons/FaIcon';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -535,21 +516,23 @@ export default function MyHomeView() {
   return (
     <div className="space-y-4">
       {/* ==================== 1. TOP HEADER & QUICK DEMO CONTROLS ==================== */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-xs gap-3">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
         {/* Household Identification */}
-        <div className="flex items-center space-x-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm">
-            <Home className="h-6 w-6" />
+        <div className="flex items-center space-x-3.5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-amber-400 shadow-md">
+            <FaIcon name="home" className="text-lg" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-base font-bold text-slate-900">{currentHousehold.name}</h2>
-              <StatusBadge status={currentHousehold.household_type || 'PROSUMER'} />
-              <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
-                LIVE TWIN ONLINE
-              </span>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">{currentHousehold.name}</h2>
+              <Badge variant={currentHousehold.household_type === 'PROSUMER' ? 'surplus' : 'default'} size="xs">
+                {currentHousehold.household_type || 'PROSUMER'}
+              </Badge>
+              <Badge variant="surplus" size="xs">
+                Live Twin Online
+              </Badge>
             </div>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-slate-500 font-normal">
               {currentHousehold.location} • Smart Meter Node: #{selectedHouseholdId.toUpperCase()} • GridShare P2P Protocol
             </p>
           </div>
@@ -571,87 +554,78 @@ export default function MyHomeView() {
           </select>
 
           {/* Load Demo Button */}
-          <button
+          <Button
+            variant="primary"
+            size="sm"
             onClick={handleLoadDemo}
-            className="flex items-center space-x-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition shadow-xs"
+            icon={<FaIcon name="sparkles" />}
           >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>LOAD HOME DEMO</span>
-          </button>
+            Load Home Demo
+          </Button>
 
           {/* Reset Demo Button */}
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleResetDemo}
-            className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
+            icon={<FaIcon name="refresh" />}
           >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>Reset</span>
-          </button>
+            Reset
+          </Button>
 
           {/* Sync Button */}
-          <button
+          <IconButton
+            name="refresh"
+            size="sm"
+            variant="secondary"
             onClick={() => {
               setIsRefreshing(true);
               fetchBackendData();
               setTimeout(() => setIsRefreshing(false), 400);
             }}
             disabled={isRefreshing}
-            className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Sync</span>
-          </button>
+            className={isRefreshing ? 'animate-spin' : ''}
+            title="Sync Home Telemetry"
+          />
         </div>
       </div>
 
       {/* ==================== 2. PRIMARY TELEMETRY KPI TILES ==================== */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Current Generation */}
-        <StatCard
+        <MetricCard
           title="Current Generation"
           value={currentSolarKw.toFixed(2)}
           unit="kW"
           subtitle={cloudCover ? "Cloud Cover Active (55% Irradiance)" : "Rooftop Monocrystalline PV"}
-          icon={Sun}
-          accentColor="solar"
-          badgeText={currentSolarKw > 0 ? "Active PV" : "Standby"}
-          badgeType={currentSolarKw > 0 ? "warning" : "neutral"}
+          iconName="solar"
+          variant="surplus"
         />
 
-        {/* Current Consumption */}
-        <StatCard
+        <MetricCard
           title="Current Consumption"
           value={currentDemandKw.toFixed(2)}
           unit="kW"
           subtitle={`${Object.values(appliances).filter(Boolean).length} Active Household Appliances`}
-          icon={Power}
-          accentColor="blue"
-          badgeText="Active Load"
-          badgeType="neutral"
+          iconName="home"
+          variant="default"
         />
 
-        {/* Net Balance */}
-        <StatCard
+        <MetricCard
           title="Net Energy Balance"
           value={isSurplus ? `+${surplusKw.toFixed(2)}` : `-${deficitKw.toFixed(2)}`}
           unit="kW"
           subtitle={isSurplus ? "Surplus charging battery & selling P2P" : "Deficit met via battery & local grid"}
-          icon={Zap}
-          accentColor={isSurplus ? "emerald" : "blue"}
-          badgeText={isSurplus ? "SURPLUS EXPORTER" : "DEFICIT CONSUMER"}
-          badgeType={isSurplus ? "success" : "neutral"}
+          iconName={isSurplus ? "trade" : "energy"}
+          variant={isSurplus ? "surplus" : "deficit"}
         />
 
-        {/* Home Battery SOC */}
-        <StatCard
+        <MetricCard
           title="Home Battery Storage"
           value={`${batterySoc.toFixed(0)}%`}
           unit={`(${((batteryCapacity * batterySoc) / 100).toFixed(1)} kWh)`}
           subtitle={`Capacity: ${batteryCapacity.toFixed(0)} kWh • Reserve: ${batteryReservePercent}%`}
-          icon={BatteryCharging}
-          accentColor="emerald"
-          badgeText={batteryPowerKw > 0 ? "CHARGING" : batteryPowerKw < 0 ? "DISCHARGING" : "STANDBY"}
-          badgeType={batteryPowerKw > 0 ? "success" : batteryPowerKw < 0 ? "warning" : "neutral"}
+          iconName="battery"
+          variant="battery"
         />
       </div>
 
@@ -907,7 +881,9 @@ export default function MyHomeView() {
                       <td className="py-2 px-3 font-mono font-bold text-emerald-700">₹{tx.price_per_kwh?.toFixed(2)}</td>
                       <td className="py-2 px-3 font-bold text-slate-900">₹{tx.total_value?.toFixed(2)}</td>
                       <td className="py-2 px-3 text-right">
-                        <StatusBadge status={tx.status} />
+                        <Badge variant={tx.status === 'SETTLED' ? 'surplus' : 'warning'} size="xs">
+                          {tx.status || 'SETTLED'}
+                        </Badge>
                       </td>
                     </tr>
                   );

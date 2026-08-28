@@ -1,26 +1,9 @@
 import React, { useState, useRef, useMemo } from 'react';
 import InteractiveOptimizerScene3D, { OPTIMIZER_3D_POSITIONS } from '../components/energy-map-3d/InteractiveOptimizerScene3D';
-import {
-  Sliders,
-  Play,
-  CheckCircle2,
-  RefreshCw,
-  RotateCcw,
-  Sparkles,
-  Zap,
-  TrendingUp,
-  ShieldCheck,
-  BatteryCharging,
-  IndianRupee,
-  Activity,
-  Layers,
-  ArrowRight,
-  Sun,
-  Camera,
-  Tag,
-  Clock,
-  Check
-} from 'lucide-react';
+import MetricCard from '../components/ui/MetricCard';
+import Badge from '../components/ui/Badge';
+import Button, { IconButton } from '../components/ui/Button';
+import FaIcon from '../components/icons/FaIcon';
 
 export default function Optimization() {
   // 1. Manual Inputs State
@@ -86,7 +69,7 @@ export default function Optimization() {
       setP2pAvailable(1.5);
       setP2pPrice(4.20);
       setGridPrice(5.80);
-      setStatusMessage('Scenario: Morning Ramp (08:00) — Moderate solar output, residential ramp-up.');
+      setStatusMessage('Scenario: Morning Ramp (08:00) - Moderate solar output, residential ramp-up.');
     } else if (scenarioKey === 'SOLAR_NOON') {
       setGeneration(8.4);
       setLoad(5.2);
@@ -94,7 +77,7 @@ export default function Optimization() {
       setP2pAvailable(3.5);
       setP2pPrice(3.90);
       setGridPrice(6.00);
-      setStatusMessage('Scenario: Solar Noon (12:00) — High renewable surplus with storage capacity.');
+      setStatusMessage('Scenario: Solar Noon (12:00) - High renewable surplus with storage capacity.');
     } else if (scenarioKey === 'EVENING_PEAK') {
       setGeneration(0.8);
       setLoad(8.2);
@@ -102,7 +85,7 @@ export default function Optimization() {
       setP2pAvailable(2.0);
       setP2pPrice(5.20);
       setGridPrice(7.50);
-      setStatusMessage('Scenario: Evening Peak (19:00) — High residential load & EV charging, elevated grid tariff.');
+      setStatusMessage('Scenario: Evening Peak (19:00) - High residential load & EV charging, elevated grid tariff.');
     } else if (scenarioKey === 'NIGHT') {
       setGeneration(0.0);
       setLoad(6.0);
@@ -110,7 +93,7 @@ export default function Optimization() {
       setP2pAvailable(0.5);
       setP2pPrice(4.80);
       setGridPrice(5.50);
-      setStatusMessage('Scenario: Night Deficit (23:00) — Zero solar generation, baseline community draw.');
+      setStatusMessage('Scenario: Night Deficit (23:00) - Zero solar generation, baseline community draw.');
     } else if (scenarioKey === 'HIGH_DEMAND') {
       setGeneration(3.0);
       setLoad(9.5);
@@ -118,7 +101,7 @@ export default function Optimization() {
       setP2pAvailable(3.0);
       setP2pPrice(5.50);
       setGridPrice(8.50);
-      setStatusMessage('Scenario: Grid Congestion — Peak utility pricing ₹8.50/kWh, maximizing local dispatch.');
+      setStatusMessage('Scenario: Grid Congestion - Peak utility pricing ₹8.50/kWh, maximizing local dispatch.');
     }
   };
 
@@ -362,92 +345,107 @@ export default function Optimization() {
   ];
 
   return (
-    <div className="space-y-2.5 max-w-[1680px] mx-auto pb-6 select-none">
+    <div className="space-y-4 max-w-[1680px] mx-auto pb-6 select-none">
+      {/* Header bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
+        <div className="flex items-center space-x-3.5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-teal-400 shadow-md">
+            <FaIcon name="ai" className="text-lg" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">Multi-Tier Microgrid Optimizer</h2>
+              <Badge variant="ai" size="xs">
+                Deterministic Solver
+              </Badge>
+            </div>
+            <p className="text-xs text-slate-500 font-normal">
+              Linear programmed cost minimization: Local Solar ➔ P2P Marketplace ➔ Community Battery ➔ Utility Grid.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleRunOptimizer}
+            disabled={status === 'ANALYZING' || status === 'APPLYING'}
+            icon={<FaIcon name={status === 'ANALYZING' ? "refresh" : "play"} className={status === 'ANALYZING' ? "animate-spin" : ""} />}
+          >
+            {status === 'ANALYZING' ? 'Analyzing...' : 'Run Optimizer'}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            icon={<FaIcon name="refresh" />}
+          >
+            Reset
+          </Button>
+        </div>
+      </div>
+
       {/* 🌟 1. TOP ROW: REAL-TIME OPTIMIZATION KPI CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        {/* Total Cost */}
-        <div className="rounded-xl border border-teal-200 bg-teal-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-teal-800 font-bold uppercase">
-            <span>Optimized Cost</span>
-            <IndianRupee className="h-3 w-3 text-teal-600" />
-          </div>
-          <div className="font-mono font-extrabold text-teal-900 text-base mt-0.5">
-            {optimizedPlan ? `₹${optimizedPlan.optimizedCost.toFixed(2)}` : '₹18.00'} <span className="text-[10px] text-slate-500 font-sans font-normal">(vs ₹{optimizedPlan ? optimizedPlan.unoptimizedCost.toFixed(0) : '60'})</span>
-          </div>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <MetricCard
+          title="Optimized Cost"
+          value={optimizedPlan ? `₹${optimizedPlan.optimizedCost.toFixed(2)}` : '₹18.00'}
+          subtitle={optimizedPlan ? `vs ₹${optimizedPlan.unoptimizedCost.toFixed(0)} grid tariff` : 'vs ₹60.00 grid tariff'}
+          iconName="rupee"
+          variant="ai"
+        />
 
-        {/* Savings */}
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-emerald-800 font-bold uppercase">
-            <span>Cost Savings</span>
-            <TrendingUp className="h-3 w-3 text-emerald-600" />
-          </div>
-          <div className="font-mono font-extrabold text-emerald-900 text-base mt-0.5">
-            +{optimizedPlan ? `₹${optimizedPlan.savings.toFixed(2)}` : '₹42.00'} <span className="text-[10px] text-emerald-700 font-bold font-sans">({optimizedPlan ? Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100) : 70}%)</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Cost Savings"
+          value={optimizedPlan ? `+₹${optimizedPlan.savings.toFixed(2)}` : '+₹42.00'}
+          subtitle={optimizedPlan ? `${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% Cheaper` : '70% Cheaper'}
+          iconName="trendingUp"
+          variant="surplus"
+        />
 
-        {/* Renewable Penetration */}
-        <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-blue-800 font-bold uppercase">
-            <span>Renewable %</span>
-            <Sun className="h-3 w-3 text-blue-600" />
-          </div>
-          <div className="font-mono font-extrabold text-blue-900 text-base mt-0.5">
-            {optimizedPlan ? `${optimizedPlan.renewablePercent}%` : '88%'} <span className="text-xs text-slate-500 font-sans font-normal">Clean</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Renewable Penetration"
+          value={optimizedPlan ? `${optimizedPlan.renewablePercent}%` : '88%'}
+          subtitle="Clean Solar & ESS"
+          iconName="solar"
+          variant="surplus"
+        />
 
-        {/* Grid Import */}
-        <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-purple-800 font-bold uppercase">
-            <span>Grid Import</span>
-            <Layers className="h-3 w-3 text-purple-600" />
-          </div>
-          <div className="font-mono font-extrabold text-purple-900 text-base mt-0.5">
-            {optimizedPlan ? `${optimizedPlan.gridImport.toFixed(1)} kWh` : '0.4 kWh'} <span className="text-[10px] text-slate-500 font-sans">({optimizedPlan ? optimizedPlan.gridDependencyPercent : 5.5}%)</span>
-          </div>
-        </div>
+        <MetricCard
+          title="Grid Import"
+          value={optimizedPlan ? `${optimizedPlan.gridImport.toFixed(1)} kWh` : '0.4 kWh'}
+          subtitle={optimizedPlan ? `${optimizedPlan.gridDependencyPercent}% Dependency` : '5.5% Dependency'}
+          iconName="grid"
+          variant="deficit"
+        />
 
-        {/* P2P Traded Volume */}
-        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-amber-800 font-bold uppercase">
-            <span>P2P Volume</span>
-            <Tag className="h-3 w-3 text-amber-600" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-base mt-0.5">
-            {optimizedPlan ? `${optimizedPlan.p2pUsed.toFixed(1)} kWh` : '2.0 kWh'} <span className="text-[10px] text-amber-800 font-mono">(@ ₹{p2pPrice.toFixed(1)})</span>
-          </div>
-        </div>
+        <MetricCard
+          title="P2P Volume"
+          value={optimizedPlan ? `${optimizedPlan.p2pUsed.toFixed(1)} kWh` : '2.0 kWh'}
+          subtitle={`@ ₹${p2pPrice.toFixed(1)}/kWh`}
+          iconName="trade"
+          variant="battery"
+        />
 
-        {/* Status */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 shadow-2xs">
-          <div className="flex items-center justify-between text-[10px] text-slate-700 font-bold uppercase">
-            <span>Optimizer State</span>
-            <Activity className="h-3 w-3 text-slate-500" />
-          </div>
-          <div className="font-mono font-extrabold text-slate-900 text-sm mt-1">
-            <span className={`rounded px-1.5 py-0.5 text-[10px] uppercase ${
-              status === 'PLAN_READY' || status === 'COMPLETED'
-                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                : status === 'ANALYZING' || status === 'APPLYING'
-                ? 'bg-purple-100 text-purple-800 border border-purple-300 animate-pulse'
-                : 'bg-slate-100 text-slate-800'
-            }`}>
-              {status}
-            </span>
-          </div>
-        </div>
+        <MetricCard
+          title="Optimizer State"
+          value={status}
+          subtitle="Deterministic Engine"
+          iconName="ai"
+          variant="default"
+        />
       </div>
 
       {/* Dynamic Narrative Banner */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-lg border border-teal-300 bg-teal-50/95 px-3 py-1 text-[11.5px] text-teal-950 shadow-2xs">
-          <div className="flex items-center space-x-1.5">
+        <div className="flex items-center justify-between rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs text-teal-950 shadow-2xs">
+          <div className="flex items-center space-x-2">
             <span className="h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
             <span className="font-semibold">{statusMessage}</span>
           </div>
-          <button onClick={() => setStatusMessage('')} className="text-teal-700 hover:text-teal-950 font-bold text-xs p-0.5">
+          <button type="button" onClick={() => setStatusMessage('')} className="text-teal-700 hover:text-teal-950 font-bold text-xs p-0.5">
             ✕
           </button>
         </div>
@@ -611,29 +609,32 @@ export default function Optimization() {
             {/* Action Trigger Buttons */}
             <div className="space-y-1.5 pt-1.5">
               <button
+                type="button"
                 onClick={handleRunOptimizer}
                 disabled={status === 'ANALYZING' || status === 'APPLYING'}
                 className="flex w-full items-center justify-center space-x-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white py-2 text-xs font-bold shadow-2xs transition active:scale-95 disabled:opacity-50"
               >
-                <Play className={`h-3.5 w-3.5 ${status === 'ANALYZING' ? 'animate-spin' : 'fill-current'}`} />
-                <span>{status === 'ANALYZING' ? 'ANALYZING MICROGRID...' : '⚡ RUN OPTIMIZER'}</span>
+                <FaIcon name={status === 'ANALYZING' ? "refresh" : "play"} className={status === 'ANALYZING' ? "animate-spin text-xs" : "text-xs"} />
+                <span>{status === 'ANALYZING' ? 'ANALYZING MICROGRID...' : 'RUN OPTIMIZER'}</span>
               </button>
 
               {status === 'PLAN_READY' && (
                 <button
+                  type="button"
                   onClick={handleApplyPlan}
                   className="flex w-full items-center justify-center space-x-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white py-1.5 text-xs font-bold shadow-2xs transition active:scale-95 animate-bounce"
                 >
-                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <FaIcon name="checkCircle" className="text-xs" />
                   <span>APPLY OPTIMAL PLAN</span>
                 </button>
               )}
 
               <button
+                type="button"
                 onClick={handleReset}
                 className="flex w-full items-center justify-center space-x-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 py-1 text-[10.5px] font-semibold transition active:scale-95"
               >
-                <RotateCcw className="h-3 w-3 text-slate-500" />
+                <FaIcon name="refresh" className="text-slate-500 text-xs" />
                 <span>RESET DEMO</span>
               </button>
             </div>
@@ -654,14 +655,16 @@ export default function Optimization() {
 
               <div className="flex items-center space-x-1 text-[10px] font-semibold">
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.resetCamera()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition"
                   title="Default Angle"
                 >
-                  <Camera className="h-3 w-3 inline mr-1 text-slate-500" />
+                  <FaIcon name="camera" className="mr-1 text-slate-500 text-xs" />
                   Reset View
                 </button>
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.topView()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
                   title="Top-Down Angle"
@@ -669,6 +672,7 @@ export default function Optimization() {
                   Top View
                 </button>
                 <button
+                  type="button"
                   onClick={() => sceneRef.current?.marketView()}
                   className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
                   title="Arena Perspective"
@@ -781,7 +785,7 @@ export default function Optimization() {
           {/* AI OPTIMIZER INSIGHT & WHY THIS PLAN */}
           <div className="rounded-xl border border-teal-200 bg-teal-50/40 p-3 shadow-card space-y-1.5 text-xs">
             <div className="flex items-center space-x-1.5 pb-1 border-b border-teal-100">
-              <Sparkles className="h-3.5 w-3.5 text-teal-700" />
+              <FaIcon name="sparkles" className="text-teal-700 text-xs" />
               <span className="font-extrabold text-[11px] text-teal-950">
                 Why This Plan?
               </span>
@@ -793,15 +797,15 @@ export default function Optimization() {
 
             <div className="space-y-1 pt-1 border-t border-teal-100 text-[10px] text-slate-600">
               <div className="flex items-center space-x-1">
-                <Check className="h-3 w-3 text-emerald-600" />
+                <FaIcon name="checkCircle" className="text-emerald-600 text-xs" />
                 <span>Zero grid dependency during peak solar</span>
               </div>
               <div className="flex items-center space-x-1">
-                <Check className="h-3 w-3 text-emerald-600" />
+                <FaIcon name="checkCircle" className="text-emerald-600 text-xs" />
                 <span>P2P trade cleared at fair community midpoint</span>
               </div>
               <div className="flex items-center space-x-1">
-                <Check className="h-3 w-3 text-emerald-600" />
+                <FaIcon name="checkCircle" className="text-emerald-600 text-xs" />
                 <span>10% ESS reserve preserved for blackout safety</span>
               </div>
             </div>
@@ -813,7 +817,7 @@ export default function Optimization() {
       <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-card space-y-2 text-xs">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-emerald-700" />
+            <FaIcon name="history" className="text-emerald-700 text-sm" />
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
               Optimization Decision Audit Trail & Performance History
             </h3>

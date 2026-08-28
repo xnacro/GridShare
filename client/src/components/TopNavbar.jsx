@@ -1,23 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import {
-  Zap,
-  LayoutDashboard,
-  Users,
-  Network,
-  ShoppingBag,
-  Cpu,
-  Home,
-  ReceiptText,
-  Sliders,
-  RefreshCw,
-  Sparkles,
-  IndianRupee,
-  BatteryCharging,
-  Play,
-  Menu,
-  X
-} from 'lucide-react';
+import FaIcon from './icons/FaIcon';
+import Badge, { StatusIndicator } from './ui/Badge';
+import Button, { IconButton } from './ui/Button';
 
 export default function TopNavbar({
   isOnline = true,
@@ -33,138 +18,149 @@ export default function TopNavbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: 'Microgrid 3D', path: '/simulation', icon: Zap, highlight: true },
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Energy Map', path: '/energy-map', icon: Network },
-    { name: 'Marketplace', path: '/marketplace', icon: ShoppingBag },
-    { name: 'Battery', path: '/battery', icon: BatteryCharging },
-    { name: 'Optimizer', path: '/optimize', icon: Sliders },
-    { name: 'AI & Forecasts', path: '/ai', icon: Cpu },
-    { name: 'My Home', path: '/my-home', icon: Home },
-    { name: 'Ledger', path: '/transactions', icon: ReceiptText },
+    { name: 'Overview', path: '/', iconName: 'overview' },
+    { name: 'Energy Network', path: '/network', iconName: 'network' },
+    { name: 'AI Copilot', path: '/ai', iconName: 'ai', highlight: true },
+    { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace' },
+    { name: 'Battery ESS', path: '/battery', iconName: 'battery' },
+    { name: 'My Home', path: '/my-home', iconName: 'home' },
+    { name: 'Devices', path: '/devices', iconName: 'devices' },
+    { name: 'Transactions', path: '/transactions', iconName: 'transactions' },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-xs select-none">
-      <div className="mx-auto flex h-12 max-w-[1680px] items-center justify-between px-3 sm:px-4">
-        {/* Brand Logo & Cluster status */}
-        <div className="flex items-center space-x-2.5 flex-shrink-0">
-          <NavLink to="/simulation" className="flex items-center space-x-2 group">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-xs group-hover:bg-emerald-700 transition">
-              <Zap className="h-4 w-4" />
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs select-none">
+      <div className="mx-auto flex h-13 max-w-[1680px] items-center justify-between px-3 sm:px-4">
+        {/* Brand Logo & Connection Status */}
+        <div className="flex items-center space-x-3 flex-shrink-0">
+          <NavLink to="/" className="flex items-center space-x-2 group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-emerald-400 shadow-md group-hover:bg-slate-800 transition">
+              <FaIcon name="energy" className="text-sm" />
             </div>
             <div className="flex items-center space-x-1.5">
-              <span className="text-sm font-black tracking-tight text-slate-900">
+              <span className="text-sm font-extrabold tracking-tight text-slate-900">
                 GRID<span className="text-emerald-600">SHARE</span>
               </span>
-              <span className="hidden sm:inline-block rounded bg-emerald-50 px-1.5 py-0.2 text-[9px] font-bold text-emerald-800 border border-emerald-200">
-                P2P MICROGRID
+              <span className="hidden sm:inline-block rounded-md bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 border border-emerald-200">
+                AI OS
               </span>
             </div>
           </NavLink>
 
-          <div className="hidden xl:flex items-center space-x-1 border-l border-slate-200 pl-2.5 text-[10.5px]">
-            <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
-            <span className="text-slate-500 font-medium font-mono">Cluster 101</span>
+          <div className="hidden xl:flex items-center space-x-1.5 border-l border-slate-200 pl-3 text-xs">
+            <StatusIndicator
+              status={isOnline ? 'online' : 'offline'}
+              pulse={isOnline}
+              label={isOnline ? 'Supabase Live' : 'Offline'}
+            />
           </div>
         </div>
 
-        {/* Horizontal Navigation Links */}
-        <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 overflow-x-auto py-1">
+        {/* Primary Navigation Links */}
+        <nav className="hidden lg:flex items-center space-x-1 xl:space-x-1.5">
           {navItems.map((item) => {
-            const Icon = item.icon;
-            const isMatch = location.pathname === item.path || (item.path === '/simulation' && location.pathname === '/');
+            const isMatch =
+              location.pathname === item.path ||
+              (item.path === '/' && (location.pathname === '/' || location.pathname === '/dashboard')) ||
+              (item.path === '/network' && (location.pathname === '/network' || location.pathname === '/simulation' || location.pathname === '/energy-map'));
 
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={
-                  `flex items-center space-x-1.5 rounded-lg px-2 xl:px-2.5 py-1 text-[11.5px] font-bold transition-all whitespace-nowrap ${
-                    isMatch
-                      ? 'bg-emerald-50 text-emerald-900 border border-emerald-300 shadow-xs'
-                      : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
-                  } ${item.highlight && !isMatch ? 'text-emerald-700 font-extrabold' : ''}`
-                }
+                className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+                  isMatch
+                    ? 'bg-slate-900 text-emerald-400 shadow-sm border border-slate-900'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent'
+                } ${item.highlight && !isMatch ? 'text-purple-700 font-bold' : ''}`}
               >
-                <Icon className={`h-3.5 w-3.5 flex-shrink-0 ${isMatch ? 'text-emerald-600' : 'text-slate-400'}`} />
+                <FaIcon
+                  name={item.iconName}
+                  className={`text-xs ${isMatch ? 'text-emerald-400' : 'text-slate-400'}`}
+                />
                 <span>{item.name}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        {/* Right Utility Badges & Action Controls */}
-        <div className="flex items-center space-x-1.5 sm:space-x-2">
-          {/* Battery Status Tag */}
-          <div className="hidden md:flex items-center space-x-1 rounded-lg border border-teal-200 bg-teal-50/70 px-2 py-0.8 text-[11px] font-mono">
-            <BatteryCharging className="h-3 w-3 text-teal-600" />
-            <span className="font-bold text-teal-900">{batterySoc.toFixed(0)}%</span>
+        {/* Utility Badges & Action Controls */}
+        <div className="flex items-center space-x-2">
+          {/* Battery Status Gauge */}
+          <div className="hidden md:flex items-center space-x-1.5 rounded-lg border border-amber-200 bg-amber-50/70 px-2.5 py-1 text-xs font-semibold text-amber-900">
+            <FaIcon name="battery" className="text-amber-600" />
+            <span>{batterySoc.toFixed(0)}%</span>
+            <span className="text-[10px] font-normal text-amber-700 hidden xl:inline">ESS</span>
           </div>
 
-          {/* Grid Benchmark */}
-          <div className="hidden xl:flex items-center space-x-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.8 text-[11px] font-mono">
-            <IndianRupee className="h-2.5 w-2.5 text-slate-500" />
-            <span className="text-slate-500 font-sans text-[10px]">Grid:</span>
-            <span className="font-bold text-slate-900">₹{gridPrice.toFixed(2)}</span>
+          {/* Grid Tariff Tag */}
+          <div className="hidden xl:flex items-center space-x-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700">
+            <FaIcon name="grid" className="text-blue-600 text-[11px]" />
+            <span className="text-slate-500 font-normal text-[11px]">Grid:</span>
+            <span>₹{gridPrice.toFixed(2)}</span>
           </div>
 
           {/* Sync Button */}
           {onRefresh && (
-            <button
+            <IconButton
+              name="refresh"
+              size="sm"
+              variant="outline"
               onClick={onRefresh}
               disabled={isRefreshing}
-              className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition active:scale-95 disabled:opacity-50"
-              title="Refresh telemetry"
-            >
-              <RefreshCw className={`h-3 w-3 text-slate-500 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline text-[10.5px]">Sync</span>
-            </button>
+              title="Refresh real-time state"
+              className={isRefreshing ? 'animate-spin' : ''}
+              ariaLabel="Refresh telemetry"
+            />
           )}
 
-          {/* Demo Mode Button */}
+          {/* Scenarios / PPT Demo Button */}
           {onOpenDemoModal && (
-            <button
+            <Button
+              variant="warning"
+              size="sm"
               onClick={onOpenDemoModal}
-              className="flex items-center space-x-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 text-[11px] font-bold shadow-xs transition active:scale-95 border border-amber-600"
-              title="Open Demo Scenarios"
+              icon={<FaIcon name="sparkles" />}
+              className="text-xs font-bold"
             >
-              <Sparkles className="h-3 w-3" />
               <span className="hidden sm:inline">Scenarios</span>
-            </button>
+            </Button>
           )}
 
           {/* Mobile Menu Toggle Button */}
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="flex lg:hidden items-center justify-center h-8 w-8 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"
-            aria-label="Toggle Navigation"
+            aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            <FaIcon name={mobileMenuOpen ? 'close' : 'sliders'} className="text-sm" />
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer Dropdown */}
+      {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-2 space-y-1 shadow-lg animate-in slide-in-from-top duration-150">
-          <div className="grid grid-cols-2 gap-1.5 py-1">
+        <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1 shadow-xl animate-in slide-in-from-top duration-150">
+          <div className="grid grid-cols-2 gap-2 py-1">
             {navItems.map((item) => {
-              const Icon = item.icon;
-              const isMatch = location.pathname === item.path || (item.path === '/simulation' && location.pathname === '/');
+              const isMatch =
+                location.pathname === item.path ||
+                (item.path === '/' && (location.pathname === '/' || location.pathname === '/dashboard')) ||
+                (item.path === '/network' && (location.pathname === '/network' || location.pathname === '/simulation'));
 
               return (
                 <NavLink
                   key={item.path}
                   to={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 rounded-lg px-2.5 py-2 text-xs font-bold transition ${
+                  className={`flex items-center space-x-2 rounded-xl px-3 py-2.5 text-xs font-bold transition ${
                     isMatch
-                      ? 'bg-emerald-50 text-emerald-900 border border-emerald-300'
-                      : 'text-slate-600 hover:bg-slate-50'
+                      ? 'bg-slate-900 text-emerald-400'
+                      : 'text-slate-700 bg-slate-50 hover:bg-slate-100'
                   }`}
                 >
-                  <Icon className={`h-3.5 w-3.5 ${isMatch ? 'text-emerald-600' : 'text-slate-400'}`} />
+                  <FaIcon name={item.iconName} className={isMatch ? 'text-emerald-400' : 'text-slate-500'} />
                   <span>{item.name}</span>
                 </NavLink>
               );

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Clock, Sun, Moon, Zap } from 'lucide-react';
+import React from 'react';
+import FaIcon from '../icons/FaIcon';
 
 export const TIMELINE_PRESETS = [
   { hour: 6, label: '06:00', title: 'Dawn / Solar Starts', solarEst: 0.8, loadEst: 1.4 },
@@ -21,7 +21,7 @@ export default function HomeTimelineSimulator({
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2.5 border-b border-slate-100 mb-3 gap-2">
         <div className="flex items-center space-x-2">
-          <Clock className="h-4 w-4 text-purple-600" />
+          <FaIcon name="clock" className="text-purple-600 text-sm" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             24-Hour Home Energy Simulation Timeline
           </h3>
@@ -30,6 +30,7 @@ export default function HomeTimelineSimulator({
         {/* Playback Controls */}
         <div className="flex items-center space-x-2">
           <button
+            type="button"
             onClick={onTogglePlay}
             className={`flex items-center space-x-1 px-3 py-1 rounded-lg text-xs font-bold transition shadow-xs ${
               isPlaying
@@ -39,22 +40,23 @@ export default function HomeTimelineSimulator({
           >
             {isPlaying ? (
               <>
-                <Pause className="h-3.5 w-3.5" />
+                <FaIcon name="pause" className="text-xs" />
                 <span>PAUSE</span>
               </>
             ) : (
               <>
-                <Play className="h-3.5 w-3.5" />
+                <FaIcon name="play" className="text-xs" />
                 <span>PLAY DAY</span>
               </>
             )}
           </button>
 
           <button
+            type="button"
             onClick={onResetTimeline}
             className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
+            <FaIcon name="rotate" className="text-xs text-slate-500" />
             <span>RESET (12:00)</span>
           </button>
         </div>
@@ -64,11 +66,10 @@ export default function HomeTimelineSimulator({
       <div className="space-y-2 mb-3">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center space-x-1.5 font-mono font-bold text-slate-800">
-            {currentHour >= 6 && currentHour <= 18 ? (
-              <Sun className="h-4 w-4 text-amber-500" />
-            ) : (
-              <Moon className="h-4 w-4 text-blue-500" />
-            )}
+            <FaIcon
+              name={currentHour >= 6 && currentHour <= 18 ? 'solar' : 'moon'}
+              className={`text-sm ${currentHour >= 6 && currentHour <= 18 ? 'text-amber-500' : 'text-blue-500'}`}
+            />
             <span>Current Time: {String(Math.floor(currentHour)).padStart(2, '0')}:00</span>
           </div>
           <span className="text-[11px] text-slate-500">
@@ -105,6 +106,7 @@ export default function HomeTimelineSimulator({
           return (
             <button
               key={preset.hour}
+              type="button"
               onClick={() => onSelectHour(preset.hour)}
               className={`p-2 rounded-lg border text-left transition-all ${
                 isSelected
