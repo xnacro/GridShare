@@ -130,14 +130,6 @@ export default function TransactionsView() {
             <FaIcon name="refresh" className={isRefreshing ? 'animate-spin' : ''} />
             <span>{isRefreshing ? 'Refreshing...' : 'Refresh Ledger'}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => navigate('/marketplace')}
-            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
-          >
-            <FaIcon name="marketplace" />
-            <span>Marketplace</span>
-          </button>
         </div>
       </div>
 
