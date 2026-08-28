@@ -58,12 +58,6 @@ export default function NavUtility({ onOpenLoginModal }) {
 
   return (
     <div className="flex items-center space-x-2.5 sm:space-x-3 select-none flex-shrink-0">
-      
-      {/* LIVE Indicator Badge */}
-      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white border border-[rgba(23,34,29,0.08)] shadow-xs">
-        <span className="h-2 w-2 rounded-full bg-[#1E9B68] animate-pulse" />
-        <span className="text-[11px] font-extrabold tracking-wider text-[#17221D]">LIVE</span>
-      </div>
 
       {/* Notifications Popover */}
       <div className="relative" ref={notifRef}>
@@ -131,7 +125,7 @@ export default function NavUtility({ onOpenLoginModal }) {
 
         {isProfileOpen && (
           <div className="absolute top-full right-0 mt-2.5 w-72 rounded-2xl border border-[rgba(23,34,29,0.10)] bg-white p-3 shadow-lg backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 z-50 space-y-2.5">
-            
+
             {/* Profile Info Header */}
             <div className="pb-2 border-b border-[rgba(23,34,29,0.06)] px-1 space-y-0.5">
               <div className="text-xs font-extrabold text-[#17221D] truncate">{displayName}</div>
@@ -152,11 +146,10 @@ export default function NavUtility({ onOpenLoginModal }) {
                 <button
                   type="button"
                   onClick={() => handleSwitchDemo('anjali')}
-                  className={`p-2 rounded-xl border text-left text-xs transition ${
-                    household?.id === 'house_anjali'
-                      ? 'bg-[#E8F6EE] border-[#1E9B68] text-[#12392B] font-bold'
-                      : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
-                  }`}
+                  className={`p-2 rounded-xl border text-left text-xs transition ${household?.id === 'house_anjali'
+                    ? 'bg-[#E8F6EE] border-[#1E9B68] text-[#12392B] font-bold'
+                    : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
+                    }`}
                 >
                   <div className="text-[11px] font-bold truncate">Anjali</div>
                   <div className="text-[9px] font-mono text-[#1E9B68]">+4.2 kW Solar</div>
@@ -166,11 +159,10 @@ export default function NavUtility({ onOpenLoginModal }) {
                 <button
                   type="button"
                   onClick={() => handleSwitchDemo('prince')}
-                  className={`p-2 rounded-xl border text-left text-xs transition ${
-                    household?.id === 'house_prince'
-                      ? 'bg-[#FCECEC] border-[#D45C5C] text-[#17221D] font-bold'
-                      : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
-                  }`}
+                  className={`p-2 rounded-xl border text-left text-xs transition ${household?.id === 'house_prince'
+                    ? 'bg-[#FCECEC] border-[#D45C5C] text-[#17221D] font-bold'
+                    : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
+                    }`}
                 >
                   <div className="text-[11px] font-bold truncate">Prince</div>
                   <div className="text-[9px] font-mono text-[#D45C5C]">-4.0 kW Load</div>
@@ -180,11 +172,10 @@ export default function NavUtility({ onOpenLoginModal }) {
                 <button
                   type="button"
                   onClick={() => handleSwitchDemo('ayush')}
-                  className={`p-2 rounded-xl border text-left text-xs transition ${
-                    household?.id === 'house_ayush'
-                      ? 'bg-[#E8F6EE] border-[#1E9B68] text-[#12392B] font-bold'
-                      : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
-                  }`}
+                  className={`p-2 rounded-xl border text-left text-xs transition ${household?.id === 'house_ayush'
+                    ? 'bg-[#E8F6EE] border-[#1E9B68] text-[#12392B] font-bold'
+                    : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
+                    }`}
                 >
                   <div className="text-[11px] font-bold truncate">Ayush</div>
                   <div className="text-[9px] font-mono text-[#1E9B68]">+0.1 kW Balance</div>
@@ -194,11 +185,10 @@ export default function NavUtility({ onOpenLoginModal }) {
                 <button
                   type="button"
                   onClick={() => handleSwitchDemo('rahul')}
-                  className={`p-2 rounded-xl border text-left text-xs transition ${
-                    household?.id === 'house_rahul'
-                      ? 'bg-[#FCECEC] border-[#D45C5C] text-[#17221D] font-bold'
-                      : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
-                  }`}
+                  className={`p-2 rounded-xl border text-left text-xs transition ${household?.id === 'house_rahul'
+                    ? 'bg-[#FCECEC] border-[#D45C5C] text-[#17221D] font-bold'
+                    : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] text-[#5E6963] hover:text-[#17221D]'
+                    }`}
                 >
                   <div className="text-[11px] font-bold truncate">Rahul</div>
                   <div className="text-[9px] font-mono text-[#3C78CC]">-3.4 kW EV</div>

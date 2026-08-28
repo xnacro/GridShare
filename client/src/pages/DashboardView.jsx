@@ -141,23 +141,23 @@ export default function DashboardView({ onOpenDemoModal }) {
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
-      
+
       {/* 🌟 1. VELUNO-STYLE SPLIT HERO: Left Content | Right Hand-Drawn Illustration */}
-      <div className="glass-card rounded-xl relative overflow-hidden min-h-[420px] lg:min-h-[480px]">
-        
+      <div className="glass-card rounded-xl relative overflow-hidden" style={{ minHeight: 'calc(100vh - 100px)' }}>
+
         {/* Subtle background tint for the right illustration area */}
         <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[55%] bg-gradient-to-bl from-[#EBF5E6]/60 via-[#F0F7EC]/40 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-stretch min-h-[420px] lg:min-h-[480px]">
-          
+        <div className="relative z-10 flex flex-col lg:flex-row items-stretch" style={{ minHeight: 'calc(100vh - 100px)' }}>
+
           {/* ─── LEFT SIDE: Content & CTAs ─── */}
           <div className="flex-1 lg:max-w-[50%] p-8 sm:p-10 lg:p-12 flex flex-col justify-center space-y-5">
-            
+
             {/* Greeting Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold w-fit shadow-xs">
+            {/* <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold w-fit shadow-xs">
               <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
               <span>{greeting}, {userName}</span>
-            </div>
+            </div> */}
 
             {/* Dynamic Headline — Changa One Typography */}
             <h1 className="font-changa text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-[1.15] tracking-wide">
@@ -207,19 +207,19 @@ export default function DashboardView({ onOpenDemoModal }) {
 
             {/* Mini Feature Card (like Veluno's secondary product) */}
             <div className="flex items-center space-x-3 pt-3 mt-auto">
-              <div className="w-16 h-12 rounded-lg bg-[#F4F6F4] border border-[rgba(23,34,29,0.08)] flex items-center justify-center">
+              {/* <div className="w-16 h-12 rounded-lg bg-[#F4F6F4] border border-[rgba(23,34,29,0.08)] flex items-center justify-center">
                 <FaIcon name="brain" className="text-[#7358C7] text-sm" />
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <div className="text-xs font-bold text-[#17221D]">Hornet AI Active</div>
                 <div className="text-[11px] text-[#5E6963]">Dual ML models predicting solar & demand</div>
-              </div>
+              </div> */}
             </div>
           </div>
 
           {/* ─── RIGHT SIDE: Hand-Drawn Illustration ─── */}
           <div className="flex-1 lg:max-w-[50%] relative flex items-center justify-center p-4 lg:p-0">
-            
+
             {/* The SVG Illustration */}
             <MicrogridSketchIllustration className="w-full h-auto max-h-[400px] lg:max-h-[440px] object-contain" />
 
@@ -253,7 +253,7 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       {/* 🌟 2. METRIC CARDS STRIP (Glassmorphism Card with 12px Radius) */}
       <div className="glass-card rounded-xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-center">
-        
+
         {/* Col 1: Net Community Balance */}
         <div>
           <div className="text-xs font-bold text-[#5E6963]">
@@ -358,10 +358,10 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       {/* 🌟 3. EXPANDED TWO-PANEL CORE WORKSPACE (65% 3D Simulation | 35% Hornet AI with 12px Radius) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
+
         {/* Left Expanded Panel: Live Microgrid Flow (8 cols ~ 65% width, 12px Radius) */}
         <div className="lg:col-span-8 glass-card rounded-xl relative overflow-hidden h-[460px] sm:h-[500px] lg:h-[530px] flex flex-col justify-between select-none">
-          
+
           {/* Full-Bleed 3D Microgrid Viewport */}
           <div className="absolute inset-0 w-full h-full">
             <MarketplaceScene3D
@@ -537,7 +537,7 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
+
         {/* Left Expanded Card: Today's Community Impact */}
         <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
           <div>

@@ -28,7 +28,7 @@ export default function GridShareNav({
       const next = !prev;
       try {
         localStorage.setItem('gridshare_nav_collapsed', JSON.stringify(next));
-      } catch {}
+      } catch { }
       return next;
     });
   };
@@ -44,14 +44,13 @@ export default function GridShareNav({
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-200 ease-out select-none ${
-          isScrolled
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ease-out select-none ${isScrolled
             ? 'py-2 sm:py-2.5 bg-[#F8F9F6]/90 backdrop-blur-md border-b border-[rgba(23,34,29,0.06)]'
             : 'py-3 sm:py-3.5 bg-[#F8F9F6]'
-        }`}
+          }`}
       >
         <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 sm:px-8">
-          
+
           {/* LEFT: BRAND IDENTITY */}
           <div className="flex items-center space-x-3 flex-shrink-0">
             <NavLink
@@ -87,11 +86,6 @@ export default function GridShareNav({
 
           {/* MOBILE TOP CONTROLS */}
           <div className="flex items-center space-x-2.5 lg:hidden">
-            <div className="flex items-center px-2 py-0.5 rounded-full bg-[#E7F5EE] text-[#1C9A67] text-[10px] font-bold border border-[#DDE4DF]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#1C9A67] animate-pulse mr-1" />
-              <span>LIVE</span>
-            </div>
-
             <button
               type="button"
               onClick={() => setIsMobileDrawerOpen(true)}
