@@ -11,8 +11,12 @@ export const MARKET_3D_POSITIONS = {
   house_a: [-4.2, 0, 1.2],
   house_b: [0.2, 0, 2.2],
   house_c: [-2.2, 0, -2.0],
+  house_d: [2.8, 0, -1.2],
+  house_e: [-1.0, 0, 3.8],
   market_hub: [-1.2, 0, 0.4],
+  battery: [4.6, 0, 1.6],
   COMMUNITY_BATTERY: [4.6, 0, 1.6],
+  grid: [1.2, 0, -3.8],
   MAIN_UTILITY_GRID: [1.2, 0, -3.8],
 };
 
@@ -100,6 +104,8 @@ function MarketHub3D({ position, isMatching = false }) {
  * Animated Traveling Energy or Money Flow Spline with transparent glass value label
  */
 function FlowConduit3D({ flow, hideHtml = false }) {
+  if (!flow) return null;
+
   const {
     id,
     start,
@@ -113,9 +119,12 @@ function FlowConduit3D({ flow, hideHtml = false }) {
 
   const pointsRef = useRef();
 
+  const safeStart = Array.isArray(start) && start.length >= 3 ? start : [-4.2, 0, 1.2];
+  const safeEnd = Array.isArray(end) && end.length >= 3 ? end : [0.2, 0, 2.2];
+
   const { curve, lineGeometry, midPoint } = useMemo(() => {
-    const p0 = new THREE.Vector3(start[0], start[1] + 0.6, start[2]);
-    const p2 = new THREE.Vector3(end[0], end[1] + 0.6, end[2]);
+    const p0 = new THREE.Vector3(safeStart[0], safeStart[1] + 0.6, safeStart[2]);
+    const p2 = new THREE.Vector3(safeEnd[0], safeEnd[1] + 0.6, safeEnd[2]);
     const mid = new THREE.Vector3(
       (p0.x + p2.x) / 2,
       Math.max(p0.y, p2.y) + (type === 'MONEY' ? 1.4 : 1.0),
@@ -125,7 +134,7 @@ function FlowConduit3D({ flow, hideHtml = false }) {
     const points = c.getPoints(32);
     const geom = new THREE.BufferGeometry().setFromPoints(points);
     return { curve: c, lineGeometry: geom, midPoint: mid };
-  }, [start, end, type]);
+  }, [safeStart, safeEnd, type]);
 
   const particleCount = useMemo(() => {
     if (!isActive) return 0;
