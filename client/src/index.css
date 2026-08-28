@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,9 +46,9 @@
     overflow-x: hidden;
   }
 
-  /* Consistent Oswald Font for all display, headings and metric emphasis */
-  h1, h2, h3, h4, .font-oswald, .font-display {
-    font-family: 'Oswald', 'Inter', sans-serif;
+  /* Fjalla One Typography for bold, modern, non-cluttered display & headings */
+  h1, h2, h3, h4, .font-fjalla, .font-display, .font-oswald {
+    font-family: 'Fjalla One', 'Oswald', sans-serif;
     letter-spacing: 0.02em;
   }
 }

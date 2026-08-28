@@ -12,7 +12,6 @@ import {
 } from '../services/dashboardSimulationEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
 import OverviewHero3D from '../components/dashboard/OverviewHero3D';
-import LiveEnergyChart from '../components/LiveEnergyChart';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
 import FaIcon from '../components/icons/FaIcon';
 
@@ -94,11 +93,6 @@ export default function DashboardView({ onOpenDemoModal }) {
     return calculateMicrogridFlows(households, battery, grid, MARKET_3D_POSITIONS);
   }, [households, battery, grid]);
 
-  // Dynamic 24h Time-Series Profile
-  const chartHistory = useMemo(() => {
-    return generate24HourProfile(households, currentHour, battery.soc);
-  }, [households, currentHour, battery.soc]);
-
   // Total Community Primary Metrics
   const totalGen = computedHouseholds.reduce((sum, h) => sum + h.generation, 0);
   const totalCon = computedHouseholds.reduce((sum, h) => sum + h.consumption, 0);
@@ -148,7 +142,7 @@ export default function DashboardView({ onOpenDemoModal }) {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. EXPANDED SEAMLESS HERO SECTION (3D Microgrid Fading Left with Oswald Typography) */}
+      {/* 🌟 1. EXPANDED SEAMLESS HERO SECTION (Fjalla One Typography & Leftward Fading 3D Microgrid) */}
       <div className="relative overflow-hidden rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs min-h-[380px] lg:min-h-[420px]">
         
         {/* Background Expanded 3D Scene anchored to the right with smooth leftward fade */}
@@ -162,24 +156,24 @@ export default function DashboardView({ onOpenDemoModal }) {
           />
         </div>
 
-        {/* Foreground Content: Oswald Headline, Friendly Greeting & Clean CTAs */}
+        {/* Foreground Content: Fjalla One Headline, Friendly Greeting & Clean CTAs */}
         <div className="relative z-10 p-6 sm:p-8 lg:p-10 max-w-xl pointer-events-auto flex flex-col justify-center min-h-[380px] lg:min-h-[420px] space-y-4">
           
           {/* Greeting */}
-          <div className="font-oswald text-xl sm:text-2xl font-normal text-[#5E6963] tracking-wide">
+          <div className="font-fjalla text-xl sm:text-2xl font-normal text-[#5E6963] tracking-wide">
             {greeting}, {userName} <span className="inline-block">👋</span>
           </div>
 
-          {/* Main Headline in Crisp Oswald Typography */}
+          {/* Main Headline in Crisp Fjalla One Typography */}
           <div className="space-y-1 pt-0.5">
-            <div className="font-oswald text-2xl sm:text-3xl lg:text-[34px] font-normal text-[#17221D] tracking-wide leading-tight">
+            <div className="font-fjalla text-2xl sm:text-3xl lg:text-[34px] font-normal text-[#17221D] tracking-wide leading-tight">
               Your community has
             </div>
-            <div className="font-oswald text-4xl sm:text-5xl lg:text-[54px] font-semibold text-[#1E9B68] tracking-wide flex items-center gap-2.5 leading-none">
+            <div className="font-fjalla text-4xl sm:text-5xl lg:text-[54px] font-normal text-[#1E9B68] tracking-wide flex items-center gap-2.5 leading-none">
               <span>+{netCommunity.toFixed(1)} kW</span>
               <span className="text-3xl sm:text-4xl text-[#1E9B68]">🍃</span>
             </div>
-            <div className="font-oswald text-lg sm:text-xl lg:text-[22px] font-normal text-[#17221D] tracking-wide leading-tight">
+            <div className="font-fjalla text-lg sm:text-xl lg:text-[22px] font-normal text-[#17221D] tracking-wide leading-tight">
               of clean energy available to share.
             </div>
           </div>
@@ -221,10 +215,10 @@ export default function DashboardView({ onOpenDemoModal }) {
         
         {/* Col 1: NET COMMUNITY BALANCE */}
         <div>
-          <div className="font-oswald text-[11px] font-semibold uppercase tracking-wider text-[#5E6963]">
+          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             NET COMMUNITY BALANCE
           </div>
-          <div className="font-oswald text-2xl sm:text-3xl font-bold text-[#1E9B68] mt-0.5">
+          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
             +{netCommunity.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#5E6963] font-medium mt-0.5">
@@ -234,10 +228,10 @@ export default function DashboardView({ onOpenDemoModal }) {
 
         {/* Col 2: TOTAL GENERATION */}
         <div>
-          <div className="font-oswald text-[11px] font-semibold uppercase tracking-wider text-[#5E6963]">
+          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             TOTAL GENERATION
           </div>
-          <div className="font-oswald text-2xl sm:text-3xl font-bold text-[#17221D] mt-0.5">
+          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
             {totalGen.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
@@ -248,10 +242,10 @@ export default function DashboardView({ onOpenDemoModal }) {
 
         {/* Col 3: TOTAL DEMAND */}
         <div>
-          <div className="font-oswald text-[11px] font-semibold uppercase tracking-wider text-[#5E6963]">
+          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             TOTAL DEMAND
           </div>
-          <div className="font-oswald text-2xl sm:text-3xl font-bold text-[#17221D] mt-0.5">
+          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
             {totalCon.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
@@ -262,10 +256,10 @@ export default function DashboardView({ onOpenDemoModal }) {
 
         {/* Col 4: BATTERY STATE */}
         <div>
-          <div className="font-oswald text-[11px] font-semibold uppercase tracking-wider text-[#5E6963]">
+          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             BATTERY STATE
           </div>
-          <div className="font-oswald text-2xl sm:text-3xl font-bold text-[#1E9B68] mt-0.5">
+          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
             {battery.soc.toFixed(0)}%
           </div>
           <div className="text-xs text-[#5E6963] font-medium mt-0.5">
@@ -321,25 +315,25 @@ export default function DashboardView({ onOpenDemoModal }) {
         </div>
       )}
 
-      {/* 🌟 3. THREE-PANEL CORE OPERATING SECTION */}
+      {/* 🌟 3. EXPANDED TWO-PANEL CORE WORKSPACE (50/50 Split with Expanded Microgrid & Hornet AI) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Panel 1: LIVE MICROGRID FLOW (4 cols ~ 33%) */}
-        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
+        {/* Left Expanded Panel: LIVE MICROGRID FLOW (6 cols ~ 50%) */}
+        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="h-2 w-2 rounded-full bg-[#1E9B68]" />
-                <h3 className="font-oswald text-xs sm:text-sm font-semibold uppercase tracking-wider text-[#17221D]">
+                <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
                   Live Microgrid Flow
                 </h3>
               </div>
 
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-1.5">
                 <button
                   type="button"
                   onClick={() => sceneRef.current?.resetCamera?.()}
-                  className="px-2 py-0.5 text-[11px] font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-md border border-[rgba(23,34,29,0.08)] transition flex items-center gap-1"
+                  className="px-2.5 py-1 text-xs font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-lg border border-[rgba(23,34,29,0.08)] transition flex items-center gap-1"
                 >
                   <span>↺</span>
                   <span>Reset</span>
@@ -347,19 +341,19 @@ export default function DashboardView({ onOpenDemoModal }) {
                 <button
                   type="button"
                   onClick={() => sceneRef.current?.setTopDownView?.()}
-                  className="px-2 py-0.5 text-[11px] font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-md border border-[rgba(23,34,29,0.08)] transition"
+                  className="px-2.5 py-1 text-xs font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-lg border border-[rgba(23,34,29,0.08)] transition"
                 >
                   Top-Down
                 </button>
               </div>
             </div>
-            <p className="text-xs text-[#5E6963] mt-0.5">
-              Real-time energy routing in your community
+            <p className="text-xs text-[#5E6963] mt-1">
+              Real-time energy routing & bilateral power exchanges
             </p>
           </div>
 
-          {/* 3D Microgrid Viewport */}
-          <div className="h-52 sm:h-56 w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
+          {/* Large Expanded 3D Microgrid Viewport */}
+          <div className="h-[340px] sm:h-[380px] w-full relative rounded-2xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
             <MarketplaceScene3D
               ref={sceneRef}
               households={computedHouseholds}
@@ -371,196 +365,191 @@ export default function DashboardView({ onOpenDemoModal }) {
             />
           </div>
 
-          {/* Bottom 4-Dot Legend */}
-          <div className="grid grid-cols-4 gap-1 text-[10px] text-[#5E6963] text-center pt-1 border-t border-[rgba(23,34,29,0.06)]">
-            <div className="flex items-center justify-center space-x-1">
+          {/* Bottom 4-Dot Flow Legend */}
+          <div className="grid grid-cols-4 gap-2 text-xs text-[#5E6963] text-center pt-2 border-t border-[rgba(23,34,29,0.06)]">
+            <div className="flex items-center justify-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#1E9B68]" />
-              <span>Surplus</span>
+              <span className="font-medium">Surplus</span>
             </div>
-            <div className="flex items-center justify-center space-x-1">
+            <div className="flex items-center justify-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#D45C5C]" />
-              <span>Deficit</span>
+              <span className="font-medium">Deficit</span>
             </div>
-            <div className="flex items-center justify-center space-x-1">
+            <div className="flex items-center justify-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#DDA12A]" />
-              <span>Battery</span>
+              <span className="font-medium">Battery</span>
             </div>
-            <div className="flex items-center justify-center space-x-1">
+            <div className="flex items-center justify-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#3C78CC]" />
-              <span>Grid</span>
+              <span className="font-medium">Grid</span>
             </div>
           </div>
         </div>
 
-        {/* Panel 2: HORNET AI — NEXT 15 MINUTES (4 cols ~ 33%) */}
-        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
+        {/* Right Expanded Panel: HORNET AI — NEXT 15 MINUTES (6 cols ~ 50%) */}
+        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="h-2 w-2 rounded-full bg-[#7358C7]" />
-                <h3 className="font-oswald text-xs sm:text-sm font-semibold uppercase tracking-wider text-[#17221D]">
+                <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
                   Hornet AI — Next 15 Minutes
                 </h3>
               </div>
 
-              <span className="font-oswald text-[10px] font-semibold text-[#7358C7] bg-[#F1EDFF] px-2 py-0.5 rounded-full border border-[#7358C7]/20">
+              <span className="font-fjalla text-xs font-normal text-[#7358C7] bg-[#F1EDFF] px-2.5 py-0.5 rounded-full border border-[#7358C7]/20">
                 Next 15 min
               </span>
             </div>
-            <p className="text-xs text-[#5E6963] mt-0.5">
-              Forecast, uncertainty & recommended action
+            <p className="text-xs text-[#5E6963] mt-1">
+              Predictive ML forecast, uncertainty corridor & optimal dispatch action
             </p>
           </div>
 
           {/* 3 Mini Forecast Boxes */}
-          <div className="grid grid-cols-3 gap-2 text-center p-2.5 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
-            <div className="space-y-0.5">
-              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+          <div className="grid grid-cols-3 gap-3 text-center p-3.5 rounded-2xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
+            <div className="space-y-1">
+              <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase text-[#5E6963]">
                 <FaIcon name="solar" className="text-[#DDA12A]" />
                 <span>SOLAR</span>
               </div>
-              <div className="font-oswald text-sm sm:text-base font-semibold text-[#DDA12A]">
+              <div className="font-fjalla text-base sm:text-lg font-normal text-[#DDA12A]">
                 {aiForecast.solar_kw?.toFixed(2) || '5.84'} kW
               </div>
             </div>
 
-            <div className="space-y-0.5 border-x border-[rgba(23,34,29,0.08)]">
-              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+            <div className="space-y-1 border-x border-[rgba(23,34,29,0.08)]">
+              <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase text-[#5E6963]">
                 <FaIcon name="home" className="text-[#17221D]" />
                 <span>DEMAND</span>
               </div>
-              <div className="font-oswald text-sm sm:text-base font-semibold text-[#17221D]">
+              <div className="font-fjalla text-base sm:text-lg font-normal text-[#17221D]">
                 {aiForecast.demand_kw?.toFixed(2) || '4.21'} kW
               </div>
             </div>
 
-            <div className="space-y-0.5">
-              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
+            <div className="space-y-1">
+              <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase text-[#5E6963]">
                 <FaIcon name="network" className="text-[#1E9B68]" />
                 <span>BALANCE</span>
               </div>
-              <div className="font-oswald text-sm sm:text-base font-semibold text-[#1E9B68]">
+              <div className="font-fjalla text-base sm:text-lg font-normal text-[#1E9B68]">
                 +{aiForecast.balance_kw?.toFixed(2) || '1.63'} kW
               </div>
             </div>
           </div>
 
           {/* Forecast Range (Uncertainty) Slider Bar */}
-          <div className="space-y-1 px-1">
-            <div className="flex items-center justify-between text-[11px]">
+          <div className="space-y-1.5 px-1 py-1">
+            <div className="flex items-center justify-between text-xs">
               <span className="text-[#5E6963] font-medium">Forecast Range (Uncertainty)</span>
-              <span className="font-oswald font-semibold text-[#7358C7]">
+              <span className="font-fjalla font-normal text-[#7358C7]">
                 {Array.isArray(aiInterval) ? `${aiInterval[0]?.toFixed(2)} kW — ${aiInterval[1]?.toFixed(2)} kW` : '5.31 kW — 6.28 kW'}
               </span>
             </div>
-            <div className="h-2 w-full rounded-full bg-gradient-to-r from-[#DDA12A]/30 via-[#7358C7] to-[#1E9B68]/40 relative">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#7358C7] shadow-xs" />
+            <div className="h-2.5 w-full rounded-full bg-gradient-to-r from-[#DDA12A]/30 via-[#7358C7] to-[#1E9B68]/40 relative">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-[#7358C7] shadow-xs" />
             </div>
           </div>
 
           {/* Recommended Action Box */}
-          <div className="p-3 rounded-xl bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-1">
+          <div className="p-4 rounded-2xl bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="font-oswald text-[10px] font-semibold uppercase tracking-wider text-[#1E9B68]">
+              <span className="font-fjalla text-xs font-normal uppercase tracking-wider text-[#1E9B68]">
                 RECOMMENDED ACTION
               </span>
-              <span className="font-oswald text-[10px] font-semibold text-[#1E9B68] bg-white px-1.5 py-0.2 rounded border border-[#1E9B68]/20">
+              <span className="font-fjalla text-xs font-normal text-[#1E9B68] bg-white px-2 py-0.5 rounded-md border border-[#1E9B68]/20">
                 ₹4.50 / kWh
               </span>
             </div>
-            <div className="font-oswald text-xs sm:text-sm font-semibold text-[#12392B]">
+            <div className="font-fjalla text-sm sm:text-base font-normal text-[#12392B]">
               {aiDecision.action_label || 'Trade 1.0 kWh locally (My Home → Eco House)'}
             </div>
-            <p className="text-[11px] text-[#5E6963] leading-snug">
+            <p className="text-xs text-[#5E6963] leading-relaxed">
               Local surplus is available and nearby demand is active. This trade maximizes self-consumption and reduces grid dependence.
             </p>
           </div>
 
           {/* CTAs */}
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex items-center gap-3 pt-1">
             <button
               type="button"
               onClick={handleExecuteRecommendation}
               disabled={isAiExecuting}
-              className="flex-1 justify-center py-2 rounded-xl bg-[#1E9B68] hover:bg-[#168557] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50"
+              className="flex-1 justify-center py-2.5 rounded-xl bg-[#1E9B68] hover:bg-[#168557] text-white text-xs sm:text-sm font-bold shadow-xs transition active:scale-98 disabled:opacity-50"
             >
               {isAiExecuting ? 'Executing...' : 'Review Decision →'}
             </button>
             <button
               type="button"
               onClick={() => navigate('/ai')}
-              className="py-2 px-3 rounded-xl bg-white hover:bg-[#F6F7F4] text-[#17221D] text-xs font-bold border border-[rgba(23,34,29,0.12)] transition"
+              className="py-2.5 px-4 rounded-xl bg-white hover:bg-[#F6F7F4] text-[#17221D] text-xs sm:text-sm font-bold border border-[rgba(23,34,29,0.12)] transition"
             >
               View Details
             </button>
           </div>
         </div>
 
-        {/* Panel 3: COMMUNITY ENERGY FORECAST (4 cols ~ 33%) */}
-        <div className="lg:col-span-4">
-          <LiveEnergyChart history={chartHistory} />
-        </div>
-
       </div>
 
-      {/* 🌟 4. BOTTOM 3-CARD FOOTER SECTION */}
+      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION (50/50 Split for Impact & Activity) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Card 1: TODAY'S COMMUNITY IMPACT (4 cols ~ 33%) */}
-        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
+        {/* Left Expanded Card: TODAY'S COMMUNITY IMPACT (6 cols ~ 50%) */}
+        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4">
           <div>
-            <h3 className="font-oswald text-xs sm:text-sm font-semibold uppercase tracking-wider text-[#17221D]">
+            <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
               Today's Community Impact
             </h3>
-            <p className="text-xs text-[#5E6963] mt-0.5">
-              Real impact of clean energy sharing today
+            <p className="text-xs text-[#5E6963] mt-1">
+              Real impact of clean energy sharing & local balancing today
             </p>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 text-center py-2">
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center py-2">
+            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+              <div className="w-9 h-9 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="leaf" />
               </div>
-              <div className="font-oswald text-base sm:text-lg font-semibold text-[#17221D]">84%</div>
-              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Renewable Self-Consumption</div>
+              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#17221D]">84%</div>
+              <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Renewable Self-Consumption</div>
             </div>
 
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5">
+            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+              <div className="w-9 h-9 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="users" />
               </div>
-              <div className="font-oswald text-base sm:text-lg font-semibold text-[#1E9B68]">2.0 kWh</div>
-              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Shared Locally</div>
+              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#1E9B68]">2.0 kWh</div>
+              <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Shared Locally</div>
             </div>
 
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs mb-1.5">
+            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+              <div className="w-9 h-9 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="rupee" />
               </div>
-              <div className="font-oswald text-base sm:text-lg font-semibold text-[#17221D]">₹4.48</div>
-              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Estimated Savings</div>
+              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#17221D]">₹4.48</div>
+              <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Estimated Savings</div>
             </div>
 
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-xl bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs mb-1.5">
+            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+              <div className="w-9 h-9 rounded-xl bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="shield" />
               </div>
-              <div className="font-oswald text-base sm:text-lg font-semibold text-[#17221D]">32%</div>
-              <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Peak Grid Strain Reduction</div>
+              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#17221D]">32%</div>
+              <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Peak Grid Strain Reduction</div>
             </div>
           </div>
         </div>
 
-        {/* Card 2: RECENT COMMUNITY ACTIVITY (4 cols ~ 33%) */}
-        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-2.5">
+        {/* Right Expanded Card: RECENT COMMUNITY ACTIVITY (6 cols ~ 50%) */}
+        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-oswald text-xs sm:text-sm font-semibold uppercase tracking-wider text-[#17221D]">
+              <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
                 Recent Community Activity
               </h3>
-              <p className="text-xs text-[#5E6963] mt-0.5">
-                Live updates from your community
+              <p className="text-xs text-[#5E6963] mt-1">
+                Live updates from your community ledger
               </p>
             </div>
             <button
@@ -572,25 +561,25 @@ export default function DashboardView({ onOpenDemoModal }) {
             </button>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {transactions.slice(0, 4).map((tx) => (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-2 rounded-xl bg-[#F6F7F4] text-xs"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-[#F6F7F4] text-xs hover:bg-[#EEF2ED] transition"
               >
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-[10px]">
+                <div className="flex items-center space-x-3">
+                  <div className="w-7 h-7 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
                     <FaIcon name={tx.icon || 'marketplace'} />
                   </div>
                   <div>
-                    <div className="font-oswald font-medium text-[#17221D] leading-tight">
+                    <div className="font-fjalla text-xs sm:text-sm font-normal text-[#17221D] leading-tight">
                       {tx.sellerName} {tx.buyerName ? `→ ${tx.buyerName}` : ''}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3 text-right">
-                  <div className="font-oswald font-semibold text-[#17221D]">
+                <div className="flex items-center space-x-3.5 text-right">
+                  <div className="font-fjalla text-xs sm:text-sm font-normal text-[#17221D]">
                     {tx.energyKwh.toFixed(1)} kWh
                   </div>
                   {tx.pricePerKwh > 0 && (
@@ -604,68 +593,6 @@ export default function DashboardView({ onOpenDemoModal }) {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Card 3: QUICK ACTIONS (4 cols ~ 33%) */}
-        <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
-          <div>
-            <h3 className="font-oswald text-xs sm:text-sm font-semibold uppercase tracking-wider text-[#17221D]">
-              Quick Actions
-            </h3>
-            <p className="text-xs text-[#5E6963] mt-0.5">
-              Shortcuts to key operations
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={() => navigate('/ai')}
-              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
-            >
-              <div className="w-7 h-7 rounded-lg bg-[#F1EDFF] text-[#7358C7] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
-                <FaIcon name="sparkles" />
-              </div>
-              <div className="font-oswald text-xs font-semibold text-[#17221D]">Ask Hornet AI</div>
-              <div className="text-[10px] text-[#5E6963]">Get AI recommendation</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('/marketplace')}
-              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
-            >
-              <div className="w-7 h-7 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
-                <FaIcon name="marketplace" />
-              </div>
-              <div className="font-oswald text-xs font-semibold text-[#17221D]">Open Marketplace</div>
-              <div className="text-[10px] text-[#5E6963]">Trade clean energy</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('/battery')}
-              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
-            >
-              <div className="w-7 h-7 rounded-lg bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
-                <FaIcon name="battery" />
-              </div>
-              <div className="font-oswald text-xs font-semibold text-[#17221D]">Battery Details</div>
-              <div className="text-[10px] text-[#5E6963]">View storage insights</div>
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenDemoModal || (() => navigate('/network'))}
-              className="p-3 rounded-xl bg-[#F6F7F4] hover:bg-white border border-[rgba(23,34,29,0.06)] hover:border-[rgba(23,34,29,0.12)] text-left transition shadow-xs group"
-            >
-              <div className="w-7 h-7 rounded-lg bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs mb-1.5 group-hover:scale-105 transition-transform">
-                <FaIcon name="play" />
-              </div>
-              <div className="font-oswald text-xs font-semibold text-[#17221D]">Run Scenario</div>
-              <div className="text-[10px] text-[#5E6963]">Test what-if conditions</div>
-            </button>
           </div>
         </div>
 
