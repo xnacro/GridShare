@@ -1,11 +1,21 @@
 import os
 from dotenv import load_dotenv
 
+# Load from project root .env, server/.env, and current working directory
+root_env = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+server_env = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
+if os.path.exists(root_env):
+    load_dotenv(root_env)
+if os.path.exists(server_env):
+    load_dotenv(server_env)
 load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "gridshare-secret-key-development")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///gridshare.db")
+    _db_uri = os.getenv("DATABASE_URL") or os.getenv("DB_CONNECT") or "sqlite:///gridshare.db"
+    if _db_uri.startswith("postgres://"):
+        _db_uri = _db_uri.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = _db_uri
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # MQTT
