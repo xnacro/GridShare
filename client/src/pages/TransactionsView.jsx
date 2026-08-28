@@ -108,9 +108,9 @@ export default function TransactionsView() {
         category="TRANSACTION AUDIT LEDGER"
         statusBadge="DOUBLE AUCTION LEDGER"
         statusVariant="surplus"
-        title="Microgrid Energy Ledger •"
-        highlightText={`${transactions.length} cleared settlements totalling ${totalEnergyTraded.toFixed(1)} kWh.`}
-        subtitle="Transparent transactional audit log tracking bilateral P2P settlements, battery storage buffering, and grid exports."
+        title="Community transaction ledger,"
+        highlightText="verified and cleared."
+        subtitle={`Audit history tracking ${transactions.length} settlements totaling ${totalEnergyTraded.toFixed(1)} kWh across peer trades and storage.`}
         supportingFacts={[
           { label: 'Total Volume', value: `₹${totalVolumeInr.toFixed(2)}`, icon: 'rupee' },
           { label: 'Average Tariff', value: `₹${avgTariff.toFixed(2)} / kWh`, icon: 'leaf' },
@@ -171,7 +171,7 @@ export default function TransactionsView() {
       </div>
 
       {/* 🌟 3. TRANSACTIONS TABLE */}
-      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+      <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
         <SectionHeader
           title="Executed Smart Transactions"
           subtitle="Chronological audit records of all microgrid energy flows"

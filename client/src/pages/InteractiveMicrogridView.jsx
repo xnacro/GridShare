@@ -92,8 +92,8 @@ export default function InteractiveMicrogridView() {
         highlightText="through your community right now."
         subtitle="Visualizing real-time power routing across prosumers, smart circuits, 50 kWh central storage, and utility grid interties."
         supportingFacts={[
-          { label: 'Current Balance', value: `+${netCommunity.toFixed(1)} kW Surplus`, icon: 'network' },
-          { label: 'Network Nodes', value: '5 Households + 1 ESS', icon: 'home' },
+          { label: 'Current Balance', value: netCommunity >= 0 ? `+${netCommunity.toFixed(1)} kW Surplus` : `${netCommunity.toFixed(1)} kW Deficit`, icon: 'network' },
+          { label: 'Network Nodes', value: '4 Households + 1 ESS', icon: 'home' },
           { label: 'Storage State', value: `${battery.soc.toFixed(0)}% (20% Floor)`, icon: 'battery' },
         ]}
         primaryAction={{
@@ -105,6 +105,10 @@ export default function InteractiveMicrogridView() {
           label: 'Reset Camera',
           icon: 'refresh',
           onClick: () => sceneRef.current?.resetCamera?.(),
+        }}
+        tertiaryAction={{
+          label: 'View Marketplace →',
+          onClick: () => navigate('/marketplace'),
         }}
       />
 
@@ -130,11 +134,11 @@ export default function InteractiveMicrogridView() {
 
         <HeroMetric
           label="Net Microgrid Balance"
-          value={`${isSurplus ? '+' : ''}${netCommunity.toFixed(1)}`}
+          value={netCommunity >= 0 ? `+${netCommunity.toFixed(1)}` : `${netCommunity.toFixed(1)}`}
           unit="kW"
-          subtitle="Zero external grid import required"
+          subtitle={isSurplus ? "Zero external grid import required" : "Drawing from community ESS buffer"}
           iconName="network"
-          variant="emerald"
+          variant={isSurplus ? "emerald" : "default"}
         />
 
         <HeroMetric
@@ -148,9 +152,9 @@ export default function InteractiveMicrogridView() {
       </div>
 
       {/* 🌟 3. EXPANSIVE 3D DIGITAL TWIN (75-80% Screen Presence) */}
-      <div className="relative rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-3 sm:p-5 shadow-card overflow-hidden">
+      <div className="relative glass-card rounded-xl p-3 sm:p-5 overflow-hidden">
         
-        <div className="h-[520px] sm:h-[620px] w-full relative rounded-2xl overflow-hidden bg-[#EEF2ED]/60 border border-[rgba(23,56,43,0.05)]">
+        <div className="h-[520px] sm:h-[620px] w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.05)]">
           <MarketplaceScene3D
             ref={sceneRef}
             households={computedHouseholds}
@@ -162,68 +166,63 @@ export default function InteractiveMicrogridView() {
           />
 
           {/* Floating Glass Controls Top-Left */}
-          <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 p-1.5 rounded-2xl gs-glass shadow-sm z-10">
+          <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 p-1.5 rounded-xl gs-glass shadow-xs z-10">
             <button
               type="button"
               onClick={() => sceneRef.current?.resetCamera?.()}
-              className="px-3 py-1.5 text-xs font-bold text-[#15221B] hover:bg-white/80 rounded-xl transition flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-bold text-[#17221D] hover:bg-white/80 rounded-lg transition flex items-center gap-1.5"
             >
-              <FaIcon name="refresh" className="text-[10px] text-[#5E6B63]" />
+              <FaIcon name="refresh" className="text-[10px] text-[#5E6963]" />
               <span>Reset</span>
             </button>
 
             <button
               type="button"
               onClick={() => sceneRef.current?.setTopDownView?.()}
-              className="px-3 py-1.5 text-xs font-bold text-[#15221B] hover:bg-white/80 rounded-xl transition flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-bold text-[#17221D] hover:bg-white/80 rounded-lg transition flex items-center gap-1.5"
             >
-              <FaIcon name="network" className="text-[10px] text-[#5E6B63]" />
+              <FaIcon name="network" className="text-[10px] text-[#5E6963]" />
               <span>Top-Down</span>
             </button>
 
-            <span className="w-px h-4 bg-[rgba(23,56,43,0.15)] mx-0.5" />
+            <span className="w-px h-4 bg-[rgba(23,34,29,0.15)] mx-0.5" />
 
-            <div className="flex items-center gap-1.5 px-2 text-[11px] font-bold text-[#1E9B67]">
-              <span className="w-2 h-2 rounded-full bg-[#1E9B67] animate-pulse" />
+            <div className="flex items-center gap-1.5 px-2 text-[11px] font-bold text-[#1E9B68]">
+              <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
               <span>{activeFlows.length} Active Flow Conduits</span>
             </div>
           </div>
 
           {/* Floating Glass Node Inspector Card Bottom-Right */}
           {activeNode && (
-            <div className="absolute bottom-4 right-4 max-w-sm w-full p-5 rounded-2xl gs-glass-hero shadow-lg z-10 space-y-3 animate-in fade-in">
-              <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,56,43,0.08)]">
+            <div className="absolute bottom-4 right-4 max-w-sm w-full p-5 rounded-xl gs-glass shadow-lg z-10 space-y-3 animate-in fade-in">
+              <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,34,29,0.08)]">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#E6F5EC] text-[#1E9B67] flex items-center justify-center text-xs">
+                  <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
                     <FaIcon name="home" />
                   </div>
-                  <span className="text-xs font-extrabold text-[#15221B]">{activeNode.name}</span>
+                  <span className="text-xs font-extrabold text-[#17221D]">{activeNode.name}</span>
                 </div>
                 <Badge variant={nodeNet >= 0 ? 'surplus' : 'deficit'} size="xs">
-                  {nodeNet >= 0 ? 'PROSUMER' : 'CONSUMER'}
+                  {nodeNet >= 0 ? 'SURPLUS' : 'DEFICIT'}
                 </Badge>
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="p-2 rounded-xl bg-white/70">
-                  <div className="text-[10px] text-[#5E6B63]">Solar</div>
-                  <div className="font-extrabold text-[#E5A72D]">{activeNode.generation.toFixed(1)} kW</div>
+                <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
+                  <div className="text-[10px] text-[#5E6963] uppercase font-bold">Solar</div>
+                  <div className="font-mono font-bold text-[#E5A72D]">{activeNode.generation.toFixed(1)} kW</div>
                 </div>
-                <div className="p-2 rounded-xl bg-white/70">
-                  <div className="text-[10px] text-[#5E6B63]">Load</div>
-                  <div className="font-extrabold text-[#15221B]">{activeNode.consumption.toFixed(1)} kW</div>
+                <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
+                  <div className="text-[10px] text-[#5E6963] uppercase font-bold">Demand</div>
+                  <div className="font-mono font-bold text-[#17221D]">{activeNode.consumption.toFixed(1)} kW</div>
                 </div>
-                <div className="p-2 rounded-xl bg-white/70">
-                  <div className="text-[10px] text-[#5E6B63]">Net</div>
-                  <div className={`font-extrabold ${nodeNet >= 0 ? 'text-[#1E9B67]' : 'text-[#D65D5D]'}`}>
+                <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
+                  <div className="text-[10px] text-[#5E6963] uppercase font-bold">Net</div>
+                  <div className={`font-mono font-bold ${nodeNet >= 0 ? 'text-[#1E9B68]' : 'text-[#D45C5C]'}`}>
                     {nodeNet >= 0 ? `+${nodeNet.toFixed(1)}` : nodeNet.toFixed(1)} kW
                   </div>
                 </div>
-              </div>
-
-              <div className="flex items-center justify-between text-[11px] text-[#5E6B63] pt-1">
-                <span>Location: {activeNode.location || 'Guwahati Cluster'}</span>
-                <span className="font-mono font-bold text-[#1E9B67]">Status: ONLINE</span>
               </div>
             </div>
           )}

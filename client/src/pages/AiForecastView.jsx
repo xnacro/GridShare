@@ -206,19 +206,19 @@ export default function AiForecastView() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             
             {/* LEFT: LARGE FORECAST RANGE CHART (7 cols) */}
-            <div className="lg:col-span-7 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+            <div className="lg:col-span-7 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
                 <div>
-                  <h3 className="text-base font-extrabold text-[#15221B]">
+                  <h3 className="text-base font-extrabold text-[#17221D]">
                     Forecast & Uncertainty Corridor
                   </h3>
-                  <p className="text-xs text-[#5E6B63]">
+                  <p className="text-xs text-[#5E6963]">
                     15-minute predictive horizon with 90% confidence bounds
                   </p>
                 </div>
 
                 {/* Horizon Switcher */}
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F5F7F3] border border-[rgba(23,56,43,0.06)]">
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
                   {['15M', '30M', '60M'].map((h) => (
                     <button
                       key={h}
@@ -226,8 +226,8 @@ export default function AiForecastView() {
                       onClick={() => setSelectedHorizon(h)}
                       className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition ${
                         selectedHorizon === h
-                          ? 'bg-[#12382A] text-white shadow-xs'
-                          : 'text-[#5E6B63] hover:text-[#15221B]'
+                          ? 'bg-[#12392B] text-white shadow-xs'
+                          : 'text-[#5E6963] hover:text-[#17221D]'
                       }`}
                     >
                       {h}
@@ -247,26 +247,26 @@ export default function AiForecastView() {
               </div>
 
               {/* Risk Summary Footer */}
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F5F7F3]/70 border border-[rgba(23,56,43,0.06)] text-xs">
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)] text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#1E9B67]" />
-                  <span className="font-medium text-[#5E6B63]">Safety Margin:</span>
-                  <strong className="text-[#12382A]">PROTECTED</strong>
+                  <span className="w-2 h-2 rounded-full bg-[#1E9B68]" />
+                  <span className="font-medium text-[#5E6963]">Safety Margin:</span>
+                  <strong className="text-[#12392B]">PROTECTED</strong>
                 </div>
-                <div className="text-[#5E6B63]">
-                  Conservative Balance: <strong className="text-[#1E9B67] font-mono">+{aiInterval.solar_lower_kw.toFixed(1)} kW</strong>
+                <div className="text-[#5E6963]">
+                  Conservative Balance: <strong className="text-[#1E9B68] font-mono">+{aiInterval.solar_lower_kw.toFixed(1)} kW</strong>
                 </div>
               </div>
             </div>
 
             {/* RIGHT: RECOMMENDATION & EXPLAINABLE REASONING (5 cols) */}
-            <div className="lg:col-span-5 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+            <div className="lg:col-span-5 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
                 <div>
-                  <h3 className="text-base font-extrabold text-[#15221B]">
+                  <h3 className="text-base font-extrabold text-[#17221D]">
                     Recommended Dispatch Action
                   </h3>
-                  <p className="text-xs text-[#5E6B63]">
+                  <p className="text-xs text-[#5E6963]">
                     Economically optimized decision for your microgrid
                   </p>
                 </div>
@@ -276,32 +276,32 @@ export default function AiForecastView() {
               </div>
 
               {/* Primary Action Hero Box */}
-              <div className="p-4 rounded-2xl bg-[#E6F5EC]/70 border border-[#1E9B67]/20 space-y-2">
+              <div className="p-4 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1E9B67]">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1E9B68]">
                     TRADE ACTION
                   </span>
-                  <span className="text-xs font-mono font-extrabold text-[#1E9B67]">
+                  <span className="text-xs font-mono font-extrabold text-[#1E9B68]">
                     ₹4.50 / kWh
                   </span>
                 </div>
-                <div className="text-sm sm:text-base font-extrabold text-[#12382A]">
+                <div className="text-sm sm:text-base font-extrabold text-[#12392B]">
                   {aiRec.headline}
                 </div>
-                <p className="text-xs text-[#5E6B63]">
+                <p className="text-xs text-[#5E6963]">
                   {aiRec.summary}
                 </p>
               </div>
 
               {/* Why? Bullet Reasoning */}
               <div className="space-y-2">
-                <div className="text-xs font-extrabold text-[#15221B] uppercase tracking-wider">
+                <div className="text-xs font-extrabold text-[#17221D] uppercase tracking-wider">
                   Why this recommendation?
                 </div>
                 <div className="space-y-1.5">
                   {aiReasoning.map((reason, idx) => (
-                    <div key={idx} className="flex items-start space-x-2 text-xs text-[#5E6B63]">
-                      <FaIcon name="check" className="text-[#1E9B67] text-xs mt-0.5 flex-shrink-0" />
+                    <div key={idx} className="flex items-start space-x-2 text-xs text-[#5E6963]">
+                      <FaIcon name="check" className="text-[#1E9B68] text-xs mt-0.5 flex-shrink-0" />
                       <span>{reason}</span>
                     </div>
                   ))}
@@ -313,7 +313,7 @@ export default function AiForecastView() {
                 <Button
                   variant="primary"
                   size="sm"
-                  className="flex-1 justify-center py-2.5 text-xs font-bold shadow-sm"
+                  className="flex-1 justify-center py-2.5 text-xs font-bold rounded-xl shadow-xs"
                   onClick={handleExecuteDispatch}
                 >
                   Approve Dispatch
@@ -321,7 +321,7 @@ export default function AiForecastView() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="py-2.5 text-xs font-bold"
+                  className="py-2.5 text-xs font-bold rounded-xl"
                   onClick={() => setViewMode('TECHNICAL')}
                 >
                   Inspect Math
@@ -336,7 +336,7 @@ export default function AiForecastView() {
       ) : (
         /* 🌟 4. TECHNICAL VIEW (For Judges & Systems Engineers) */
         <div className="space-y-6">
-          <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+          <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
             <SectionHeader
               title="Full 6-Step Machine Learning & Optimization Pipeline"
               subtitle="Inspect mathematical constraints, prediction bounds, and dispatch algorithms"
@@ -344,6 +344,7 @@ export default function AiForecastView() {
                 <Button
                   variant="secondary"
                   size="xs"
+                  className="rounded-xl"
                   onClick={() => setViewMode('SIMPLE')}
                   icon={<FaIcon name="close" />}
                 >

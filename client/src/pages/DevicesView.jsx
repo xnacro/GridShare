@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
 import GlassSurface from '../components/ui/GlassSurface';
@@ -10,6 +11,7 @@ import { LoadingState, ErrorState } from '../components/ui/FeedbackStates';
 import { api } from '../services/api';
 
 export default function DevicesView() {
+  const navigate = useNavigate();
   const [devicesData, setDevicesData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,9 +73,9 @@ export default function DevicesView() {
         category="MICROGRID INFRASTRUCTURE"
         statusBadge="EDGE TELEMETRY"
         statusVariant="surplus"
-        title="Hardware & Smart Meter Nodes •"
-        highlightText={`${onlineCount} of ${devices.length} virtual telemetry circuits online.`}
-        subtitle="Monitors household smart meters, battery BMS controllers, and substation intertie gateways across the Guwahati cluster."
+        title="Hardware telemetry,"
+        highlightText="monitored in real time."
+        subtitle={`Streaming live telemetry across ${onlineCount} active smart meter circuits, rooftop inverters, and central BMS controllers.`}
         supportingFacts={[
           { label: 'Ingestion Mode', value: ingestionMode, icon: 'devices' },
           { label: 'Sample Rate', value: '1 Hz Continuous', icon: 'refresh' },
@@ -86,6 +88,10 @@ export default function DevicesView() {
             setRefreshing(true);
             fetchDevices();
           },
+        }}
+        tertiaryAction={{
+          label: 'View Marketplace →',
+          onClick: () => navigate('/marketplace'),
         }}
       />
 
@@ -129,7 +135,7 @@ export default function DevicesView() {
       </div>
 
       {/* 🌟 3. DEVICE NODES TABLE */}
-      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+      <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
         <SectionHeader
           title="Registered Edge Devices & Circuits"
           subtitle="Virtual smart meters, inverters, and central battery telemetry units"
@@ -143,30 +149,30 @@ export default function DevicesView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-[rgba(23,56,43,0.08)] text-[11px] font-extrabold uppercase tracking-wider text-[#5E6B63]">
-                <th className="py-3 px-4">Device Identifier</th>
-                <th className="py-3 px-4">Circuit Name</th>
-                <th className="py-3 px-4">Type</th>
-                <th className="py-3 px-4">Telemetry Power</th>
-                <th className="py-3 px-4">Voltage</th>
-                <th className="py-3 px-4">Status</th>
+              <tr className="border-b border-[rgba(23,34,29,0.06)] bg-[#F6F7F4] text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
+                <th className="py-2.5 px-3.5 rounded-l-lg">Device Identifier</th>
+                <th className="py-2.5 px-3.5">Circuit Name</th>
+                <th className="py-2.5 px-3.5">Type</th>
+                <th className="py-2.5 px-3.5">Telemetry Power</th>
+                <th className="py-2.5 px-3.5">Voltage</th>
+                <th className="py-2.5 px-3.5 rounded-r-lg">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(23,56,43,0.06)] font-medium text-[#15221B]">
+            <tbody className="divide-y divide-[rgba(23,34,29,0.04)] font-medium text-[#17221D]">
               {devices.map((d) => (
                 <tr
                   key={d.id}
                   onClick={() => setSelectedDevice(d)}
-                  className={`hover:bg-[#F5F7F3]/60 cursor-pointer transition ${
-                    selectedDevice?.id === d.id ? 'bg-[#E6F5EC]/40' : ''
+                  className={`hover:bg-[#F6F7F4]/60 cursor-pointer transition ${
+                    selectedDevice?.id === d.id ? 'bg-[#E8F6EE]/40' : ''
                   }`}
                 >
-                  <td className="py-3.5 px-4 font-mono font-bold text-[#12382A]">{d.id}</td>
-                  <td className="py-3.5 px-4 font-bold">{d.name}</td>
-                  <td className="py-3.5 px-4 text-[#5E6B63]">{d.type}</td>
-                  <td className="py-3.5 px-4 font-mono font-bold text-[#1E9B67]">{d.powerKw ? `${d.powerKw.toFixed(1)} kW` : 'N/A'}</td>
-                  <td className="py-3.5 px-4 font-mono">{d.voltage || 230} V</td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3 px-3.5 font-mono font-bold text-[#12392B]">{d.id}</td>
+                  <td className="py-3 px-3.5 font-bold">{d.name}</td>
+                  <td className="py-3 px-3.5 text-[#5E6963]">{d.type}</td>
+                  <td className="py-3 px-3.5 font-mono font-bold text-[#1E9B68]">{d.powerKw ? `${d.powerKw.toFixed(1)} kW` : 'N/A'}</td>
+                  <td className="py-3 px-3.5 font-mono">{d.voltage || 230} V</td>
+                  <td className="py-3 px-3.5">
                     <Badge variant={d.status === 'ONLINE' ? 'surplus' : 'deficit'} size="xs">
                       {d.status}
                     </Badge>

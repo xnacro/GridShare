@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import InteractiveOptimizerScene3D, { OPTIMIZER_3D_POSITIONS } from '../components/energy-map-3d/InteractiveOptimizerScene3D';
 import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
@@ -8,6 +9,7 @@ import Button, { IconButton } from '../components/ui/Button';
 import FaIcon from '../components/icons/FaIcon';
 
 export default function Optimization() {
+  const navigate = useNavigate();
   // 1. Manual Inputs State
   const [generation, setGeneration] = useState(6.0);
   const [load, setLoad] = useState(8.0);
@@ -347,20 +349,19 @@ export default function Optimization() {
   ];
 
   return (
-    <div className="space-y-4 max-w-[1680px] mx-auto pb-6 select-none">
-      {/* Header bar */}
+    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       {/* 🌟 1. OPTIMIZATION HERO */}
       <PageHero
         category="DISPATCH OPTIMIZATION ENGINE"
         statusBadge="DETERMINISTIC SOLVER"
         statusVariant="ai"
-        title="Multi-Tier Microgrid Optimizer •"
-        highlightText={
+        title="Dispatch optimization,"
+        highlightText="mathematically minimized."
+        subtitle={
           optimizedPlan
-            ? `Optimal plan saves ₹${optimizedPlan.savings.toFixed(2)} (${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% cost reduction).`
-            : 'Linear programmed cost minimization across Solar, P2P, ESS, and Utility Grid.'
+            ? `Optimal plan saves ₹${optimizedPlan.savings.toFixed(2)} (${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% cost reduction) while locking the 20% ESS emergency safety reserve.`
+            : 'Simulating multi-tier objective functions to minimize community electricity expenditure across Solar, P2P, ESS, and Grid.'
         }
-        subtitle="Simulates mathematical objective functions to minimize community electricity expenditure while ensuring 20% ESS emergency reserve continuity."
         supportingFacts={[
           { label: 'Renewable Fraction', value: optimizedPlan ? `${optimizedPlan.renewablePercent}%` : '88%', icon: 'leaf' },
           { label: 'P2P Clearing', value: `₹${p2pPrice.toFixed(2)}/kWh`, icon: 'rupee' },
@@ -375,6 +376,10 @@ export default function Optimization() {
           label: 'Reset Baseline',
           icon: 'refresh',
           onClick: handleReset,
+        }}
+        tertiaryAction={{
+          label: 'View Marketplace →',
+          onClick: () => navigate('/marketplace'),
         }}
       />
 
@@ -419,12 +424,12 @@ export default function Optimization() {
 
       {/* Dynamic Narrative Banner */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs text-teal-950 shadow-2xs">
+        <div className="flex items-center justify-between rounded-xl border border-[#1E9B68]/30 bg-[#E8F6EE] px-4 py-3 text-xs text-[#12392B] font-bold shadow-xs">
           <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
-            <span className="font-semibold">{statusMessage}</span>
+            <span className="h-2 w-2 rounded-full bg-[#1E9B68] animate-pulse" />
+            <span>{statusMessage}</span>
           </div>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-teal-700 hover:text-teal-950 font-bold text-xs p-0.5">
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#1E9B68] font-bold text-xs p-0.5">
             ✕
           </button>
         </div>

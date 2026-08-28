@@ -140,12 +140,12 @@ export default function BatteryView() {
       
       {/* 🌟 1. BATTERY HERO */}
       <PageHero
-        category="COMMUNITY BATTERY STORAGE"
-        statusBadge="CENTRAL ESS (50 kWh)"
+        category="COMMUNITY ENERGY STORAGE (ESS)"
+        statusBadge={`${battery.soc.toFixed(0)}% CHARGED`}
         statusVariant="solar"
-        title="40% Stored •"
-        highlightText={`${usableKwh.toFixed(1)} / ${battery.storedKwh.toFixed(1)} kWh usable with 20% emergency reserve floor.`}
-        subtitle="Buffers rooftop solar surplus, preserves blackout resilience, and provides equity accounting for community contributors."
+        title="Shared community storage,"
+        highlightText="buffered and resilient."
+        subtitle={`Your microgrid has ${battery.storedKwh.toFixed(1)} kWh stored in the central battery with ${usableKwh.toFixed(1)} kWh usable above the ${battery.minSoc}% emergency floor.`}
         supportingFacts={[
           { label: 'Total Capacity', value: `${battery.capacity.toFixed(0)} kWh`, icon: 'battery' },
           { label: 'Round-Trip Efficiency', value: `${battery.efficiency}%`, icon: 'leaf' },
@@ -160,6 +160,10 @@ export default function BatteryView() {
           label: 'Withdraw Credit',
           icon: 'flash',
           onClick: handleExecuteDischarge,
+        }}
+        tertiaryAction={{
+          label: 'View Marketplace →',
+          onClick: () => navigate('/marketplace'),
         }}
       />
 
@@ -219,17 +223,17 @@ export default function BatteryView() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* LEFT: 3D SPATIAL BATTERY TWIN (7 cols) */}
-        <div className="lg:col-span-7 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+        <div className="lg:col-span-7 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs">
                 <FaIcon name="battery" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-[#15221B]">
+                <h3 className="text-base font-extrabold text-[#17221D]">
                   3D Central ESS Architecture Twin
                 </h3>
-                <p className="text-xs text-[#5E6B63]">
+                <p className="text-xs text-[#5E6963]">
                   50 kWh LiFePO4 rack modules with cell balancing and thermal management
                 </p>
               </div>
@@ -239,7 +243,7 @@ export default function BatteryView() {
             </Badge>
           </div>
 
-          <div className="h-[380px] w-full relative rounded-2xl overflow-hidden bg-[#EEF2ED]/60 border border-[rgba(23,56,43,0.05)]">
+          <div className="h-[380px] w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.05)]">
             <InteractiveBatteryTwin3D
               ref={sceneRef}
               battery={battery}
@@ -249,21 +253,21 @@ export default function BatteryView() {
             />
 
             {/* Floating Glass SOC Chip */}
-            <div className="absolute top-3 left-3 p-2 rounded-2xl gs-glass shadow-sm space-y-1">
-              <div className="text-[10px] uppercase font-bold text-[#5E6B63]">State of Charge</div>
+            <div className="absolute top-3 left-3 p-2 rounded-xl gs-glass shadow-xs space-y-1">
+              <div className="text-[10px] uppercase font-bold text-[#5E6963]">State of Charge</div>
               <div className="text-lg font-black text-[#E5A72D]">{battery.soc}% ({battery.storedKwh.toFixed(1)} kWh)</div>
             </div>
           </div>
         </div>
 
         {/* RIGHT: STORAGE DISPATCH & EQUITY LEDGER (5 cols) */}
-        <div className="lg:col-span-5 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+        <div className="lg:col-span-5 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
             <div>
-              <h3 className="text-base font-extrabold text-[#15221B]">
+              <h3 className="text-base font-extrabold text-[#17221D]">
                 Manual Storage Dispatch
               </h3>
-              <p className="text-xs text-[#5E6B63]">
+              <p className="text-xs text-[#5E6963]">
                 Inject solar surplus or withdraw energy credits
               </p>
             </div>
@@ -273,8 +277,8 @@ export default function BatteryView() {
           </div>
 
           {/* Charge Card */}
-          <div className="p-4 rounded-2xl bg-[#FFF7E4]/50 border border-[#E5A72D]/20 space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold text-[#15221B]">
+          <div className="p-4 rounded-xl bg-[#FFF7E4] border border-[#E5A72D]/20 space-y-3">
+            <div className="flex items-center justify-between text-xs font-bold text-[#17221D]">
               <span className="flex items-center gap-1.5 text-[#E5A72D]">
                 <FaIcon name="solar" />
                 Charge ESS (Solar Ingestion)
@@ -293,7 +297,7 @@ export default function BatteryView() {
             <Button
               variant="solar"
               size="sm"
-              className="w-full justify-center text-xs font-bold"
+              className="w-full justify-center text-xs font-bold rounded-xl shadow-xs"
               onClick={handleExecuteCharge}
               isLoading={status === 'CHARGING'}
             >
@@ -302,9 +306,9 @@ export default function BatteryView() {
           </div>
 
           {/* Discharge Card */}
-          <div className="p-4 rounded-2xl bg-[#E6F5EC]/50 border border-[#1E9B67]/20 space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold text-[#15221B]">
-              <span className="flex items-center gap-1.5 text-[#1E9B67]">
+          <div className="p-4 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 space-y-3">
+            <div className="flex items-center justify-between text-xs font-bold text-[#17221D]">
+              <span className="flex items-center gap-1.5 text-[#1E9B68]">
                 <FaIcon name="flash" />
                 Discharge ESS (Load Relief)
               </span>
@@ -317,12 +321,12 @@ export default function BatteryView() {
               step="0.5"
               value={dischargeAmount}
               onChange={(e) => setDischargeAmount(Number(e.target.value))}
-              className="w-full accent-[#1E9B67] cursor-pointer"
+              className="w-full accent-[#1E9B68] cursor-pointer"
             />
             <Button
               variant="primary"
               size="sm"
-              className="w-full justify-center text-xs font-bold"
+              className="w-full justify-center text-xs font-bold rounded-xl shadow-xs"
               onClick={handleExecuteDischarge}
               isLoading={status === 'DISCHARGING'}
             >
@@ -335,7 +339,7 @@ export default function BatteryView() {
       </div>
 
       {/* 🌟 4. RECENT BATTERY DISPATCH LOG */}
-      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+      <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
         <SectionHeader
           title="Community Storage Accounting & History"
           subtitle="Transparent transactional audit log tracking solar injections and credit withdrawals"
@@ -350,22 +354,22 @@ export default function BatteryView() {
           {history.map((h) => (
             <div
               key={h.id}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F5F7F3]/60 border border-[rgba(23,56,43,0.06)] hover:bg-white text-xs transition"
+              className="flex items-center justify-between p-3.5 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)] hover:bg-white text-xs transition"
             >
               <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs ${
-                  h.action === 'CHARGE' ? 'bg-[#FFF7E4] text-[#E5A72D]' : 'bg-[#E6F5EC] text-[#1E9B67]'
+                  h.action === 'CHARGE' ? 'bg-[#FFF7E4] text-[#E5A72D]' : 'bg-[#E8F6EE] text-[#1E9B68]'
                 }`}>
                   <FaIcon name={h.action === 'CHARGE' ? 'solar' : 'flash'} />
                 </div>
                 <div>
-                  <div className="font-bold text-[#15221B]">{h.action}: {h.source} ➔ {h.dest}</div>
-                  <div className="text-[11px] text-[#5E6B63]">{h.time} • SOC {h.socBefore}% ➔ {h.socAfter}%</div>
+                  <div className="font-bold text-[#17221D]">{h.action}: {h.source} ➔ {h.dest}</div>
+                  <div className="text-[11px] text-[#5E6963]">{h.time} • SOC {h.socBefore}% ➔ {h.socAfter}%</div>
                 </div>
               </div>
 
               <div className="text-right space-y-0.5">
-                <div className="font-mono font-bold text-[#12382A]">
+                <div className="font-mono font-bold text-[#12392B]">
                   {h.action === 'CHARGE' ? '+' : '-'}{h.energyKwh.toFixed(1)} kWh
                 </div>
                 <Badge variant={h.action === 'CHARGE' ? 'solar' : 'surplus'} size="xs">{h.status}</Badge>
