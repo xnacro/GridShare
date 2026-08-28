@@ -24,6 +24,14 @@ export default function DashboardView({ onOpenDemoModal }) {
   const userName = profile?.display_name || user?.email?.split('@')[0] || 'Rahul';
   const householdName = household?.name || 'My Home';
 
+  // Dynamic Time-of-Day Greeting
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour >= 17 || hour < 4) return 'Good evening';
+    if (hour >= 12) return 'Good afternoon';
+    return 'Good morning';
+  }, []);
+
   // Master Microgrid State
   const [households] = useState(INITIAL_DEMO_STATE.households);
   const [battery] = useState(INITIAL_DEMO_STATE.battery);
