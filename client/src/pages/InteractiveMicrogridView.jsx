@@ -4,6 +4,7 @@ import {
   computeHouseholdStates,
 } from '../services/marketEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
+import RadialTopology2D from '../components/microgrid/RadialTopology2D';
 import HeroMetric from '../components/ui/HeroMetric';
 import GlassSurface from '../components/ui/GlassSurface';
 import FaIcon from '../components/icons/FaIcon';
@@ -11,6 +12,9 @@ import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 
 export default function InteractiveMicrogridView() {
+  // Visualization Mode: '2d' (Default) | '3d'
+  const [viewMode, setViewMode] = useState('2d');
+
   // Master Simulation State
   const [households] = useState(INITIAL_DEMO_STATE.households);
   const [battery] = useState(INITIAL_DEMO_STATE.battery);
@@ -82,7 +86,7 @@ export default function InteractiveMicrogridView() {
   return (
     <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
 
-      {/* 🌟 1. COMPACT PAGE HEADER */}
+      {/* 🌟 1. COMPACT PAGE HEADER WITH 2D/3D SEGMENTED TOGGLE */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
         <div>
           <div className="flex items-center space-x-2">
@@ -98,125 +102,152 @@ export default function InteractiveMicrogridView() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => sceneRef.current?.setTopDownView?.()}
-            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
-          >
-            <FaIcon name="network" />
-            <span>Top-Down</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => sceneRef.current?.resetCamera?.()}
-            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
-          >
-            <FaIcon name="refresh" />
-            <span>Reset 3D</span>
-          </button>
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          {/* Segmented 2D / 3D Toggle */}
+          <div className="inline-flex rounded-xl bg-white border border-[#BED69E] p-1 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setViewMode('2d')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                viewMode === '2d'
+                  ? 'bg-[#012F13] text-white shadow-xs'
+                  : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
+              }`}
+            >
+              📊 2D Topology
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('3d')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                viewMode === '3d'
+                  ? 'bg-[#012F13] text-white shadow-xs'
+                  : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
+              }`}
+            >
+              🌐 3D Twin
+            </button>
+          </div>
+
+          {viewMode === '3d' && (
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => sceneRef.current?.setTopDownView?.()}
+                className="px-3 py-1.5 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+              >
+                <FaIcon name="network" />
+                <span>Top-Down</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => sceneRef.current?.resetCamera?.()}
+                className="px-3 py-1.5 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+              >
+                <FaIcon name="refresh" />
+                <span>Reset 3D</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-
-
-      {/* 🌟 3. EXPANSIVE 3D DIGITAL TWIN (75-80% Screen Presence) */}
-      <div className="relative glass-card rounded-xl p-3 sm:p-5 overflow-hidden">
-
-        <div className="h-[520px] sm:h-[620px] w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.05)]">
-          <MarketplaceScene3D
-            ref={sceneRef}
+      {/* 🌟 2. MAIN VISUALIZATION VIEWPORT (2D Radial Topology by Default, 3D Twin on Toggle) */}
+      <div className="relative glass-card rounded-xl p-4 sm:p-6 overflow-hidden">
+        {viewMode === '2d' ? (
+          <RadialTopology2D
             households={computedHouseholds}
             battery={battery}
             grid={grid}
-            activeFlows={activeFlows}
-            selectedNode={selectedNodeId}
+            selectedNodeId={selectedNodeId}
             onSelectNode={(node) => setSelectedNodeId(node.id)}
           />
+        ) : (
+          <div className="h-[520px] sm:h-[620px] w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.05)]">
+            <MarketplaceScene3D
+              ref={sceneRef}
+              households={computedHouseholds}
+              battery={battery}
+              grid={grid}
+              activeFlows={activeFlows}
+              selectedNode={selectedNodeId}
+              onSelectNode={(node) => setSelectedNodeId(node.id)}
+            />
 
-          {/* Floating Glass Controls Top-Left */}
-          <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 p-1.5 rounded-xl gs-glass shadow-xs z-10">
-            <button
-              type="button"
-              onClick={() => sceneRef.current?.resetCamera?.()}
-              className="px-3 py-1.5 text-xs font-bold text-[#17221D] hover:bg-white/80 rounded-lg transition flex items-center gap-1.5"
-            >
-              <FaIcon name="refresh" className="text-[10px] text-[#5E6963]" />
-              <span>Reset</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => sceneRef.current?.setTopDownView?.()}
-              className="px-3 py-1.5 text-xs font-bold text-[#17221D] hover:bg-white/80 rounded-lg transition flex items-center gap-1.5"
-            >
-              <FaIcon name="network" className="text-[10px] text-[#5E6963]" />
-              <span>Top-Down</span>
-            </button>
-
-            <span className="w-px h-4 bg-[rgba(23,34,29,0.15)] mx-0.5" />
-
-            <div className="flex items-center gap-1.5 px-2 text-[11px] font-bold text-[#1E9B68]">
-              <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
-              <span>{activeFlows.length} Active Flow Conduits</span>
-            </div>
-          </div>
-
-          {/* Floating Glass Node Inspector Card Bottom-Right */}
-          {activeNode && (
-            <div className="absolute bottom-4 right-4 max-w-sm w-full p-5 rounded-xl gs-glass shadow-lg z-10 space-y-3 animate-in fade-in">
-              <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,34,29,0.08)]">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
-                    <FaIcon name="home" />
-                  </div>
-                  <span className="text-xs font-extrabold text-[#17221D]">{activeNode.name}</span>
-                </div>
-                <Badge variant={nodeNet >= 0 ? 'surplus' : 'deficit'} size="xs">
-                  {nodeNet >= 0 ? 'SURPLUS' : 'DEFICIT'}
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
-                  <div className="text-[10px] text-[#5E6963] uppercase font-bold">Solar</div>
-                  <div className="font-mono font-bold text-[#E5A72D]">{activeNode.generation.toFixed(1)} kW</div>
-                </div>
-                <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
-                  <div className="text-[10px] text-[#5E6963] uppercase font-bold">Demand</div>
-                  <div className="font-mono font-bold text-[#17221D]">{activeNode.consumption.toFixed(1)} kW</div>
-                </div>
-                <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
-                  <div className="text-[10px] text-[#5E6963] uppercase font-bold">Net</div>
-                  <div className={`font-mono font-bold ${nodeNet >= 0 ? 'text-[#1E9B68]' : 'text-[#D45C5C]'}`}>
-                    {nodeNet >= 0 ? `+${nodeNet.toFixed(1)}` : nodeNet.toFixed(1)} kW
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Quick Node Selector Pills Bottom-Left */}
-          <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-1.5 p-1.5 rounded-2xl gs-glass shadow-sm z-10">
-            {computedHouseholds.map((h) => (
+            {/* Floating Glass Controls Top-Left */}
+            <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 p-1.5 rounded-xl gs-glass shadow-xs z-10">
               <button
-                key={h.id}
                 type="button"
-                onClick={() => setSelectedNodeId(h.id)}
-                className={`px-3 py-1 text-xs font-bold rounded-xl transition ${selectedNodeId === h.id
-                  ? 'bg-[#12382A] text-white shadow-xs'
-                  : 'text-[#5E6B63] hover:text-[#15221B] hover:bg-white/60'
-                  }`}
+                onClick={() => sceneRef.current?.setTopDownView?.()}
+                className="px-3 py-1.5 text-xs font-bold text-[#17221D] hover:bg-white/80 rounded-lg transition flex items-center gap-1.5"
               >
-                {h.id.toUpperCase().replace('_', ' ')}
+                <FaIcon name="network" className="text-[10px] text-[#5E6963]" />
+                <span>Top-Down</span>
               </button>
-            ))}
+
+              <span className="w-px h-4 bg-[rgba(23,34,29,0.15)] mx-0.5" />
+
+              <div className="flex items-center gap-1.5 px-2 text-[11px] font-bold text-[#1E9B68]">
+                <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
+                <span>{activeFlows.length} Active Flow Conduits</span>
+              </div>
+            </div>
+
+            {/* Floating Glass Node Inspector Card Bottom-Right */}
+            {activeNode && (
+              <div className="absolute bottom-4 right-4 max-w-sm w-full p-5 rounded-xl gs-glass shadow-lg z-10 space-y-3 animate-in fade-in">
+                <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,34,29,0.08)]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
+                      <FaIcon name="home" />
+                    </div>
+                    <span className="text-xs font-extrabold text-[#17221D]">{activeNode.name}</span>
+                  </div>
+                  <Badge variant={nodeNet >= 0 ? 'surplus' : 'deficit'} size="xs">
+                    {nodeNet >= 0 ? 'SURPLUS' : 'DEFICIT'}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
+                    <div className="text-[10px] text-[#5E6963] uppercase font-bold">Solar</div>
+                    <div className="font-mono font-bold text-[#E5A72D]">{activeNode.generation.toFixed(1)} kW</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
+                    <div className="text-[10px] text-[#5E6963] uppercase font-bold">Demand</div>
+                    <div className="font-mono font-bold text-[#17221D]">{activeNode.consumption.toFixed(1)} kW</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
+                    <div className="text-[10px] text-[#5E6963] uppercase font-bold">Net</div>
+                    <div className={`font-mono font-bold ${nodeNet >= 0 ? 'text-[#1E9B68]' : 'text-[#D45C5C]'}`}>
+                      {nodeNet >= 0 ? `+${nodeNet.toFixed(1)}` : nodeNet.toFixed(1)} kW
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Quick Node Selector Pills Bottom-Left */}
+            <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-1.5 p-1.5 rounded-2xl gs-glass shadow-sm z-10">
+              {computedHouseholds.map((h) => (
+                <button
+                  key={h.id}
+                  type="button"
+                  onClick={() => setSelectedNodeId(h.id)}
+                  className={`px-3 py-1 text-xs font-bold rounded-xl transition ${selectedNodeId === h.id
+                    ? 'bg-[#12382A] text-white shadow-xs'
+                    : 'text-[#5E6B63] hover:text-[#15221B] hover:bg-white/60'
+                    }`}
+                >
+                  {h.id.toUpperCase().replace('_', ' ')}
+                </button>
+              ))}
+            </div>
           </div>
-
-        </div>
-
+        )}
       </div>
-      {/* 🌟 2. METRIC STRIP */}
+
+      {/* 🌟 3. METRIC STRIP */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <HeroMetric
           label="Total Generation"
