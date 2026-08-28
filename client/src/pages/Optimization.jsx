@@ -1,5 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import InteractiveOptimizerScene3D, { OPTIMIZER_3D_POSITIONS } from '../components/energy-map-3d/InteractiveOptimizerScene3D';
+import PageHero from '../components/ui/PageHero';
+import HeroMetric from '../components/ui/HeroMetric';
 import MetricCard from '../components/ui/MetricCard';
 import Badge from '../components/ui/Badge';
 import Button, { IconButton } from '../components/ui/Button';
@@ -347,94 +349,71 @@ export default function Optimization() {
   return (
     <div className="space-y-4 max-w-[1680px] mx-auto pb-6 select-none">
       {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
-        <div className="flex items-center space-x-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-teal-400 shadow-md">
-            <FaIcon name="ai" className="text-lg" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900">Multi-Tier Microgrid Optimizer</h2>
-              <Badge variant="ai" size="xs">
-                Deterministic Solver
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-500 font-normal">
-              Linear programmed cost minimization: Local Solar ➔ P2P Marketplace ➔ Community Battery ➔ Utility Grid.
-            </p>
-          </div>
-        </div>
+      {/* 🌟 1. OPTIMIZATION HERO */}
+      <PageHero
+        category="DISPATCH OPTIMIZATION ENGINE"
+        statusBadge="DETERMINISTIC SOLVER"
+        statusVariant="ai"
+        title="Multi-Tier Microgrid Optimizer •"
+        highlightText={
+          optimizedPlan
+            ? `Optimal plan saves ₹${optimizedPlan.savings.toFixed(2)} (${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% cost reduction).`
+            : 'Linear programmed cost minimization across Solar, P2P, ESS, and Utility Grid.'
+        }
+        subtitle="Simulates mathematical objective functions to minimize community electricity expenditure while ensuring 20% ESS emergency reserve continuity."
+        supportingFacts={[
+          { label: 'Renewable Fraction', value: optimizedPlan ? `${optimizedPlan.renewablePercent}%` : '88%', icon: 'leaf' },
+          { label: 'P2P Clearing', value: `₹${p2pPrice.toFixed(2)}/kWh`, icon: 'rupee' },
+          { label: 'Engine State', value: status, icon: 'ai' },
+        ]}
+        primaryAction={{
+          label: status === 'ANALYZING' ? 'Analyzing Solver...' : 'Run Optimization',
+          icon: status === 'ANALYZING' ? 'refresh' : 'play',
+          onClick: handleRunOptimizer,
+        }}
+        secondaryAction={{
+          label: 'Reset Baseline',
+          icon: 'refresh',
+          onClick: handleReset,
+        }}
+      />
 
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleRunOptimizer}
-            disabled={status === 'ANALYZING' || status === 'APPLYING'}
-            icon={<FaIcon name={status === 'ANALYZING' ? "refresh" : "play"} className={status === 'ANALYZING' ? "animate-spin" : ""} />}
-          >
-            {status === 'ANALYZING' ? 'Analyzing...' : 'Run Optimizer'}
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            icon={<FaIcon name="refresh" />}
-          >
-            Reset
-          </Button>
-        </div>
-      </div>
-
-      {/* 🌟 1. TOP ROW: REAL-TIME OPTIMIZATION KPI CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <MetricCard
-          title="Optimized Cost"
+      {/* 🌟 2. METRIC STRIP */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <HeroMetric
+          label="Optimized Energy Cost"
           value={optimizedPlan ? `₹${optimizedPlan.optimizedCost.toFixed(2)}` : '₹18.00'}
-          subtitle={optimizedPlan ? `vs ₹${optimizedPlan.unoptimizedCost.toFixed(0)} grid tariff` : 'vs ₹60.00 grid tariff'}
+          unit=""
+          subtitle={optimizedPlan ? `vs ₹${optimizedPlan.unoptimizedCost.toFixed(0)} unoptimized` : 'vs ₹60.00 grid tariff'}
           iconName="rupee"
           variant="ai"
         />
 
-        <MetricCard
-          title="Cost Savings"
+        <HeroMetric
+          label="Community Savings"
           value={optimizedPlan ? `+₹${optimizedPlan.savings.toFixed(2)}` : '+₹42.00'}
-          subtitle={optimizedPlan ? `${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% Cheaper` : '70% Cheaper'}
+          unit="Saved"
+          subtitle={optimizedPlan ? `${Math.round((optimizedPlan.savings / optimizedPlan.unoptimizedCost) * 100)}% Cost Reduction` : '70% Cost Reduction'}
           iconName="trendingUp"
-          variant="surplus"
+          variant="emerald"
         />
 
-        <MetricCard
-          title="Renewable Penetration"
+        <HeroMetric
+          label="Renewable Penetration"
           value={optimizedPlan ? `${optimizedPlan.renewablePercent}%` : '88%'}
-          subtitle="Clean Solar & ESS"
+          unit="Clean"
+          subtitle="Direct Solar & ESS Dispatch"
           iconName="solar"
-          variant="surplus"
+          variant="solar"
         />
 
-        <MetricCard
-          title="Grid Import"
-          value={optimizedPlan ? `${optimizedPlan.gridImport.toFixed(1)} kWh` : '0.4 kWh'}
-          subtitle={optimizedPlan ? `${optimizedPlan.gridDependencyPercent}% Dependency` : '5.5% Dependency'}
+        <HeroMetric
+          label="Grid Import Dependency"
+          value={optimizedPlan ? `${optimizedPlan.gridImport.toFixed(1)}` : '0.4'}
+          unit="kWh"
+          subtitle={optimizedPlan ? `${optimizedPlan.gridDependencyPercent}% Grid Reliance` : '5.5% Grid Reliance'}
           iconName="grid"
           variant="deficit"
-        />
-
-        <MetricCard
-          title="P2P Volume"
-          value={optimizedPlan ? `${optimizedPlan.p2pUsed.toFixed(1)} kWh` : '2.0 kWh'}
-          subtitle={`@ ₹${p2pPrice.toFixed(1)}/kWh`}
-          iconName="trade"
-          variant="battery"
-        />
-
-        <MetricCard
-          title="Optimizer State"
-          value={status}
-          subtitle="Deterministic Engine"
-          iconName="ai"
-          variant="default"
         />
       </div>
 

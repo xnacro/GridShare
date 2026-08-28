@@ -40,7 +40,7 @@ export default function NavPill({
   return (
     <nav
       aria-label="Main Navigation"
-      className={`inline-flex items-center rounded-full border border-[#DDE4DF] bg-white p-1.5 shadow-elevated transition-all duration-300 ease-out select-none ${
+      className={`inline-flex items-center rounded-full gs-glass p-1.5 shadow-sm transition-all duration-300 ease-out select-none ${
         isCollapsed ? 'space-x-1' : 'space-x-1 sm:space-x-1.5'
       }`}
     >

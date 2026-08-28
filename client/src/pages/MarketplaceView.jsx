@@ -4,16 +4,17 @@ import {
   computeHouseholdStates,
 } from '../services/marketEngine';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
-import MetricCard from '../components/ui/MetricCard';
+import PageHero from '../components/ui/PageHero';
+import HeroMetric from '../components/ui/HeroMetric';
+import GlassSurface from '../components/ui/GlassSurface';
+import SectionHeader from '../components/ui/SectionHeader';
+import FaIcon from '../components/icons/FaIcon';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
-import FaIcon from '../components/icons/FaIcon';
 
 export default function MarketplaceView() {
   // Master P2P Trading State
   const [households] = useState(INITIAL_DEMO_STATE.households);
-  const [battery] = useState(INITIAL_DEMO_STATE.battery);
-  const [grid] = useState(INITIAL_DEMO_STATE.grid);
 
   const [aiMatches, setAiMatches] = useState([
     {
@@ -26,7 +27,6 @@ export default function MarketplaceView() {
       demandKwh: 2.8,
       pricePerKwh: 4.5,
       gridPrice: 6.1,
-      distanceMeters: 45,
       circuit: 'Feeder Sub-branch A',
       matchQuality: 98,
       expectedSaving: 4.48,
@@ -42,7 +42,6 @@ export default function MarketplaceView() {
       demandKwh: 1.5,
       pricePerKwh: 4.8,
       gridPrice: 6.1,
-      distanceMeters: 80,
       circuit: 'Feeder Sub-branch B',
       matchQuality: 94,
       expectedSaving: 1.95,
@@ -58,10 +57,6 @@ export default function MarketplaceView() {
   const [activePurchase, setActivePurchase] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
-
-  const computedHouseholds = useMemo(() => {
-    return computeHouseholdStates(households, [], [], transactions);
-  }, [households, transactions]);
 
   const totalEnergyTraded = transactions.reduce((sum, t) => sum + (t.energyKwh || 0), 0);
   const totalTradeValue = transactions.reduce((sum, t) => sum + (t.totalValue || 0), 0);
@@ -99,235 +94,222 @@ export default function MarketplaceView() {
     setTransactions((prev) => [newTxn, ...prev]);
     setAiMatches((prev) => prev.filter((m) => m.id !== activePurchase.sellOrder.id));
     setIsConfirmModalOpen(false);
-    setStatusMessage(`P2P Trade settled: ${newTxn.energyKwh} kWh transferred from ${newTxn.sellerId} to ${newTxn.buyerId} @ ₹${newTxn.pricePerKwh}/kWh.`);
-    setTimeout(() => setStatusMessage(''), 5000);
+    setStatusMessage(`Successfully cleared bilateral trade: ${activePurchase.quantityKwh} kWh @ ₹${activePurchase.sellOrder.min_price_per_kwh}/kWh.`);
+    setTimeout(() => setStatusMessage(''), 4500);
   };
 
   return (
-    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-        <div>
-          <div className="flex items-center space-x-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#15211B] tracking-tight">
-              Community P2P Energy Exchange
-            </h1>
-            <Badge variant="ai" size="sm">
-              Double Auction
-            </Badge>
-          </div>
-          <p className="text-sm text-[#5E6A63] font-medium mt-1">
-            Proximity-weighted bilateral peer matching with transparent clearing rates (₹4.50/kWh vs ₹6.10 grid benchmark).
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => {
-              if (aiMatches.length > 0) handleSettleAiMatch(aiMatches[0]);
-            }}
-            icon={<FaIcon name="sparkles" />}
-          >
-            Clear Top AI Match
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
+      
+      {/* 🌟 1. MARKETPLACE HERO */}
+      <PageHero
+        category="COMMUNITY ENERGY MARKET"
+        statusBadge="ACTIVE AUCTION"
+        statusVariant="surplus"
+        title="Share local renewable energy"
+        highlightText="with the neighbors who need it."
+        subtitle="Peer-to-peer continuous double auction matching rooftop solar surplus with local consumers at fair tariffs."
+        supportingFacts={[
+          { label: 'Available Locally', value: `${totalHeadroom.toFixed(1)} kWh`, icon: 'solar' },
+          { label: 'Recommended Matches', value: `${aiMatches.length} Pairs`, icon: 'sparkles' },
+          { label: 'Average P2P Price', value: '₹4.50 / kWh', icon: 'rupee' },
+        ]}
+        primaryAction={{
+          label: 'Settle Top Match',
+          icon: 'marketplace',
+          onClick: () => aiMatches.length > 0 && handleSettleAiMatch(aiMatches[0]),
+        }}
+        secondaryAction={{
+          label: 'Create Custom Offer',
+          icon: 'plus',
+          onClick: () => {
+            setStatusMessage('Select a household node from My Home to post custom offer parameters.');
+            setTimeout(() => setStatusMessage(''), 4000);
+          },
+        }}
+      />
 
       {/* Dynamic Status Notification */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#DCE4DE] bg-[#E7F6EE] px-4 py-3 text-sm text-[#12392B] font-bold shadow-subtle animate-in fade-in">
-          <span>{statusMessage}</span>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#209B67] text-xs font-bold p-1">
+        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E6F5EC] px-4 py-3 text-xs sm:text-sm text-[#12382A] font-bold shadow-sm animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <FaIcon name="check" className="text-[#1E9B67]" />
+            <span>{statusMessage}</span>
+          </div>
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#1E9B67] text-xs p-1 font-bold">
             ✕
           </button>
         </div>
       )}
 
-      {/* 🌟 1. PRIMARY MARKETPLACE METRIC CARDS */}
+      {/* 🌟 2. METRIC STRIP */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <MetricCard
-          title="Traded Volume"
-          value={`${totalEnergyTraded.toFixed(1)} kWh`}
-          subtitle="Total peer energy settled"
-          iconName="network"
-          variant="surplus"
-          delta="100% clean solar"
-          deltaType="positive"
-        />
-
-        <MetricCard
-          title="Average P2P Tariff"
-          value="₹4.65"
-          unit="/ kWh"
-          subtitle="vs ₹6.10 utility peak tariff"
-          iconName="marketplace"
-          variant="ai"
-          delta="Save ₹1.45/kWh (24%)"
-          deltaType="positive"
-        />
-
-        <MetricCard
-          title="Total Community Value"
-          value={`₹${totalTradeValue.toFixed(2)}`}
-          subtitle="Bilateral settled revenue"
-          iconName="receipt"
-          variant="default"
-          delta="Instant clearing"
-          deltaType="positive"
-        />
-
-        <MetricCard
-          title="Available Headroom"
-          value={`${totalHeadroom.toFixed(1)} kWh`}
-          subtitle="Active prosumer listings"
+        <HeroMetric
+          label="Local Energy Available"
+          value={totalHeadroom.toFixed(1)}
+          unit="kWh"
+          subtitle="Prosumer rooftop headroom"
           iconName="solar"
           variant="solar"
-          badge="READY"
+        />
+
+        <HeroMetric
+          label="Average P2P Tariff"
+          value="₹4.50"
+          unit="/ kWh"
+          subtitle="vs ₹6.10 utility grid rate"
+          iconName="rupee"
+          variant="emerald"
+        />
+
+        <HeroMetric
+          label="Total Cleared Trades"
+          value={totalEnergyTraded.toFixed(1)}
+          unit="kWh"
+          subtitle={`₹${totalTradeValue.toFixed(2)} total transaction volume`}
+          iconName="transactions"
+          variant="default"
+        />
+
+        <HeroMetric
+          label="Community Savings"
+          value="₹8.32"
+          unit="INR"
+          subtitle="Saved vs standard DISCOM grid tariffs"
+          iconName="leaf"
+          variant="emerald"
         />
       </div>
 
-      {/* 🌟 2. PRIMARY CONCEPT: AI MATCH CARDS */}
+      {/* 🌟 3. AI-MATCHED PROSUMER-CONSUMER PAIRS */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold text-[#15211B]">
-              Algorithmic Proximity Matches
-            </h2>
-            <p className="text-xs sm:text-[13px] text-[#5E6A63]">
-              Hornet AI pairs local prosumer generation with neighboring demand on the same distribution feeder
-            </p>
-          </div>
-          <Badge variant="ai" size="xs">
-            {aiMatches.length} Recommended Matches
-          </Badge>
-        </div>
+        <SectionHeader
+          title="Optimal Peer-to-Peer Energy Matches"
+          subtitle="Algorithmic double-auction matching ranked by proximity, surplus volume, and tariff headroom"
+          rightAction={
+            <Badge variant="ai" size="sm">
+              Continuous Matching
+            </Badge>
+          }
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {aiMatches.map((match) => (
-            <div
-              key={match.id}
-              className="rounded-2xl border border-[#DCE4DE] bg-white p-5 shadow-card hover:shadow-elevated transition duration-200 space-y-4"
-            >
-              {/* Header Match Quality */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-xl bg-[#F1EDFF] text-[#7359C8] flex items-center justify-center text-sm font-bold">
-                    <FaIcon name="sparkles" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-bold text-[#15211B]">
-                      {match.matchQuality}% Proximity AI Match
-                    </span>
-                    <div className="text-[11px] text-[#87918B]">{match.circuit} • {match.distanceMeters}m distance</div>
-                  </div>
-                </div>
-                <Badge variant="surplus" size="xs">
-                  Save ₹{match.expectedSaving.toFixed(2)}
-                </Badge>
-              </div>
-
-              {/* Bilateral Peer Transfer Diagram */}
-              <div className="grid grid-cols-3 items-center gap-2 text-center p-3.5 rounded-xl border border-[#DCE4DE] bg-[#FBFCFA]">
-                {/* Seller Node */}
-                <div className="space-y-1">
-                  <div className="w-8 h-8 mx-auto rounded-xl bg-[#FFF3D7] text-[#E7AA31] flex items-center justify-center text-sm">
-                    <FaIcon name="solar" />
-                  </div>
-                  <div className="text-xs font-bold text-[#15211B] truncate">{match.sellerName.split(' ')[0]}</div>
-                  <div className="text-[11px] font-mono font-bold text-[#209B67]">+{match.surplusKwh} kWh</div>
-                </div>
-
-                {/* Flow Arrow & Tariff */}
-                <div className="space-y-1">
-                  <div className="text-xs font-extrabold text-[#7359C8]">₹{match.pricePerKwh.toFixed(2)}/kWh</div>
-                  <div className="flex items-center justify-center space-x-1 text-[#209B67]">
-                    <div className="h-0.5 w-6 bg-[#209B67]" />
-                    <FaIcon name="arrowRight" className="text-xs" />
-                  </div>
-                  <div className="text-[10px] text-[#87918B]">vs ₹{match.gridPrice} Grid</div>
-                </div>
-
-                {/* Buyer Node */}
-                <div className="space-y-1">
-                  <div className="w-8 h-8 mx-auto rounded-xl bg-[#EAF2FC] text-[#397BD2] flex items-center justify-center text-sm">
-                    <FaIcon name="home" />
-                  </div>
-                  <div className="text-xs font-bold text-[#15211B] truncate">{match.buyerName.split(' ')[0]}</div>
-                  <div className="text-[11px] font-mono font-bold text-[#D85D5D]">-{match.demandKwh} kWh</div>
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-xs text-[#5E6A63]">
-                  Total Value: <strong className="text-[#15211B] font-mono">₹{(match.surplusKwh * match.pricePerKwh).toFixed(2)}</strong>
-                </span>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleSettleAiMatch(match)}
-                  icon={<FaIcon name="marketplace" />}
-                >
-                  Review Match
-                </Button>
-              </div>
+        {aiMatches.length === 0 ? (
+          <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#E6F5EC] text-[#1E9B67] flex items-center justify-center mx-auto text-xl">
+              <FaIcon name="check" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-base font-extrabold text-[#15221B]">All Available Matches Cleared</h3>
+            <p className="text-xs text-[#5E6B63]">The local microgrid is currently fully balanced with zero open seller surplus.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+            {aiMatches.map((match) => (
+              <div
+                key={match.id}
+                className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-7 shadow-card hover:border-[rgba(23,56,43,0.15)] transition flex flex-col justify-between space-y-5"
+              >
+                {/* Match Header */}
+                <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#F1ECFF] text-[#7358C8] text-[11px] font-extrabold tracking-wider">
+                      {match.matchQuality}% MATCH QUALITY
+                    </span>
+                    <span className="text-xs text-[#5E6B63] font-medium hidden sm:inline">
+                      {match.circuit}
+                    </span>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-[#1E9B67]">
+                    Save ₹{match.expectedSaving.toFixed(2)}
+                  </span>
+                </div>
+
+                {/* Seller ➔ Buyer Visual Route */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-center sm:text-left">
+                  {/* Seller */}
+                  <div className="p-3.5 rounded-2xl bg-[#FFF7E4]/60 border border-[#E5A72D]/20 space-y-1">
+                    <div className="text-[10px] font-bold uppercase text-[#E5A72D]">Seller (Surplus)</div>
+                    <div className="text-xs font-extrabold text-[#15221B]">{match.sellerName}</div>
+                    <div className="text-sm font-mono font-extrabold text-[#E5A72D]">+{match.surplusKwh} kWh</div>
+                  </div>
+
+                  {/* Arrow & Tariff */}
+                  <div className="text-center space-y-1">
+                    <div className="w-8 h-8 rounded-full bg-[#12382A] text-white flex items-center justify-center mx-auto text-xs shadow-xs">
+                      <FaIcon name="chevronRight" />
+                    </div>
+                    <div className="text-xs font-extrabold text-[#1E9B67]">₹{match.pricePerKwh.toFixed(2)}/kWh</div>
+                  </div>
+
+                  {/* Buyer */}
+                  <div className="p-3.5 rounded-2xl bg-[#EDF3FD]/60 border border-[#3979D0]/20 space-y-1">
+                    <div className="text-[10px] font-bold uppercase text-[#3979D0]">Buyer (Demand)</div>
+                    <div className="text-xs font-extrabold text-[#15221B]">{match.buyerName}</div>
+                    <div className="text-sm font-mono font-extrabold text-[#3979D0]">-{match.demandKwh} kWh</div>
+                  </div>
+                </div>
+
+                {/* Settle Action */}
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-xs text-[#5E6B63]">
+                    Grid comparison: <del className="text-[#D65D5D]">₹{match.gridPrice.toFixed(2)}/kWh</del>
+                  </span>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleSettleAiMatch(match)}
+                    icon={<FaIcon name="check" />}
+                  >
+                    Review & Settle Match
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* 🌟 3. RECENT SETTLED P2P TRANSACTIONS LEDGER */}
-      <div className="rounded-2xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
+      {/* 🌟 4. BILATERAL SETTLEMENT HISTORY (Progressive Disclosure) */}
+      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-[#15211B]">
-              Settlement Ledger & Transaction Audit
+            <h3 className="text-base font-extrabold text-[#15221B]">
+              Bilateral Energy Settlement Ledger
             </h3>
-            <p className="text-xs text-[#5E6A63]">
-              Immutable bilateral trade confirmations verified on the Guwahati community microgrid bus
+            <p className="text-xs text-[#5E6B63]">
+              Executed P2P smart trades between community prosumers and consumers
             </p>
           </div>
           <Badge variant="surplus" size="xs">
-            {transactions.length} Transactions Settled
+            {transactions.length} CLEARED
           </Badge>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-[#DCE4DE] bg-[#F5F7F3] text-[11px] font-bold uppercase tracking-wider text-[#5E6A63]">
-                <th className="px-3.5 py-2.5">TX ID</th>
-                <th className="px-3.5 py-2.5">Time</th>
-                <th className="px-3.5 py-2.5">Seller (Prosumer)</th>
-                <th className="px-3.5 py-2.5">Buyer (Consumer)</th>
-                <th className="px-3.5 py-2.5 text-right">Energy (kWh)</th>
-                <th className="px-3.5 py-2.5 text-right">Tariff (₹/kWh)</th>
-                <th className="px-3.5 py-2.5 text-right">Total Settlement</th>
-                <th className="px-3.5 py-2.5 text-right">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#F5F7F3] font-mono text-[12px]">
-              {transactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-[#FBFCFA] transition">
-                  <td className="px-3.5 py-3 font-bold text-[#15211B]">{tx.id}</td>
-                  <td className="px-3.5 py-3 text-[#5E6A63] font-sans">{tx.time}</td>
-                  <td className="px-3.5 py-3 font-sans font-semibold text-[#209B67]">{tx.sellerId}</td>
-                  <td className="px-3.5 py-3 font-sans font-semibold text-[#397BD2]">{tx.buyerId}</td>
-                  <td className="px-3.5 py-3 text-right font-bold text-[#15211B]">{tx.energyKwh.toFixed(1)}</td>
-                  <td className="px-3.5 py-3 text-right font-bold text-[#7359C8]">₹{tx.pricePerKwh.toFixed(2)}</td>
-                  <td className="px-3.5 py-3 text-right font-extrabold text-[#209B67]">₹{tx.totalValue.toFixed(2)}</td>
-                  <td className="px-3.5 py-3 text-right font-sans">
-                    <Badge variant="surplus" size="xs">
-                      SETTLED ✓
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-2.5">
+          {transactions.map((tx) => (
+            <div
+              key={tx.id}
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F5F7F3]/60 border border-[rgba(23,56,43,0.06)] hover:bg-white text-xs transition"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-xl bg-[#E6F5EC] text-[#1E9B67] flex items-center justify-center text-xs">
+                  <FaIcon name="marketplace" />
+                </div>
+                <div>
+                  <div className="font-bold text-[#15221B]">
+                    {tx.sellerId.replace('_', ' ')} ➔ {tx.buyerId.replace('_', ' ')}
+                  </div>
+                  <div className="text-[11px] text-[#5E6A63]">{tx.time} • P2P Continuous Double Auction</div>
+                </div>
+              </div>
+
+              <div className="text-right space-y-0.5">
+                <div className="font-mono font-bold text-[#1E9B67]">
+                  {tx.energyKwh.toFixed(1)} kWh • ₹{tx.totalValue.toFixed(2)}
+                </div>
+                <Badge variant="surplus" size="xs">TRANSFERRED</Badge>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -336,10 +318,11 @@ export default function MarketplaceView() {
         <TradeConfirmationModal
           isOpen={isConfirmModalOpen}
           onClose={() => setIsConfirmModalOpen(false)}
-          purchaseDetails={activePurchase}
-          onConfirmTrade={handleConfirmTrade}
+          purchase={activePurchase}
+          onConfirm={handleConfirmTrade}
         />
       )}
+
     </div>
   );
 }

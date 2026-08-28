@@ -2,10 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import ResidentialHouseCanvas3D from '../components/home-3d/ResidentialHouseCanvas3D';
-import MetricCard from '../components/ui/MetricCard';
+import PageHero from '../components/ui/PageHero';
+import HeroMetric from '../components/ui/HeroMetric';
+import GlassSurface from '../components/ui/GlassSurface';
+import SectionHeader from '../components/ui/SectionHeader';
+import FaIcon from '../components/icons/FaIcon';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
-import FaIcon from '../components/icons/FaIcon';
 
 export default function MyHomeView() {
   const { user, profile, household, energyNode } = useAuth();
@@ -31,7 +34,7 @@ export default function MyHomeView() {
     waterHeater: { name: 'Smart Heat Pump Water Heater', kw: 0.9, active: false, icon: 'plug' },
   });
 
-  const [activityLogs, setActivityLogs] = useState([
+  const [activityLogs] = useState([
     { time: '11:15', action: 'Battery Charge', energy: 1.5, source: 'Rooftop Solar', dest: 'Home Storage', status: 'COMPLETED' },
     { time: '11:45', action: 'P2P Peer Sale', energy: 2.0, source: 'Solar Surplus', dest: 'House B (EV)', status: 'COMPLETED' },
     { time: '12:00', action: 'Auto Load Shift', energy: 1.2, source: 'Solar Array', dest: 'Air Conditioning', status: 'ACTIVE' },
@@ -143,151 +146,318 @@ export default function MyHomeView() {
   const householdType = household?.household_type || (isSurplus ? 'PROSUMER' : 'CONSUMER');
 
   return (
-    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. USER-SPECIFIC GREETING HERO */}
-      <div className="rounded-3xl border border-[#DCE4DE] bg-white p-6 sm:p-8 shadow-card relative overflow-hidden">
-        <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[#E7F6EE]/80 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2.5 max-w-3xl">
-            <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#E7F6EE] text-[#209B67] text-[11px] font-bold uppercase tracking-wider">
-                {householdTitle}
-              </span>
-              <Badge variant={householdType === 'PROSUMER' ? 'surplus' : 'deficit'} size="xs">
-                {householdType}
-              </Badge>
-              <Badge variant="default" size="xs">
-                {sourceType} SOURCE
-              </Badge>
-            </div>
-
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#15211B] tracking-tight leading-tight">
-              {isSurplus
-                ? `Welcome Home! Rooftop solar is generating ${activeGenKw.toFixed(1)} kW clean power.`
-                : `Active residential load is ${totalApplianceKw.toFixed(1)} kW with ${Math.abs(netHomeKw).toFixed(1)} kW deficit.`}
-            </h1>
-
-            <p className="text-xs sm:text-sm text-[#5E6A63] font-medium">
-              {isSurplus
-                ? `You are 100% self-powered with +${netHomeKw.toFixed(1)} kW surplus feeding your 10 kWh battery and neighboring prosumers.`
-                : `Drawing clean peer energy from House A @ ₹4.50/kWh to shave peak utility grid costs.`}
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-2 flex-shrink-0">
-            <Badge variant="ai" size="sm">
-              Operating Mode: {energyMode}
-            </Badge>
-          </div>
-        </div>
-      </div>
+      {/* 🌟 1. MY HOME HERO */}
+      <PageHero
+        category="YOUR HOUSEHOLD COCKPIT"
+        statusBadge={householdType}
+        statusVariant={isSurplus ? 'surplus' : 'deficit'}
+        title="Welcome Home •"
+        highlightText={
+          isSurplus
+            ? `You're currently producing ${netHomeKw.toFixed(1)} kW more than you need.`
+            : `Drawing ${Math.abs(netHomeKw).toFixed(1)} kW clean power to meet active household load.`
+        }
+        subtitle="Manage rooftop solar allocation, smart appliance circuits, and bilateral peer sales for your residence."
+        supportingFacts={[
+          { label: 'Rooftop Solar', value: `${activeGenKw.toFixed(1)} kW`, icon: 'solar' },
+          { label: 'Active Load', value: `${totalApplianceKw.toFixed(1)} kW`, icon: 'home' },
+          { label: 'Net Balance', value: `${isSurplus ? '+' : ''}${netHomeKw.toFixed(1)} kW`, icon: 'network' },
+        ]}
+        primaryAction={{
+          label: 'Smart Load Balancing',
+          icon: 'sliders',
+          onClick: () => {
+            const el = document.getElementById('appliance-manager');
+            el?.scrollIntoView({ behavior: 'smooth' });
+          },
+        }}
+        secondaryAction={{
+          label: 'Configure Data Source',
+          icon: 'devices',
+          onClick: () => {
+            const el = document.getElementById('data-source-panel');
+            el?.scrollIntoView({ behavior: 'smooth' });
+          },
+        }}
+      />
 
       {/* Dynamic Status Notification */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E7F6EE] px-4 py-2.5 text-sm text-[#12392B] font-bold shadow-subtle animate-in fade-in">
-          <span>{statusMessage}</span>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#209B67] text-xs font-bold p-1">
+        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E6F5EC] px-4 py-3 text-xs sm:text-sm text-[#12382A] font-bold shadow-sm animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <FaIcon name="check" className="text-[#1E9B67]" />
+            <span>{statusMessage}</span>
+          </div>
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#1E9B67] text-xs p-1 font-bold">
             ✕
           </button>
         </div>
       )}
 
-      {/* 🌟 2. PRIMARY HOUSEHOLD METRICS */}
+      {/* 🌟 2. METRIC STRIP */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <MetricCard
-          title="Rooftop Solar Gen"
-          value={`${activeGenKw.toFixed(1)} kW`}
-          subtitle={sourceType === 'MANUAL' ? 'Manual user configured' : 'Simulated diurnal physics'}
+        <HeroMetric
+          label="Solar Generation"
+          value={activeGenKw.toFixed(1)}
+          unit="kW"
+          subtitle={sourceType === 'MANUAL' ? 'Manual user override' : 'Simulated diurnal physics'}
           iconName="solar"
           variant="solar"
-          delta={sourceType}
-          deltaType="positive"
         />
 
-        <MetricCard
-          title="Active Home Load"
-          value={`${totalApplianceKw.toFixed(1)} kW`}
+        <HeroMetric
+          label="Active Household Load"
+          value={totalApplianceKw.toFixed(1)}
+          unit="kW"
           subtitle="Household circuits & appliances"
           iconName="home"
           variant="default"
-          delta="Real-time draw"
-          deltaType="neutral"
         />
 
-        <MetricCard
-          title="Net Home Balance"
-          value={`${isSurplus ? '+' : ''}${netHomeKw.toFixed(1)} kW`}
-          subtitle={isSurplus ? 'Surplus ready for P2P trading' : 'Importing from local peers'}
+        <HeroMetric
+          label="Net Home Balance"
+          value={`${isSurplus ? '+' : ''}${netHomeKw.toFixed(1)}`}
+          unit="kW"
+          subtitle={isSurplus ? 'Clean surplus for local trading' : 'Importing from local peers'}
           iconName="network"
-          variant={isSurplus ? 'surplus' : 'deficit'}
-          badge={isSurplus ? 'SURPLUS' : 'DEFICIT'}
+          variant={isSurplus ? 'emerald' : 'deficit'}
         />
 
-        <MetricCard
-          title="Home ESS Battery"
+        <HeroMetric
+          label="Home Battery SOC"
           value={`${batterySoc.toFixed(0)}%`}
+          unit="SOC"
           subtitle="10 kWh residential storage"
           iconName="battery"
-          variant="battery"
-          badge="HEALTHY"
+          variant="solar"
         />
       </div>
 
-      {/* 🌟 3. DATA SOURCE SELECTOR (SIMULATION vs MANUAL) */}
-      <div className="rounded-3xl border border-[#DCE4DE] bg-white p-6 shadow-card space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
-          <div>
-            <h3 className="text-base font-bold text-[#15211B]">
-              Energy Data Source & Ingestion Mode
-            </h3>
-            <p className="text-xs text-[#5E6A63]">
-              Choose whether your household runs on physics-based diurnal simulation or manual test values
-            </p>
+      {/* 🌟 3. 3D RESIDENTIAL ARCHITECTURAL TWIN + SMART APPLIANCES */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        {/* LEFT: 3D RESIDENTIAL HOUSE CANVAS (7 cols) */}
+        <div className="lg:col-span-7 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-xl bg-[#E6F5EC] text-[#1E9B67] flex items-center justify-center text-xs">
+                <FaIcon name="home" />
+              </div>
+              <div>
+                <h3 className="text-base font-extrabold text-[#15221B]">
+                  3D Residential Architectural Twin
+                </h3>
+                <p className="text-xs text-[#5E6B63]">
+                  Spatial view of rooftop panels, living circuits, and home storage
+                </p>
+              </div>
+            </div>
+            <Badge variant="surplus" size="xs">
+              {householdTitle}
+            </Badge>
           </div>
-          <Badge variant="ai" size="xs">
-            Multi-Tenant Isolation
-          </Badge>
+
+          <div className="h-[380px] w-full relative rounded-2xl overflow-hidden bg-[#EEF2ED]/60 border border-[rgba(23,56,43,0.05)]">
+            <ResidentialHouseCanvas3D
+              solarGen={activeGenKw}
+              consumption={totalApplianceKw}
+              batterySoc={batterySoc}
+              appliances={appliances}
+              energyMode={energyMode}
+            />
+
+            {/* Floating Glass Surplus Pill */}
+            <div className="absolute top-3 left-3 pointer-events-none p-2 rounded-2xl gs-glass shadow-sm flex items-center gap-2">
+              <FaIcon name="solar" className="text-[#1E9B67] text-xs" />
+              <span className="text-xs font-bold text-[#15221B]">
+                {isSurplus ? `Surplus: +${netHomeKw.toFixed(1)} kW` : `Deficit: ${netHomeKw.toFixed(1)} kW`}
+              </span>
+            </div>
+          </div>
         </div>
 
+        {/* RIGHT: SMART APPLIANCE BALANCER (5 cols) */}
+        <div id="appliance-manager" className="lg:col-span-5 rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 shadow-card flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.06)]">
+            <div>
+              <h3 className="text-base font-extrabold text-[#15221B]">
+                Appliance Load Balancing
+              </h3>
+              <p className="text-xs text-[#5E6B63]">
+                Toggle smart circuits to shift peak consumption
+              </p>
+            </div>
+            <span className="text-xs font-mono font-bold text-[#1E9B67]">
+              Total: {totalApplianceKw.toFixed(1)} kW
+            </span>
+          </div>
+
+          <div className="space-y-2.5">
+            {Object.entries(appliances).map(([key, app]) => (
+              <div
+                key={key}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F5F7F3]/60 border border-[rgba(23,56,43,0.06)] hover:bg-white transition"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs ${
+                    app.active ? 'bg-[#E6F5EC] text-[#1E9B67]' : 'bg-[#F5F7F3] text-[#8A948E]'
+                  }`}>
+                    <FaIcon name={app.icon || 'plug'} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-[#15221B]">{app.name}</div>
+                    <div className="text-[11px] font-mono text-[#5E6B63]">{app.kw} kW draw</div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => toggleAppliance(key)}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    app.active ? 'bg-[#1E9B67]' : 'bg-[#DCE4DE]'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ease-in-out ${
+                      app.active ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Simulation Slider if in simulation */}
+          {sourceType === 'SIMULATION' && (
+            <div className="p-3.5 rounded-2xl bg-[#FFF7E4]/60 border border-[#E5A72D]/20 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-[#E5A72D] flex items-center gap-1.5">
+                  <FaIcon name="solar" />
+                  Simulate Solar Irradiance
+                </span>
+                <span className="font-mono font-bold text-[#15221B]">{solarKw.toFixed(1)} kW</span>
+              </div>
+              <input
+                type="range"
+                min="0.0"
+                max="8.0"
+                step="0.2"
+                value={solarKw}
+                onChange={(e) => setSolarKw(Number(e.target.value))}
+                className="w-full accent-[#E5A72D] cursor-pointer"
+              />
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      {/* 🌟 4. SMART ENERGY MODES */}
+      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+        <SectionHeader
+          title="Smart Household Operating Modes"
+          subtitle="Configure how your home allocates solar energy, preserves battery reserve, and participates in P2P trading"
+          rightAction={
+            <Badge variant="ai" size="xs">
+              Automated Dispatch
+            </Badge>
+          }
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 pt-1">
+          {energyModes.map((mode) => {
+            const isSelected = energyMode === mode.id;
+            return (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => {
+                  setEnergyMode(mode.id);
+                  setStatusMessage(`Switched home operating profile to ${mode.name}.`);
+                  setTimeout(() => setStatusMessage(''), 4000);
+                }}
+                className={`p-4 rounded-2xl border text-left transition duration-150 flex flex-col justify-between space-y-3 ${
+                  isSelected
+                    ? 'bg-[#12382A] text-white border-[#12382A] shadow-md'
+                    : 'bg-[#F5F7F3]/40 border-[rgba(23,56,43,0.08)] text-[#15221B] hover:bg-white hover:border-[#1E9B67]'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <FaIcon
+                      name={mode.icon}
+                      className={`text-sm ${isSelected ? 'text-[#43CB8C]' : 'text-[#5E6B63]'}`}
+                    />
+                    {mode.recommended && (
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase ${
+                        isSelected ? 'bg-[#43CB8C] text-[#12382A]' : 'bg-[#E6F5EC] text-[#1E9B67]'
+                      }`}>
+                        Recommended
+                      </span>
+                    )}
+                  </div>
+                  <div className={`text-xs font-bold mt-2 ${isSelected ? 'text-white' : 'text-[#15221B]'}`}>
+                    {mode.name}
+                  </div>
+                </div>
+                <p className={`text-[11px] leading-snug line-clamp-2 ${isSelected ? 'text-[#DCE4DE]' : 'text-[#5E6B63]'}`}>
+                  {mode.desc}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 🌟 5. DATA SOURCE & INGESTION MODE (SIMULATION vs MANUAL) */}
+      <div id="data-source-panel" className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+        <SectionHeader
+          title="Energy Data Source & Ingestion Mode"
+          subtitle="Choose between physics-based diurnal simulation or manual test inputs"
+          rightAction={
+            <Badge variant="surplus" size="xs">
+              Multi-Tenant Scoped
+            </Badge>
+          }
+        />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Simulation Mode */}
           <div
             onClick={() => setSourceType('SIMULATION')}
             className={`p-4 rounded-2xl border cursor-pointer transition ${
               sourceType === 'SIMULATION'
-                ? 'bg-[#E7F6EE]/40 border-[#209B67] ring-2 ring-[#209B67]/20'
-                : 'bg-[#F5F7F3]/40 border-[#DCE4DE] hover:bg-white'
+                ? 'bg-[#E6F5EC]/50 border-[#1E9B67] ring-2 ring-[#1E9B67]/20'
+                : 'bg-[#F5F7F3]/40 border-[rgba(23,56,43,0.08)] hover:bg-white'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="font-bold text-sm text-[#15211B]">SIMULATION Mode</span>
+              <span className="font-bold text-sm text-[#15221B]">SIMULATION Mode</span>
               <Badge variant={sourceType === 'SIMULATION' ? 'surplus' : 'default'} size="xs">
                 DIURNAL
               </Badge>
             </div>
-            <p className="text-xs text-[#5E6A63]">
+            <p className="text-xs text-[#5E6B63]">
               Continuous physical simulation calculated from NSRDB Guwahati satellite irradiance models.
             </p>
           </div>
 
-          {/* Manual Mode */}
           <div
             onClick={() => setSourceType('MANUAL')}
             className={`p-4 rounded-2xl border cursor-pointer transition ${
               sourceType === 'MANUAL'
-                ? 'bg-[#F1EDFF]/40 border-[#7359C8] ring-2 ring-[#7359C8]/20'
-                : 'bg-[#F5F7F3]/40 border-[#DCE4DE] hover:bg-white'
+                ? 'bg-[#F1ECFF]/50 border-[#7358C8] ring-2 ring-[#7358C8]/20'
+                : 'bg-[#F5F7F3]/40 border-[rgba(23,56,43,0.08)] hover:bg-white'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="font-bold text-sm text-[#15211B]">MANUAL Override Mode</span>
+              <span className="font-bold text-sm text-[#15221B]">MANUAL Override Mode</span>
               <Badge variant={sourceType === 'MANUAL' ? 'ai' : 'default'} size="xs">
                 CUSTOM kW
               </Badge>
             </div>
-            <p className="text-xs text-[#5E6A63]">
+            <p className="text-xs text-[#5E6B63]">
               Manually set generation and demand to stress test microgrid balances, tariffs, and P2P matching.
             </p>
           </div>
@@ -295,10 +465,10 @@ export default function MyHomeView() {
 
         {/* Manual Configuration Inputs */}
         {sourceType === 'MANUAL' && (
-          <div className="p-4 rounded-2xl border border-[#7359C8]/30 bg-[#F1EDFF]/20 space-y-3 animate-in fade-in">
+          <div className="p-4 rounded-2xl border border-[#7358C8]/30 bg-[#F1ECFF]/20 space-y-3 animate-in fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#15211B]">Manual Solar Generation (kW)</label>
+                <label className="text-xs font-bold text-[#15221B]">Manual Solar Generation (kW)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -306,12 +476,12 @@ export default function MyHomeView() {
                   max="20"
                   value={manualGenInput}
                   onChange={(e) => setManualGenInput(Number(e.target.value))}
-                  className="w-full rounded-xl border border-[#DCE4DE] bg-white px-3 py-2 text-xs font-mono font-bold text-[#15211B] focus:border-[#7359C8] focus:outline-none"
+                  className="w-full rounded-xl border border-[rgba(23,56,43,0.12)] bg-white px-3 py-2 text-xs font-mono font-bold text-[#15221B] focus:border-[#7358C8] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#15211B]">Manual Household Load (kW)</label>
+                <label className="text-xs font-bold text-[#15221B]">Manual Household Load (kW)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -319,15 +489,15 @@ export default function MyHomeView() {
                   max="20"
                   value={manualConInput}
                   onChange={(e) => setManualConInput(Number(e.target.value))}
-                  className="w-full rounded-xl border border-[#DCE4DE] bg-white px-3 py-2 text-xs font-mono font-bold text-[#15211B] focus:border-[#7359C8] focus:outline-none"
+                  className="w-full rounded-xl border border-[rgba(23,56,43,0.12)] bg-white px-3 py-2 text-xs font-mono font-bold text-[#15221B] focus:border-[#7358C8] focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="flex items-center justify-between pt-1">
-              <span className="text-xs text-[#5E6A63]">
+              <span className="text-xs text-[#5E6B63]">
                 Resulting Balance:{' '}
-                <strong className={manualGenInput - manualConInput >= 0 ? 'text-[#209B67]' : 'text-[#D85D5D]'}>
+                <strong className={manualGenInput - manualConInput >= 0 ? 'text-[#1E9B67]' : 'text-[#D65D5D]'}>
                   {manualGenInput - manualConInput >= 0 ? `+${(manualGenInput - manualConInput).toFixed(2)}` : (manualGenInput - manualConInput).toFixed(2)} kW
                 </strong>
               </span>
@@ -344,228 +514,6 @@ export default function MyHomeView() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* 🌟 4. SMART OPERATING MODES SELECTOR */}
-      <div className="rounded-3xl border border-[#DCE4DE] bg-white p-6 shadow-card space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
-          <div>
-            <h3 className="text-base font-bold text-[#15211B]">
-              Smart Home Energy Modes
-            </h3>
-            <p className="text-xs text-[#5E6A63]">
-              Select how your household manages solar allocation, battery reserve, and peer trading
-            </p>
-          </div>
-          <Badge variant="ai" size="xs">
-            Intelligent Dispatch
-          </Badge>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 pt-1">
-          {energyModes.map((mode) => {
-            const isSelected = energyMode === mode.id;
-            return (
-              <button
-                key={mode.id}
-                type="button"
-                onClick={() => {
-                  setEnergyMode(mode.id);
-                  setStatusMessage(`Switched home operating profile to ${mode.name}.`);
-                  setTimeout(() => setStatusMessage(''), 4000);
-                }}
-                className={`p-4 rounded-2xl border text-left transition duration-150 flex flex-col justify-between space-y-3 ${
-                  isSelected
-                    ? 'bg-[#12392B] text-white border-[#12392B] shadow-card'
-                    : 'bg-[#F5F7F3]/40 border-[#DCE4DE] text-[#15211B] hover:bg-white hover:border-[#C7D2CB]'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <FaIcon
-                      name={mode.icon}
-                      className={`text-sm ${isSelected ? 'text-[#41C98A]' : 'text-[#5E6A63]'}`}
-                    />
-                    {mode.recommended && (
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase ${
-                        isSelected ? 'bg-[#41C98A] text-[#12392B]' : 'bg-[#E7F6EE] text-[#209B67]'
-                      }`}>
-                        Recommended
-                      </span>
-                    )}
-                  </div>
-                  <div className={`text-xs font-bold mt-2 ${isSelected ? 'text-white' : 'text-[#15211B]'}`}>
-                    {mode.name}
-                  </div>
-                </div>
-                <p className={`text-[11px] leading-snug line-clamp-2 ${isSelected ? 'text-[#C7D2CB]' : 'text-[#87918B]'}`}>
-                  {mode.desc}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 🌟 5. 3D RESIDENTIAL HOUSE TWIN + APPLIANCE MANAGER */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
-        {/* 3D RESIDENTIAL HOUSE CANVAS (7 cols) */}
-        <div className="lg:col-span-7 rounded-3xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-xs">
-                <FaIcon name="home" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-[#15211B]">
-                  3D Residential Architectural Twin
-                </h3>
-                <p className="text-xs text-[#5E6A63]">
-                  Spatial visualization of rooftop solar panels, living spaces, and battery circuit
-                </p>
-              </div>
-            </div>
-            <Badge variant="surplus" size="xs">
-              {householdTitle}
-            </Badge>
-          </div>
-
-          <div className="h-[400px] w-full relative rounded-2xl overflow-hidden bg-[#F5F7F3]">
-            <ResidentialHouseCanvas3D
-              solarGen={activeGenKw}
-              consumption={totalApplianceKw}
-              batterySoc={batterySoc}
-              appliances={appliances}
-              energyMode={energyMode}
-            />
-
-            {/* Micro Overlay */}
-            <div className="absolute top-3 left-3 pointer-events-none">
-              <div className="flex items-center space-x-2 rounded-full border border-[#DCE4DE] bg-white/95 px-3 py-1 shadow-card backdrop-blur-md">
-                <FaIcon name="solar" className="text-[#209B67] text-xs" />
-                <span className="text-xs font-bold text-[#15211B]">
-                  {isSurplus ? `Surplus: +${netHomeKw.toFixed(1)} kW` : `Deficit: ${netHomeKw.toFixed(1)} kW`}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* APPLIANCE LOAD CONTROLLER (5 cols) */}
-        <div className="lg:col-span-5 rounded-3xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
-            <div>
-              <h3 className="text-base font-bold text-[#15211B]">
-                Smart Appliance Load Balancing
-              </h3>
-              <p className="text-xs text-[#5E6A63]">
-                Toggle household circuits to shift peak consumption
-              </p>
-            </div>
-            <span className="text-xs font-mono font-bold text-[#209B67]">
-              Total: {totalApplianceKw.toFixed(1)} kW
-            </span>
-          </div>
-
-          <div className="space-y-2.5">
-            {Object.entries(appliances).map(([key, app]) => (
-              <div
-                key={key}
-                className="flex items-center justify-between p-3.5 rounded-2xl border border-[#DCE4DE] bg-[#F5F7F3]/40 hover:bg-white transition"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs ${
-                    app.active ? 'bg-[#E7F6EE] text-[#209B67]' : 'bg-[#F5F7F3] text-[#87918B]'
-                  }`}>
-                    <FaIcon name={app.icon || 'plug'} />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-[#15211B]">{app.name}</div>
-                    <div className="text-[11px] font-mono text-[#87918B]">{app.kw} kW draw</div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => toggleAppliance(key)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    app.active ? 'bg-[#209B67]' : 'bg-[#DCE4DE]'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ease-in-out ${
-                      app.active ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Quick Simulation Slider */}
-          {sourceType === 'SIMULATION' && (
-            <div className="p-3.5 rounded-2xl bg-[#FFF3D7]/50 border border-[#FDE7B4] space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-[#E7AA31] flex items-center gap-1.5">
-                  <FaIcon name="solar" />
-                  Simulate Solar Irradiance
-                </span>
-                <span className="font-mono font-bold text-[#15211B]">{solarKw.toFixed(1)} kW</span>
-              </div>
-              <input
-                type="range"
-                min="0.0"
-                max="8.0"
-                step="0.2"
-                value={solarKw}
-                onChange={(e) => setSolarKw(Number(e.target.value))}
-                className="w-full accent-[#E7AA31] cursor-pointer"
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 🌟 6. RECENT HOUSEHOLD ACTIVITY LOG */}
-      <div className="rounded-3xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
-          <div>
-            <h3 className="text-base font-bold text-[#15211B]">
-              Household Dispatch & Activity Log
-            </h3>
-            <p className="text-xs text-[#5E6A63]">
-              Recent automated solar allocations, battery dispatches, and peer transactions
-            </p>
-          </div>
-          <Badge variant="default" size="xs">
-            {activityLogs.length} Events Logged
-          </Badge>
-        </div>
-
-        <div className="space-y-2.5">
-          {activityLogs.map((log, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between p-3.5 rounded-2xl border border-[#DCE4DE] bg-[#F5F7F3]/40 hover:bg-white text-xs transition"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-xl bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-xs">
-                  <FaIcon name="marketplace" />
-                </div>
-                <div>
-                  <div className="font-bold text-[#15211B]">{log.action}</div>
-                  <div className="text-[11px] text-[#87918B]">{log.time} • {log.source} ➔ {log.dest}</div>
-                </div>
-              </div>
-
-              <div className="text-right">
-                <div className="font-mono font-bold text-[#209B67]">+{log.energy.toFixed(1)} kWh</div>
-                <Badge variant="surplus" size="xs">{log.status}</Badge>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
     </div>

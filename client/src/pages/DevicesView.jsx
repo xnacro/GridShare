@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import PageHero from '../components/ui/PageHero';
+import HeroMetric from '../components/ui/HeroMetric';
+import GlassSurface from '../components/ui/GlassSurface';
+import SectionHeader from '../components/ui/SectionHeader';
 import FaIcon from '../components/icons/FaIcon';
 import Badge, { StatusIndicator } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
-import MetricCard from '../components/ui/MetricCard';
 import { LoadingState, ErrorState } from '../components/ui/FeedbackStates';
 import { api } from '../services/api';
 
@@ -56,131 +59,122 @@ export default function DevicesView() {
     { id: 'GRID-SUB-01', name: 'Substation Interconnection Gateway', type: 'SIMULATED_GATEWAY', status: 'ONLINE', powerKw: 0.7, voltage: 415, lastUpdate: 'Just now', firmware: 'v1.2.0-sim' },
   ];
 
+  const onlineCount = devices.filter((d) => d.status === 'ONLINE').length;
+  const totalTelemetryPower = devices.reduce((sum, d) => sum + (d.powerKw || 0), 0);
+
   return (
-    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl border border-[#DCE4DE] p-5 sm:p-6 shadow-card">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-[#12392B] text-white flex items-center justify-center text-xl shadow-sm flex-shrink-0">
-            <FaIcon name="devices" className="text-[#41C98A]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-extrabold text-[#15211B] tracking-tight">
-                Simulated Edge Nodes & Devices
-              </h1>
-              <Badge variant="warning" size="xs">
-                SIMULATED TELEMETRY
-              </Badge>
-            </div>
-            <p className="text-xs sm:text-sm text-[#5E6A63] font-medium mt-0.5">
-              Virtual smart meters, bidirectional inverter controllers, and future edge hardware boundaries.
-            </p>
-          </div>
-        </div>
+      {/* 🌟 1. DEVICES HERO */}
+      <PageHero
+        category="MICROGRID INFRASTRUCTURE"
+        statusBadge="EDGE TELEMETRY"
+        statusVariant="surplus"
+        title="Hardware & Smart Meter Nodes •"
+        highlightText={`${onlineCount} of ${devices.length} virtual telemetry circuits online.`}
+        subtitle="Monitors household smart meters, battery BMS controllers, and substation intertie gateways across the Guwahati cluster."
+        supportingFacts={[
+          { label: 'Ingestion Mode', value: ingestionMode, icon: 'devices' },
+          { label: 'Sample Rate', value: '1 Hz Continuous', icon: 'refresh' },
+          { label: 'Active Draw', value: `${totalTelemetryPower.toFixed(1)} kW`, icon: 'network' },
+        ]}
+        primaryAction={{
+          label: 'Poll Telemetry',
+          icon: 'refresh',
+          onClick: () => {
+            setRefreshing(true);
+            fetchDevices();
+          },
+        }}
+      />
 
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={fetchDevices}
-            isLoading={refreshing}
-            icon={<FaIcon name="rotate" />}
-          >
-            Poll Telemetry
-          </Button>
-        </div>
-      </div>
-
-      {/* Primary Device Metrics */}
+      {/* 🌟 2. METRIC STRIP */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <MetricCard
-          title="Active Edge Nodes"
-          value={devices.length}
-          subtitle="Smart meters & BMS"
+        <HeroMetric
+          label="Online Telemetry Nodes"
+          value={`${onlineCount} / ${devices.length}`}
+          unit="Active"
+          subtitle="All microgrid nodes responding"
           iconName="devices"
-          variant="default"
-          delta="100% Online"
-          deltaType="positive"
+          variant="emerald"
         />
 
-        <MetricCard
-          title="Telemetry Source"
-          value="Simulated"
-          subtitle="Physics-based diurnal engine"
-          iconName="sliders"
-          variant="ai"
-          badge="SIMULATED"
-        />
-
-        <MetricCard
-          title="Connection Health"
-          value="100%"
-          subtitle="Zero packet drop across mesh"
+        <HeroMetric
+          label="Ingestion Mode"
+          value={ingestionMode}
+          unit=""
+          subtitle="Physics simulator active"
           iconName="network"
-          variant="surplus"
-          delta="Stable 6s polling cycle"
-          deltaType="positive"
-        />
-
-        <MetricCard
-          title="Aggregate Edge Load"
-          value={`${devices.reduce((sum, d) => sum + (d.powerKw || 0), 0).toFixed(1)} kW`}
-          subtitle="Total telemetry throughput"
-          iconName="solar"
           variant="solar"
         />
+
+        <HeroMetric
+          label="Telemetry Throughput"
+          value={totalTelemetryPower.toFixed(1)}
+          unit="kW"
+          subtitle="Instantaneous measured load"
+          iconName="solar"
+          variant="default"
+        />
+
+        <HeroMetric
+          label="Network Latency"
+          value="14"
+          unit="ms"
+          subtitle="MQTT / REST loopback verified"
+          iconName="shield"
+          variant="emerald"
+        />
       </div>
 
-      {/* Device Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {devices.map((device) => (
-          <div
-            key={device.id}
-            onClick={() => setSelectedDevice(device)}
-            className={`rounded-2xl border bg-white p-5 shadow-card transition-all cursor-pointer ${
-              selectedDevice?.id === device.id
-                ? 'border-[#209B67] ring-2 ring-[#209B67]/20'
-                : 'border-[#DCE4DE] hover:border-[#C7D2CB]'
-            }`}
-          >
-            <div className="flex items-start justify-between pb-3 border-b border-[#DCE4DE]">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-sm">
-                  <FaIcon name="devices" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-[#15211B]">{device.name}</h3>
-                  <span className="text-[11px] font-mono text-[#87918B]">{device.id}</span>
-                </div>
-              </div>
-              <Badge variant="surplus" size="xs">
-                <StatusIndicator status="online" pulse />
-                <span>ONLINE</span>
-              </Badge>
-            </div>
+      {/* 🌟 3. DEVICE NODES TABLE */}
+      <div className="rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-6 sm:p-8 shadow-card space-y-4">
+        <SectionHeader
+          title="Registered Edge Devices & Circuits"
+          subtitle="Virtual smart meters, inverters, and central battery telemetry units"
+          rightAction={
+            <Badge variant="surplus" size="xs">
+              {devices.length} Registered
+            </Badge>
+          }
+        />
 
-            <div className="mt-3 space-y-2 text-xs">
-              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
-                <span className="text-[#5E6A63]">Device Role:</span>
-                <span className="font-semibold text-[#15211B]">{device.type}</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
-                <span className="text-[#5E6A63]">Telemetry Power:</span>
-                <span className="font-mono font-bold text-[#209B67]">{device.powerKw?.toFixed(2)} kW</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
-                <span className="text-[#5E6A63]">Bus Voltage:</span>
-                <span className="font-mono font-bold text-[#15211B]">{device.voltage} V AC</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-[#F5F7F3]">
-                <span className="text-[#5E6A63]">Firmware Build:</span>
-                <span className="font-mono text-[#87918B]">{device.firmware}</span>
-              </div>
-            </div>
-          </div>
-        ))}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-[rgba(23,56,43,0.08)] text-[11px] font-extrabold uppercase tracking-wider text-[#5E6B63]">
+                <th className="py-3 px-4">Device Identifier</th>
+                <th className="py-3 px-4">Circuit Name</th>
+                <th className="py-3 px-4">Type</th>
+                <th className="py-3 px-4">Telemetry Power</th>
+                <th className="py-3 px-4">Voltage</th>
+                <th className="py-3 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[rgba(23,56,43,0.06)] font-medium text-[#15221B]">
+              {devices.map((d) => (
+                <tr
+                  key={d.id}
+                  onClick={() => setSelectedDevice(d)}
+                  className={`hover:bg-[#F5F7F3]/60 cursor-pointer transition ${
+                    selectedDevice?.id === d.id ? 'bg-[#E6F5EC]/40' : ''
+                  }`}
+                >
+                  <td className="py-3.5 px-4 font-mono font-bold text-[#12382A]">{d.id}</td>
+                  <td className="py-3.5 px-4 font-bold">{d.name}</td>
+                  <td className="py-3.5 px-4 text-[#5E6B63]">{d.type}</td>
+                  <td className="py-3.5 px-4 font-mono font-bold text-[#1E9B67]">{d.powerKw ? `${d.powerKw.toFixed(1)} kW` : 'N/A'}</td>
+                  <td className="py-3.5 px-4 font-mono">{d.voltage || 230} V</td>
+                  <td className="py-3.5 px-4">
+                    <Badge variant={d.status === 'ONLINE' ? 'surplus' : 'deficit'} size="xs">
+                      {d.status}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>

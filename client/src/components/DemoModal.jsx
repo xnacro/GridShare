@@ -19,9 +19,10 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
       name: 'High Solar Noon (12:00)',
       desc: 'Peak prosumer solar yield (+4.7 kW surplus), low baseline demand, charging ESS.',
       icon: 'solar',
-      variant: 'solar',
+      bgStyle: 'bg-gradient-to-br from-[#FFF7E4] to-[#FBECC7] border-[#E5A72D]/30 text-[#12382A]',
+      activePill: 'bg-[#E5A72D] text-white',
       before: { gen: '6.8 kW', load: '2.1 kW', balance: '+4.7 kW Surplus', battery: '40% SOC' },
-      analysis: 'Solar surplus exceeds local household demand. Proximity demand active at House B.',
+      analysis: 'Solar surplus exceeds household load. EV charging demand active at House B.',
       decision: 'Route 2.80 kW to House B (P2P @ ₹4.50), store 1.20 kW in ESS, export 0.70 kW to grid.',
       after: { p2p: '2.80 kWh Settled', batterySoc: '46% (+1.2 kWh)', savings: '₹4.48 Community Savings' },
     },
@@ -30,7 +31,8 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
       name: 'Evening Peak Hour (19:00)',
       desc: 'Zero solar generation, EV chargers active (-2.8 kW deficit), utility grid tariff ₹8.50/kWh.',
       icon: 'home',
-      variant: 'deficit',
+      bgStyle: 'bg-gradient-to-br from-[#EDF3FD] to-[#E0ECFC] border-[#3979D0]/30 text-[#12382A]',
+      activePill: 'bg-[#3979D0] text-white',
       before: { gen: '0.2 kW', load: '8.4 kW', balance: '-8.2 kW Deficit', battery: '65% SOC' },
       analysis: 'Severe grid congestion and peak utility tariff. Central ESS has sufficient charge.',
       decision: 'Discharge 4.0 kW from Community ESS to shave local peak; avoid ₹8.50/kWh utility import.',
@@ -41,7 +43,8 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
       name: 'Normal Day Balance (10:00)',
       desc: 'Balanced generation and residential consumption, smooth bilateral trade equilibrium.',
       icon: 'network',
-      variant: 'surplus',
+      bgStyle: 'bg-gradient-to-br from-[#E6F5EC] to-[#D7EFE0] border-[#1E9B67]/30 text-[#12382A]',
+      activePill: 'bg-[#1E9B67] text-white',
       before: { gen: '4.5 kW', load: '3.8 kW', balance: '+0.7 kW Surplus', battery: '50% SOC' },
       analysis: 'Equilibrium state with moderate headroom. Local battery buffer safe.',
       decision: 'Maintain local self-sufficiency. Settle 0.5 kWh micro-trade with House C.',
@@ -52,7 +55,8 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
       name: 'Monsoon Overcast',
       desc: 'Heavy cloud cover (0.4 kW solar), variable residential loads, relying on stored battery reserves.',
       icon: 'shield',
-      variant: 'warning',
+      bgStyle: 'bg-gradient-to-br from-[#EEF2ED] to-[#E3E8E2] border-[rgba(23,56,43,0.15)] text-[#12382A]',
+      activePill: 'bg-[#12382A] text-white',
       before: { gen: '0.4 kW', load: '4.2 kW', balance: '-3.8 kW Deficit', battery: '80% SOC' },
       analysis: 'Cloud cover dampens solar generation across community. Pre-charged ESS available.',
       decision: 'Deploy stored monsoon battery reserves while preserving 20% emergency blackout floor.',
@@ -101,182 +105,180 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#15211B]/50 p-4 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-3xl rounded-3xl border border-[#DCE4DE] bg-white p-6 shadow-modal animate-in zoom-in-95 duration-150 space-y-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#15221B]/50 p-4 sm:p-6 backdrop-blur-sm animate-in fade-in select-none">
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-[rgba(23,56,43,0.10)] p-6 sm:p-8 shadow-modal space-y-6">
         
-        {/* Modal Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-[#DCE4DE]">
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="rounded-full bg-[#FFF3D7] px-2.5 py-0.5 text-[11px] font-bold text-[#E7AA31] border border-[#F7E7BE] uppercase tracking-wider">
-                Guided Scenarios Engine
-              </span>
-              <Badge variant="ai" size="xs">
-                Deterministic Simulation Mode
-              </Badge>
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-[rgba(23,56,43,0.08)]">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#12382A] text-[#43CB8C] flex items-center justify-center text-lg flex-shrink-0">
+              <FaIcon name="scenarios" />
             </div>
-            <h3 className="text-xl font-extrabold text-[#15211B] mt-1.5">
-              Microgrid Scenario Workbench
-            </h3>
-            <p className="text-xs text-[#5E6A63]">
-              Simulate dynamic physical and weather conditions to evaluate automated peer dispatch
-            </p>
+            <div>
+              <h2 className="text-xl font-extrabold text-[#15221B]">
+                Interactive Scenario Engine
+              </h2>
+              <p className="text-xs text-[#5E6B63]">
+                Evaluate microgrid balancing, continuous double auctions, and 20% battery reserve limits
+              </p>
+            </div>
           </div>
+
           <button
             type="button"
             onClick={onClose}
-            className="text-[#87918B] hover:text-[#15211B] text-sm font-bold p-1 rounded-lg hover:bg-[#F5F7F3]"
+            className="text-[#5E6B63] hover:text-[#15221B] text-sm font-bold p-1.5 rounded-xl hover:bg-[#F5F7F3] transition"
           >
             ✕
           </button>
         </div>
 
-        {/* Scenario Selection Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          {scenarios.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => {
-                setActiveScenario(s.id);
-                setCurrentStep(0);
-              }}
-              className={`p-3.5 rounded-2xl border text-left transition flex flex-col justify-between space-y-1.5 ${
-                activeScenario === s.id
-                  ? 'bg-[#12392B] text-white border-[#12392B] shadow-sm'
-                  : 'bg-[#FBFCFA] border-[#DCE4DE] text-[#15211B] hover:bg-[#F5F7F3]'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <FaIcon name={s.icon} className={`text-xs ${activeScenario === s.id ? 'text-[#41C98A]' : 'text-[#5E6A63]'}`} />
-                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                  activeScenario === s.id ? 'bg-[#41C98A] text-[#12392B]' : 'bg-[#E7F6EE] text-[#209B67]'
-                }`}>
-                  {s.id === 'SOLAR_NOON' ? 'NOON' : s.id === 'EVENING_PEAK' ? 'PEAK' : s.id === 'MONSOON' ? 'STORM' : 'MID'}
-                </span>
-              </div>
-              <div>
-                <div className="text-xs font-bold leading-tight">{s.name}</div>
-                <div className={`text-[10px] mt-0.5 leading-snug line-clamp-2 ${activeScenario === s.id ? 'text-[#C7D2CB]' : 'text-[#87918B]'}`}>
-                  {s.desc}
-                </div>
-              </div>
-            </button>
-          ))}
+        {/* Reset Notification */}
+        {resetMessage && (
+          <div className="rounded-2xl border border-[#1E9B67]/20 bg-[#E6F5EC] p-3 text-xs font-bold text-[#12382A] flex items-center gap-2">
+            <FaIcon name="check" className="text-[#1E9B67]" />
+            <span>{resetMessage}</span>
+          </div>
+        )}
+
+        {/* 1. SCENARIO SELECTOR CARDS */}
+        <div className="space-y-2.5">
+          <div className="text-xs font-extrabold text-[#15221B] uppercase tracking-wider">
+            1. Select Operating Condition
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {scenarios.map((s) => {
+              const isSelected = activeScenario === s.id;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveScenario(s.id);
+                    setCurrentStep(0);
+                  }}
+                  className={`p-4 rounded-2xl border text-left transition duration-150 flex flex-col justify-between space-y-3 ${
+                    isSelected
+                      ? `${s.bgStyle} shadow-sm ring-2 ring-[#12382A]/20`
+                      : 'bg-[#F5F7F3]/50 border-[rgba(23,56,43,0.08)] text-[#15221B] hover:bg-white hover:border-[rgba(23,56,43,0.18)]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <FaIcon name={s.icon} className="text-base text-[#12382A]" />
+                    {isSelected && (
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${s.activePill}`}>
+                        ACTIVE
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-xs font-extrabold text-[#15221B]">{s.name}</div>
+                    <p className="text-[11px] text-[#5E6B63] line-clamp-2 mt-1 leading-snug">{s.desc}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* 4-Step Scenario Progression Flow */}
-        <div className="p-4 rounded-2xl border border-[#DCE4DE] bg-[#F5F7F3]/50 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#15211B] uppercase tracking-wide">
-              {currentScen.name} Sequence Execution
-            </span>
-            <div className="flex items-center space-x-1 text-[11px] font-mono text-[#87918B]">
-              <span>Step:</span>
-              <strong className="text-[#209B67]">{currentStep === 0 ? 'Ready' : `${currentStep} of 4`}</strong>
-            </div>
+        {/* 2. TIMELINE: BEFORE ➔ AI ANALYSIS ➔ DECISION ➔ IMPACT */}
+        <div className="space-y-3 pt-2">
+          <div className="text-xs font-extrabold text-[#15221B] uppercase tracking-wider">
+            2. Real-Time Autonomous Microgrid Execution
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
-            {/* Step 1: Before */}
-            <div className={`p-3 rounded-xl border transition ${
-              currentStep >= 1 ? 'bg-white border-[#209B67] shadow-xs' : 'bg-white/60 border-[#DCE4DE] text-[#87918B]'
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            {/* Step 1: Observed State */}
+            <div className={`p-4 rounded-2xl border space-y-2 transition ${
+              currentStep >= 1 ? 'bg-[#FFF7E4]/50 border-[#E5A72D]/30' : 'bg-[#F5F7F3]/40 border-[rgba(23,56,43,0.08)]'
             }`}>
-              <div className="flex items-center space-x-1.5 font-bold text-[#15211B] mb-1">
-                <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                  currentStep >= 1 ? 'bg-[#E7F6EE] text-[#209B67]' : 'bg-[#F5F7F3] text-[#87918B]'
-                }`}>1</span>
-                <span>Before State</span>
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#E5A72D]">
+                <span>1. OBSERVE</span>
+                {currentStep >= 1 && <FaIcon name="check" />}
               </div>
-              <div className="text-[11px] space-y-0.5 text-[#5E6A63]">
-                <div>Gen: <strong>{currentScen.before.gen}</strong></div>
-                <div>Load: <strong>{currentScen.before.load}</strong></div>
-                <div>Net: <strong>{currentScen.before.balance}</strong></div>
+              <div className="text-xs font-extrabold text-[#15221B]">Grid Telemetry</div>
+              <div className="text-[11px] text-[#5E6B63] space-y-0.5 font-mono">
+                <div>Gen: {currentScen.before.gen}</div>
+                <div>Load: {currentScen.before.load}</div>
+                <div className="font-bold text-[#1E9B67]">{currentScen.before.balance}</div>
               </div>
             </div>
 
-            {/* Step 2: Analysis */}
-            <div className={`p-3 rounded-xl border transition ${
-              currentStep >= 2 ? 'bg-white border-[#7359C8] shadow-xs' : 'bg-white/60 border-[#DCE4DE] text-[#87918B]'
+            {/* Step 2: AI Analysis */}
+            <div className={`p-4 rounded-2xl border space-y-2 transition ${
+              currentStep >= 2 ? 'bg-[#F1ECFF]/50 border-[#7358C8]/30' : 'bg-[#F5F7F3]/40 border-[rgba(23,56,43,0.08)]'
             }`}>
-              <div className="flex items-center space-x-1.5 font-bold text-[#15211B] mb-1">
-                <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                  currentStep >= 2 ? 'bg-[#F1EDFF] text-[#7359C8]' : 'bg-[#F5F7F3] text-[#87918B]'
-                }`}>2</span>
-                <span>AI Risk Analysis</span>
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#7358C8]">
+                <span>2. PREDICT</span>
+                {currentStep >= 2 && <FaIcon name="check" />}
               </div>
-              <p className="text-[10.5px] text-[#5E6A63] leading-snug">
-                {currentScen.analysis}
-              </p>
+              <div className="text-xs font-extrabold text-[#15221B]">Hornet AI Engine</div>
+              <p className="text-[11px] text-[#5E6B63] leading-snug">{currentScen.analysis}</p>
             </div>
 
             {/* Step 3: Decision */}
-            <div className={`p-3 rounded-xl border transition ${
-              currentStep >= 3 ? 'bg-white border-[#397BD2] shadow-xs' : 'bg-white/60 border-[#DCE4DE] text-[#87918B]'
+            <div className={`p-4 rounded-2xl border space-y-2 transition ${
+              currentStep >= 3 ? 'bg-[#E6F5EC]/50 border-[#1E9B67]/30' : 'bg-[#F5F7F3]/40 border-[rgba(23,56,43,0.08)]'
             }`}>
-              <div className="flex items-center space-x-1.5 font-bold text-[#15211B] mb-1">
-                <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                  currentStep >= 3 ? 'bg-[#EAF2FC] text-[#397BD2]' : 'bg-[#F5F7F3] text-[#87918B]'
-                }`}>3</span>
-                <span>Optimal Routing</span>
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#1E9B67]">
+                <span>3. OPTIMIZE</span>
+                {currentStep >= 3 && <FaIcon name="check" />}
               </div>
-              <p className="text-[10.5px] text-[#5E6A63] leading-snug">
-                {currentScen.decision}
-              </p>
+              <div className="text-xs font-extrabold text-[#15221B]">P2P & Storage Dispatch</div>
+              <p className="text-[11px] text-[#5E6B63] leading-snug">{currentScen.decision}</p>
             </div>
 
-            {/* Step 4: After */}
-            <div className={`p-3 rounded-xl border transition ${
-              currentStep >= 4 ? 'bg-white border-[#209B67] shadow-xs' : 'bg-white/60 border-[#DCE4DE] text-[#87918B]'
+            {/* Step 4: Impact */}
+            <div className={`p-4 rounded-2xl border space-y-2 transition ${
+              currentStep >= 4 ? 'bg-[#EDF3FD]/50 border-[#3979D0]/30' : 'bg-[#F5F7F3]/40 border-[rgba(23,56,43,0.08)]'
             }`}>
-              <div className="flex items-center space-x-1.5 font-bold text-[#15211B] mb-1">
-                <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                  currentStep >= 4 ? 'bg-[#E7F6EE] text-[#209B67]' : 'bg-[#F5F7F3] text-[#87918B]'
-                }`}>4</span>
-                <span>Impact Result</span>
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#3979D0]">
+                <span>4. SETTLE</span>
+                {currentStep >= 4 && <FaIcon name="check" />}
               </div>
-              <div className="text-[11px] space-y-0.5 text-[#5E6A63]">
-                <div>P2P: <strong>{currentScen.after.p2p}</strong></div>
-                <div>ESS: <strong>{currentScen.after.batterySoc}</strong></div>
-                <div className="text-[#209B67]"><strong>{currentScen.after.savings}</strong></div>
+              <div className="text-xs font-extrabold text-[#15221B]">Community Impact</div>
+              <div className="text-[11px] text-[#5E6B63] space-y-0.5">
+                <div className="font-bold text-[#1E9B67]">{currentScen.after.p2p}</div>
+                <div>Battery: {currentScen.after.batterySoc}</div>
+                <div className="font-bold text-[#12382A]">{currentScen.after.savings}</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            isLoading={isResetting}
-            icon={<FaIcon name="rotate" />}
-          >
-            Reset to Baseline
-          </Button>
-
-          <div className="flex items-center space-x-2">
-            <Button variant="secondary" size="sm" onClick={onClose}>
-              Close
+        {/* 3. MODAL ACTION FOOTER */}
+        <div className="pt-4 border-t border-[rgba(23,56,43,0.08)] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleReset}
+              isLoading={isResetting}
+              icon={<FaIcon name="refresh" />}
+            >
+              Reset Microgrid Baseline
             </Button>
             <Button
-              variant="primary"
+              variant="ghost"
               size="sm"
-              onClick={handleRunGuidedDemo}
-              isLoading={isRunning}
-              icon={<FaIcon name="sparkles" />}
+              onClick={onClose}
             >
-              Run Scenario
+              Close
             </Button>
           </div>
+
+          <Button
+            variant="primary"
+            size="md"
+            className="w-full sm:w-auto justify-center px-8 py-3 text-xs sm:text-sm font-bold shadow-md"
+            onClick={handleRunGuidedDemo}
+            isLoading={isRunning}
+            icon={<FaIcon name="scenarios" className="text-[#43CB8C]" />}
+          >
+            {isRunning ? 'Executing Multi-Step Scenario...' : 'Run Scenario'}
+          </Button>
         </div>
 
-        {resetMessage && (
-          <div className="text-center text-xs text-[#209B67] font-semibold">
-            {resetMessage}
-          </div>
-        )}
       </div>
     </div>
   );

@@ -4,10 +4,12 @@ import {
   computeHouseholdStates,
 } from '../services/marketEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
-import MetricCard from '../components/ui/MetricCard';
+import PageHero from '../components/ui/PageHero';
+import HeroMetric from '../components/ui/HeroMetric';
+import GlassSurface from '../components/ui/GlassSurface';
+import FaIcon from '../components/icons/FaIcon';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
-import FaIcon from '../components/icons/FaIcon';
 
 export default function InteractiveMicrogridView() {
   // Master Simulation State
@@ -23,8 +25,7 @@ export default function InteractiveMicrogridView() {
   const [transactions] = useState([
     { id: 'TX-GS-001', time: '12:30', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.8, pricePerKwh: 4.5, totalValue: 12.6, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' }
   ]);
-  const [selectedNode, setSelectedNode] = useState('house_a');
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const [selectedNodeId, setSelectedNodeId] = useState('house_a');
   const [statusMessage, setStatusMessage] = useState('');
 
   const sceneRef = useRef();
@@ -40,11 +41,9 @@ export default function InteractiveMicrogridView() {
   const netCommunity = Math.round((totalGen - totalCon) * 100) / 100;
   const isSurplus = netCommunity >= 0;
 
-  // Compute semantic 3D active conduits
+  // Active Flow Conduits
   const activeFlows = useMemo(() => {
     const flows = [];
-    
-    // P2P Local Trade Flow (Green)
     flows.push({
       id: 'flow-p2p-1',
       start: MARKET_3D_POSITIONS['house_a'],
@@ -52,11 +51,9 @@ export default function InteractiveMicrogridView() {
       kw: 2.8,
       tariff: '₹4.50/kWh',
       type: 'P2P_TRANSFER',
-      color: '#209B67',
+      color: '#1E9B67',
       isActive: true,
     });
-
-    // Battery Storage Injection (Amber)
     flows.push({
       id: 'flow-battery-1',
       start: MARKET_3D_POSITIONS['house_a'],
@@ -64,11 +61,9 @@ export default function InteractiveMicrogridView() {
       kw: 1.2,
       tariff: 'ESS Buffer',
       type: 'BATTERY_CHARGE',
-      color: '#E7AA31',
+      color: '#E5A72D',
       isActive: true,
     });
-
-    // Utility Grid Export (Blue)
     flows.push({
       id: 'flow-grid-1',
       start: MARKET_3D_POSITIONS['house_a'],
@@ -76,310 +71,185 @@ export default function InteractiveMicrogridView() {
       kw: 0.7,
       tariff: '₹6.10/kWh',
       type: 'GRID_EXPORT',
-      color: '#397BD2',
+      color: '#3979D0',
       isActive: true,
     });
-
     return flows;
-  }, [computedHouseholds, battery, grid]);
+  }, []);
 
-  const selectedHouseholdData = useMemo(() => {
-    return computedHouseholds.find((h) => h.id === selectedNode) || computedHouseholds[0];
-  }, [computedHouseholds, selectedNode]);
+  const activeNode = computedHouseholds.find((h) => h.id === selectedNodeId) || computedHouseholds[0];
+  const nodeNet = (activeNode?.generation || 0) - (activeNode?.consumption || 0);
 
   return (
-    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+    <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-        <div>
-          <div className="flex items-center space-x-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#15211B] tracking-tight">
-              3D Spatial Energy Network
-            </h1>
-            <Badge variant="surplus" size="sm">
-              Live Digital Twin
-            </Badge>
-          </div>
-          <p className="text-sm text-[#5E6A63] font-medium mt-1">
-            Guwahati microgrid topology with physical power vectors: Solar ➔ Prosumer ➔ Consumer ➔ Battery ➔ Grid.
-          </p>
-        </div>
+      {/* 🌟 1. ENERGY NETWORK HERO */}
+      <PageHero
+        category="COMMUNITY ENERGY NETWORK"
+        statusBadge="LIVE 3D TWIN"
+        statusVariant="surplus"
+        title="See how renewable energy moves"
+        highlightText="through your community right now."
+        subtitle="Visualizing real-time power routing across prosumers, smart circuits, 50 kWh central storage, and utility grid interties."
+        supportingFacts={[
+          { label: 'Current Balance', value: `+${netCommunity.toFixed(1)} kW Surplus`, icon: 'network' },
+          { label: 'Network Nodes', value: '5 Households + 1 ESS', icon: 'home' },
+          { label: 'Storage State', value: `${battery.soc.toFixed(0)}% (20% Floor)`, icon: 'battery' },
+        ]}
+        primaryAction={{
+          label: 'Top-Down Overview',
+          icon: 'network',
+          onClick: () => sceneRef.current?.setTopDownView?.(),
+        }}
+        secondaryAction={{
+          label: 'Reset Camera',
+          icon: 'refresh',
+          onClick: () => sceneRef.current?.resetCamera?.(),
+        }}
+      />
 
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => sceneRef.current?.resetCamera()}
-            icon={<FaIcon name="rotate" />}
-          >
-            Reset Camera
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-            icon={<FaIcon name="sliders" />}
-          >
-            {isDrawerOpen ? 'Hide Inspector' : 'Inspect Node'}
-          </Button>
-        </div>
-      </div>
-
-      {/* Dynamic Status Message */}
-      {statusMessage && (
-        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E7F6EE] px-4 py-2.5 text-sm text-[#12392B] font-bold shadow-subtle">
-          <span>{statusMessage}</span>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#209B67] text-xs font-bold p-1">
-            ✕
-          </button>
-        </div>
-      )}
-
-      {/* 🌟 1. PRIMARY METRICS */}
+      {/* 🌟 2. METRIC STRIP */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <MetricCard
-          title="Total Generation"
-          value={`${totalGen.toFixed(1)} kW`}
-          subtitle="Community solar yield"
+        <HeroMetric
+          label="Total Generation"
+          value={totalGen.toFixed(1)}
+          unit="kW"
+          subtitle="Rooftop solar irradiance"
           iconName="solar"
           variant="solar"
-          delta="100% clean solar"
-          deltaType="positive"
         />
 
-        <MetricCard
-          title="Total Demand"
-          value={`${totalCon.toFixed(1)} kW`}
-          subtitle="Aggregate household loads"
+        <HeroMetric
+          label="Total Demand"
+          value={totalCon.toFixed(1)}
+          unit="kW"
+          subtitle="Residential loads & EV draws"
           iconName="home"
           variant="default"
-          delta="5 residential nodes"
-          deltaType="neutral"
         />
 
-        <MetricCard
-          title="Community Net"
-          value={`${isSurplus ? '+' : ''}${netCommunity.toFixed(1)} kW`}
-          subtitle={isSurplus ? "Renewable surplus ready for P2P" : "Net deficit buffered by ESS"}
+        <HeroMetric
+          label="Net Microgrid Balance"
+          value={`${isSurplus ? '+' : ''}${netCommunity.toFixed(1)}`}
+          unit="kW"
+          subtitle="Zero external grid import required"
           iconName="network"
-          variant={isSurplus ? "surplus" : "deficit"}
-          badge={isSurplus ? "SURPLUS" : "DEFICIT"}
+          variant="emerald"
         />
 
-        <MetricCard
-          title="Community ESS"
+        <HeroMetric
+          label="Community Battery"
           value={`${battery.soc.toFixed(0)}%`}
-          subtitle="50 kWh centralized storage"
+          unit="SOC"
+          subtitle="50 kWh central storage unit"
           iconName="battery"
-          variant="battery"
-          badge="SAFE RESERVE"
+          variant="solar"
         />
       </div>
 
-      {/* 🌟 2. CENTERPIECE 3D SPATIAL DIGITAL TWIN + SLIDE-IN INSPECTOR */}
-      <div className="relative rounded-3xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card overflow-hidden">
+      {/* 🌟 3. EXPANSIVE 3D DIGITAL TWIN (75-80% Screen Presence) */}
+      <div className="relative rounded-3xl bg-white border border-[rgba(23,56,43,0.08)] p-3 sm:p-5 shadow-card overflow-hidden">
         
-        {/* 3D Scene Header Bar */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-sm flex-shrink-0">
-              <FaIcon name="network" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-[#15211B] tracking-tight">
-                Interactive Microgrid Canvas
-              </h3>
-              <p className="text-xs text-[#5E6A63]">
-                Click any household building or battery asset to inspect live physical telemetry
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-1.5">
-            <button
-              type="button"
-              onClick={() => sceneRef.current?.topView()}
-              className="px-2.5 py-1 rounded-lg border border-[#DCE4DE] bg-[#F5F7F3] text-xs font-semibold text-[#15211B] hover:bg-white transition hidden sm:inline-flex"
-            >
-              Top-Down
-            </button>
-            <button
-              type="button"
-              onClick={() => sceneRef.current?.marketView()}
-              className="px-2.5 py-1 rounded-lg border border-[#DCE4DE] bg-[#F5F7F3] text-xs font-semibold text-[#15211B] hover:bg-white transition hidden sm:inline-flex"
-            >
-              Perspective
-            </button>
-          </div>
-        </div>
-
-        {/* 3D Viewport */}
-        <div className="mt-4 h-[480px] sm:h-[540px] w-full relative rounded-2xl overflow-hidden bg-[#F5F7F3]">
+        <div className="h-[520px] sm:h-[620px] w-full relative rounded-2xl overflow-hidden bg-[#EEF2ED]/60 border border-[rgba(23,56,43,0.05)]">
           <MarketplaceScene3D
             ref={sceneRef}
             households={computedHouseholds}
             battery={battery}
             grid={grid}
             activeFlows={activeFlows}
-            selectedNode={selectedNode}
-            onSelectNode={(nodeId) => {
-              setSelectedNode(nodeId);
-              setIsDrawerOpen(true);
-            }}
+            selectedNode={selectedNodeId}
+            onSelectNode={(node) => setSelectedNodeId(node.id)}
           />
 
-          {/* Floating Semantic Conduits Legend */}
-          <div className="absolute top-3 left-3 pointer-events-none">
-            <div className="flex flex-col gap-1.5 rounded-2xl border border-[#DCE4DE] bg-white/95 p-3 shadow-card backdrop-blur-md text-[11px] font-semibold text-[#15211B]">
-              <span className="text-[10px] uppercase font-bold text-[#87918B]">Active Power Conduits</span>
-              <div className="flex items-center gap-2">
-                <FaIcon name="bolt" className="text-[#209B67] text-xs" />
-                <span>P2P Peer Trade (Green)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FaIcon name="battery" className="text-[#E7AA31] text-xs" />
-                <span>Battery Buffer (Amber)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FaIcon name="grid" className="text-[#397BD2] text-xs" />
-                <span>Grid Interconnect (Blue)</span>
-              </div>
+          {/* Floating Glass Controls Top-Left */}
+          <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 p-1.5 rounded-2xl gs-glass shadow-sm z-10">
+            <button
+              type="button"
+              onClick={() => sceneRef.current?.resetCamera?.()}
+              className="px-3 py-1.5 text-xs font-bold text-[#15221B] hover:bg-white/80 rounded-xl transition flex items-center gap-1.5"
+            >
+              <FaIcon name="refresh" className="text-[10px] text-[#5E6B63]" />
+              <span>Reset</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => sceneRef.current?.setTopDownView?.()}
+              className="px-3 py-1.5 text-xs font-bold text-[#15221B] hover:bg-white/80 rounded-xl transition flex items-center gap-1.5"
+            >
+              <FaIcon name="network" className="text-[10px] text-[#5E6B63]" />
+              <span>Top-Down</span>
+            </button>
+
+            <span className="w-px h-4 bg-[rgba(23,56,43,0.15)] mx-0.5" />
+
+            <div className="flex items-center gap-1.5 px-2 text-[11px] font-bold text-[#1E9B67]">
+              <span className="w-2 h-2 rounded-full bg-[#1E9B67] animate-pulse" />
+              <span>{activeFlows.length} Active Flow Conduits</span>
             </div>
           </div>
 
-          {/* Slide-In Node Detail Inspector */}
-          {isDrawerOpen && selectedHouseholdData && (
-            <div className="absolute top-3 right-3 w-80 rounded-2xl border border-[#DCE4DE] bg-white/98 p-5 shadow-modal backdrop-blur-xl animate-in fade-in slide-in-from-right duration-200 z-20">
-              <div className="flex items-start justify-between pb-2.5 border-b border-[#DCE4DE]">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#87918B]">
-                    Node Inspector
-                  </span>
-                  <h4 className="text-base font-bold text-[#15211B]">
-                    {selectedHouseholdData.name}
-                  </h4>
+          {/* Floating Glass Node Inspector Card Bottom-Right */}
+          {activeNode && (
+            <div className="absolute bottom-4 right-4 max-w-sm w-full p-5 rounded-2xl gs-glass-hero shadow-lg z-10 space-y-3 animate-in fade-in">
+              <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,56,43,0.08)]">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-[#E6F5EC] text-[#1E9B67] flex items-center justify-center text-xs">
+                    <FaIcon name="home" />
+                  </div>
+                  <span className="text-xs font-extrabold text-[#15221B]">{activeNode.name}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsDrawerOpen(false)}
-                  className="text-[#87918B] hover:text-[#15211B] text-xs font-bold p-1 rounded-lg hover:bg-[#F5F7F3]"
-                >
-                  ✕
-                </button>
+                <Badge variant={nodeNet >= 0 ? 'surplus' : 'deficit'} size="xs">
+                  {nodeNet >= 0 ? 'PROSUMER' : 'CONSUMER'}
+                </Badge>
               </div>
 
-              <div className="mt-3 space-y-2.5 text-xs">
-                <div className="flex justify-between py-1 border-b border-[#EEF1EB]">
-                  <span className="text-[#5E6A63]">Current State:</span>
-                  <Badge variant={selectedHouseholdData.status === 'SURPLUS' ? 'surplus' : 'deficit'} size="xs">
-                    {selectedHouseholdData.status}
-                  </Badge>
+              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                <div className="p-2 rounded-xl bg-white/70">
+                  <div className="text-[10px] text-[#5E6B63]">Solar</div>
+                  <div className="font-extrabold text-[#E5A72D]">{activeNode.generation.toFixed(1)} kW</div>
                 </div>
-
-                <div className="flex justify-between py-1 border-b border-[#EEF1EB]">
-                  <span className="text-[#5E6A63]">Solar Generation:</span>
-                  <span className="font-mono font-bold text-[#E7AA31]">
-                    {selectedHouseholdData.generation.toFixed(2)} kW
-                  </span>
+                <div className="p-2 rounded-xl bg-white/70">
+                  <div className="text-[10px] text-[#5E6B63]">Load</div>
+                  <div className="font-extrabold text-[#15221B]">{activeNode.consumption.toFixed(1)} kW</div>
                 </div>
-
-                <div className="flex justify-between py-1 border-b border-[#EEF1EB]">
-                  <span className="text-[#5E6A63]">Active Consumption:</span>
-                  <span className="font-mono font-bold text-[#397BD2]">
-                    {selectedHouseholdData.consumption.toFixed(2)} kW
-                  </span>
-                </div>
-
-                <div className="flex justify-between py-1 border-b border-[#EEF1EB]">
-                  <span className="text-[#5E6A63]">Net Energy Balance:</span>
-                  <span className={`font-mono font-bold ${(selectedHouseholdData.netBalance ?? (selectedHouseholdData.generation - selectedHouseholdData.consumption) ?? 0) >= 0 ? 'text-[#209B67]' : 'text-[#D85D5D]'}`}>
-                    {(selectedHouseholdData.netBalance ?? (selectedHouseholdData.generation - selectedHouseholdData.consumption) ?? 0) >= 0
-                      ? `+${(selectedHouseholdData.netBalance ?? (selectedHouseholdData.generation - selectedHouseholdData.consumption) ?? 0).toFixed(2)}`
-                      : (selectedHouseholdData.netBalance ?? (selectedHouseholdData.generation - selectedHouseholdData.consumption) ?? 0).toFixed(2)} kW
-                  </span>
-                </div>
-
-                {selectedHouseholdData.battery && (
-                  <div className="flex justify-between py-1 border-b border-[#EEF1EB]">
-                    <span className="text-[#5E6A63]">Local Home Battery:</span>
-                    <span className="font-mono font-bold text-[#D79A27]">
-                      {selectedHouseholdData.battery.soc?.toFixed(0) || '0'}% SOC ({selectedHouseholdData.battery.capacity_kwh || '0'} kWh)
-                    </span>
+                <div className="p-2 rounded-xl bg-white/70">
+                  <div className="text-[10px] text-[#5E6B63]">Net</div>
+                  <div className={`font-extrabold ${nodeNet >= 0 ? 'text-[#1E9B67]' : 'text-[#D65D5D]'}`}>
+                    {nodeNet >= 0 ? `+${nodeNet.toFixed(1)}` : nodeNet.toFixed(1)} kW
                   </div>
-                )}
-
-                <div className="pt-2">
-                  <span className="text-[10.5px] font-bold text-[#7359C8] block mb-1">
-                    Hornet AI Recommendation:
-                  </span>
-                  <p className="text-[11.5px] text-[#5E6A63] leading-relaxed">
-                    {selectedHouseholdData.status === 'SURPLUS'
-                      ? `Allocate ${(selectedHouseholdData.netBalance ?? (selectedHouseholdData.generation - selectedHouseholdData.consumption) ?? 0).toFixed(1)} kW surplus to neighboring deficit nodes @ ₹4.50/kWh.`
-                      : `Purchase 2.0 kWh from House A to avoid peak grid tariff (save ₹1.60/kWh).`}
-                  </p>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-[#5E6B63] pt-1">
+                <span>Location: {activeNode.location || 'Guwahati Cluster'}</span>
+                <span className="font-mono font-bold text-[#1E9B67]">Status: ONLINE</span>
               </div>
             </div>
           )}
-        </div>
 
-        {/* Node Switcher Strip */}
-        <div className="mt-3.5 pt-3 border-t border-[#DCE4DE] flex flex-wrap items-center justify-between gap-2 text-xs">
-          <span className="text-[#5E6A63] font-medium">Select Household Perspective:</span>
-          <div className="flex flex-wrap items-center gap-1.5">
+          {/* Quick Node Selector Pills Bottom-Left */}
+          <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-1.5 p-1.5 rounded-2xl gs-glass shadow-sm z-10">
             {computedHouseholds.map((h) => (
               <button
                 key={h.id}
                 type="button"
-                onClick={() => {
-                  setSelectedNode(h.id);
-                  setIsDrawerOpen(true);
-                }}
-                className={`px-3 py-1.5 rounded-xl font-bold transition text-xs ${
-                  selectedNode === h.id
-                    ? 'bg-[#12392B] text-white shadow-xs'
-                    : 'bg-[#F5F7F3] text-[#5E6A63] hover:text-[#15211B] border border-[#DCE4DE]'
+                onClick={() => setSelectedNodeId(h.id)}
+                className={`px-3 py-1 text-xs font-bold rounded-xl transition ${
+                  selectedNodeId === h.id
+                    ? 'bg-[#12382A] text-white shadow-xs'
+                    : 'text-[#5E6B63] hover:text-[#15221B] hover:bg-white/60'
                 }`}
               >
-                {h.name}
+                {h.id.toUpperCase().replace('_', ' ')}
               </button>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* 🌟 3. ACTIVE 3D POWER ROUTING CONDUITS DETAIL STRIP */}
-      <div className="rounded-3xl border border-[#DCE4DE] bg-white p-5 shadow-card">
-        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE] mb-3">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[#E7F6EE] text-[#209B67] flex items-center justify-center text-xs">
-              <FaIcon name="solar" />
-            </div>
-            <h3 className="text-base font-bold text-[#15211B]">
-              Active 3D Energy Routing Conduits
-            </h3>
-          </div>
-          <Badge variant="surplus" size="xs">
-            {activeFlows.length} Active Conduits
-          </Badge>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          {activeFlows.map((flow) => (
-            <div key={flow.id} className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#F5F7F3]/50 p-3.5 text-xs">
-              <div className="flex items-center space-x-2.5">
-                <FaIcon name="bolt" style={{ color: flow.color }} className="text-sm" />
-                <span className="font-mono font-bold text-sm text-[#15211B]">{flow.kw.toFixed(2)} kW</span>
-                <Badge variant="default" size="xs">
-                  {flow.type}
-                </Badge>
-              </div>
-              <span className="font-mono font-bold text-[#209B67] text-xs">{flow.tariff}</span>
-            </div>
-          ))}
-        </div>
       </div>
+
     </div>
   );
 }

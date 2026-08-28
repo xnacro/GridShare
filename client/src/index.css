@@ -7,58 +7,82 @@
 @layer base {
   :root {
     --canvas: #F5F7F3;
-    --canvas-soft: #EEF1EB;
+    --canvas-subtle: #EEF2ED;
     --surface: #FFFFFF;
     --surface-elevated: #FBFCFA;
-    --text-primary: #15211B;
-    --text-brand: #17382B;
-    --text-secondary: #5E6A63;
-    --text-muted: #87918B;
-    --border-soft: #DCE4DE;
-    --border-strong: #C7D2CB;
     
-    --brand-forest: #12392B;
-    --brand-emerald: #209B67;
-    --brand-bright: #41C98A;
-    --brand-soft-emerald: #E7F6EE;
+    --text-primary: #15221B;
+    --text-secondary: #5E6B63;
+    --text-muted: #8A948E;
+    --border-soft: rgba(23, 56, 43, 0.10);
+    --border-strong: rgba(23, 56, 43, 0.18);
     
-    --solar-gold: #E7AA31;
-    --solar-soft: #FFF3D7;
-    --battery-amber: #D79A27;
-    --grid-blue: #397BD2;
-    --grid-soft: #EAF2FC;
-    --deficit-coral: #D85D5D;
-    --deficit-soft: #FDECEC;
-    --ai-violet: #7359C8;
-    --ai-soft: #F1EDFF;
+    --forest-deep: #12382A;
+    --forest-mid: #164A35;
+    --forest-light: #1C5B42;
     
-    --nav-height: 48px;
-    --nav-radius: 9999px;
+    --emerald-primary: #1E9B67;
+    --emerald-bright: #2CB477;
+    --emerald-light: #43CB8C;
+    --emerald-soft: #E6F5EC;
+    
+    --solar-amber: #E5A72D;
+    --solar-soft: #FFF7E4;
+    --battery-amber: #E5A72D;
+    --grid-blue: #3979D0;
+    --grid-soft: #EDF3FD;
+    --deficit-coral: #D65D5D;
+    --deficit-soft: #FCECEC;
+    --ai-violet: #7358C8;
+    --ai-soft: #F1ECFF;
   }
 
   body {
     background-color: var(--canvas);
     color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 }
 
 @layer utilities {
-  /* Subtle, restrained glassmorphism */
-  .glass-pill {
-    background-color: rgba(255, 255, 255, 0.85);
+  /* Selective, Airy Climate-Tech Glassmorphism */
+  .gs-glass {
+    background: rgba(255, 255, 255, 0.72);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(220, 228, 222, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 20px -2px rgba(18, 56, 42, 0.05);
   }
 
-  .glass-card {
-    background-color: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(220, 228, 222, 0.65);
+  .gs-glass-hero {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(245, 247, 243, 0.82) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 30px -5px rgba(18, 56, 42, 0.06);
+  }
+
+  .gs-glass-overlay {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(23, 56, 43, 0.10);
+    box-shadow: 0 8px 24px -4px rgba(18, 56, 42, 0.08);
+  }
+
+  .gs-card-surface {
+    background: #FFFFFF;
+    border: 1px solid rgba(23, 56, 43, 0.08);
+    box-shadow: 0 2px 12px -2px rgba(18, 56, 42, 0.03);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .gs-card-surface:hover {
+    border-color: rgba(23, 56, 43, 0.14);
+    box-shadow: 0 6px 20px -4px rgba(18, 56, 42, 0.06);
   }
 
   /* Micro-animation transitions */
@@ -69,7 +93,7 @@
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(6px);
     }
     to {
       opacity: 1;
@@ -78,7 +102,7 @@
   }
 }
 
-/* Premium Climate-Tech Scrollbars */
+/* Premium Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -89,10 +113,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-soft);
+  background: rgba(23, 56, 43, 0.14);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
+  background: rgba(23, 56, 43, 0.25);
 }
