@@ -1,7 +1,5 @@
 import React from 'react';
 import FaIcon from '../icons/FaIcon';
-import Badge from '../ui/Badge';
-import Button from '../ui/Button';
 
 export default function TradeConfirmationModal({
   purchase,
@@ -14,134 +12,131 @@ export default function TradeConfirmationModal({
 }) {
   if (!isOpen || !purchase) return null;
 
-  const { buyerId, sellOrder, quantityKwh } = purchase;
-  const unitPrice = sellOrder?.min_price_per_kwh || 7.0;
+  const { buyerId, buyerName, sellOrder, sellerName, quantityKwh } = purchase;
+  const unitPrice = sellOrder?.min_price_per_kwh || 4.50;
   const qty = Number(quantityKwh) || sellOrder?.remaining_kwh || 2.0;
   const totalAmount = Math.round(qty * unitPrice * 100) / 100;
+  const gridPrice = 6.10;
+  const savingsVsGrid = Math.round((gridPrice - unitPrice) * qty * 100) / 100;
 
-  const buyerWalletBefore = buyerHousehold.wallet || 100;
-  const buyerWalletAfter = Math.max(0, Math.round((buyerWalletBefore - totalAmount) * 100) / 100);
-
-  const sellerWalletBefore = sellerHousehold.wallet || 50;
-  const sellerWalletAfter = Math.round((sellerWalletBefore + totalAmount) * 100) / 100;
+  const displaySeller = sellerName || sellerHousehold.name || sellOrder?.sellerName || 'Rahul\'s Home (Solar)';
+  const displayBuyer = buyerName || buyerHousehold.name || purchase?.buyerName || 'Green Valley Block 2 (Demand)';
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-md">
-      <div className="relative z-10 w-full max-w-lg rounded-2xl border border-blue-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in select-none">
+      <div className="relative z-10 w-full max-w-lg rounded-xl glass-card p-6 sm:p-7 shadow-2xl border border-white/95 space-y-5 animate-in zoom-in-95 duration-150">
+        
         {/* Header */}
-        <div className="flex items-start justify-between pb-3 border-b border-slate-100 mb-4">
-          <div className="flex items-center space-x-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-              <FaIcon name="marketplace" className="text-sm" />
+        <div className="flex items-start justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-sm shadow-xs">
+              <FaIcon name="marketplace" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="text-base font-extrabold text-slate-900">
-                  Purchase Confirmation
+                <h3 className="font-changa text-lg font-normal text-[#17221D]">
+                  Review & Settle Energy Trade
                 </h3>
-                <Badge variant="ai" size="xs">
-                  Pending Buyer Consent
-                </Badge>
               </div>
-              <p className="text-[11px] text-slate-500 font-medium">
-                Verify energy quantity, pricing, and virtual wallet settlement
+              <p className="text-xs text-[#5E6963]">
+                Verify energy quantity, pricing, and virtual bilateral settlement
               </p>
             </div>
           </div>
+          
           <button
             type="button"
             onClick={onCancel}
             disabled={isSettling}
-            className="text-slate-400 hover:text-slate-700 text-sm font-bold p-1"
+            className="text-[#89938D] hover:text-[#17221D] text-sm p-1 rounded-md transition"
           >
-            <FaIcon name="close" className="text-xs" />
+            ✕
           </button>
         </div>
 
         {/* Counterparty Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 space-y-1">
-            <div className="flex items-center justify-between text-slate-500 text-[10px]">
-              <span className="font-bold text-emerald-800 uppercase">Seller (Prosumer)</span>
-              <span className="font-mono">Listing #{sellOrder?.id}</span>
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          {/* Seller */}
+          <div className="rounded-lg border border-[#1E9B68]/20 bg-[#E8F6EE]/70 p-3 space-y-1">
+            <div className="flex items-center justify-between text-[10px]">
+              <span className="font-changa font-bold text-[#1E9B68] uppercase tracking-wider">Seller (Prosumer)</span>
+              <span className="font-mono text-[#5E6963]">#{sellOrder?.id || 'GS-001'}</span>
             </div>
-            <div className="font-extrabold text-slate-900 text-sm">{sellerHousehold.name || sellOrder?.household_id?.toUpperCase()}</div>
-            <div className="flex items-center justify-between text-[11px] pt-1 border-t border-emerald-100 font-mono">
-              <span className="text-slate-500">Wallet:</span>
-              <span className="font-bold text-emerald-800">₹{sellerWalletBefore.toFixed(0)} ➔ ₹{sellerWalletAfter.toFixed(0)}</span>
+            <div className="font-bold text-[#17221D] text-sm truncate">
+              {displaySeller}
+            </div>
+            <div className="text-[11px] text-[#5E6963]">
+              Surplus: <span className="font-mono font-bold text-[#1E9B68]">+{qty.toFixed(1)} kWh</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3 space-y-1">
-            <div className="flex items-center justify-between text-slate-500 text-[10px]">
-              <span className="font-bold text-blue-800 uppercase">Buyer (Consumer)</span>
-              <span className="font-mono">Active Persona</span>
+          {/* Buyer */}
+          <div className="rounded-lg border border-[#3C78CC]/20 bg-[#EDF3FD]/70 p-3 space-y-1">
+            <div className="flex items-center justify-between text-[10px]">
+              <span className="font-changa font-bold text-[#3C78CC] uppercase tracking-wider">Buyer (Consumer)</span>
+              <span className="font-mono text-[#5E6963]">Local Feeder</span>
             </div>
-            <div className="font-extrabold text-slate-900 text-sm">{buyerHousehold.name || buyerId?.toUpperCase()}</div>
-            <div className="flex items-center justify-between text-[11px] pt-1 border-t border-blue-100 font-mono">
-              <span className="text-slate-500">Wallet:</span>
-              <span className="font-bold text-blue-800">₹{buyerWalletBefore.toFixed(0)} ➔ ₹{buyerWalletAfter.toFixed(0)}</span>
+            <div className="font-bold text-[#17221D] text-sm truncate">
+              {displayBuyer}
+            </div>
+            <div className="text-[11px] text-[#5E6963]">
+              Demand: <span className="font-mono font-bold text-[#3C78CC]">-{qty.toFixed(1)} kWh</span>
             </div>
           </div>
         </div>
 
-        {/* Financial Summary Box */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2 mb-4 text-xs">
+        {/* Financial Breakdown Box */}
+        <div className="rounded-lg border border-[rgba(23,34,29,0.06)] bg-[#F8F9F6] p-4 space-y-2 text-xs">
           <div className="flex items-center justify-between">
-            <span className="text-slate-600 font-medium">Energy Quantity:</span>
-            <span className="font-mono font-bold text-slate-900 text-sm">{qty.toFixed(1)} kWh</span>
+            <span className="text-[#5E6963]">Energy Traded:</span>
+            <span className="font-mono font-bold text-[#17221D] text-sm">{qty.toFixed(1)} kWh</span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-slate-600 font-medium">Listed Unit Price:</span>
-            <span className="font-mono font-bold text-emerald-700 text-sm">₹{unitPrice.toFixed(2)} / kWh</span>
+            <span className="text-[#5E6963]">P2P Agreed Tariff:</span>
+            <span className="font-mono font-bold text-[#1E9B68] text-sm">₹{unitPrice.toFixed(2)} / kWh</span>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-            <span className="font-bold text-slate-900 text-xs">Total Simulated Payment:</span>
-            <span className="font-mono font-extrabold text-slate-900 text-base">₹{totalAmount.toFixed(2)}</span>
+          <div className="flex items-center justify-between text-[11px] text-[#5E6963]">
+            <span>Standard Grid Utility Tariff:</span>
+            <span className="font-mono line-through text-[#89938D]">₹{gridPrice.toFixed(2)} / kWh</span>
           </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-[rgba(23,34,29,0.08)]">
+            <span className="text-[#17221D] font-bold">Total Trade Settlement Value:</span>
+            <span className="font-changa font-bold text-base text-[#12392B]">₹{totalAmount.toFixed(2)}</span>
+          </div>
+
+          {savingsVsGrid > 0 && (
+            <div className="flex items-center justify-between text-[11px] text-[#1E9B68] pt-1">
+              <span className="font-medium">Total Community Savings vs Grid:</span>
+              <span className="font-mono font-bold">+₹{savingsVsGrid.toFixed(2)}</span>
+            </div>
+          )}
         </div>
 
-        {/* Verification Check Badges */}
-        <div className="space-y-1.5 mb-4 text-xs">
-          <div className="flex items-center space-x-2 text-emerald-800 text-[11px] font-semibold bg-emerald-50 border border-emerald-200 p-2 rounded-lg">
-            <FaIcon name="checkCircle" className="text-emerald-600 flex-shrink-0 text-sm" />
-            <span>Buyer virtual wallet verified (₹{buyerWalletBefore.toFixed(2)} available ≥ ₹{totalAmount.toFixed(2)})</span>
-          </div>
-          <div className="flex items-center space-x-2 text-emerald-800 text-[11px] font-semibold bg-emerald-50 border border-emerald-200 p-2 rounded-lg">
-            <FaIcon name="checkCircle" className="text-emerald-600 flex-shrink-0 text-sm" />
-            <span>Seller energy listing confirmed ({qty.toFixed(1)} kWh available for transfer)</span>
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-amber-50 border border-amber-200 p-2 text-[10.5px] text-amber-900 mb-5 flex items-start space-x-2">
-          <FaIcon name="shield" className="text-amber-600 flex-shrink-0 mt-0.5 text-sm" />
-          <span>
-            <strong>Simulated Software Settlement:</strong> Virtual wallet balances will be adjusted and 3D energy routing particles will be triggered upon confirmation.
-          </span>
-        </div>
-
-        {/* Action Controls */}
-        <div className="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-100">
-          <Button
-            variant="outline"
-            size="sm"
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end space-x-3 pt-2">
+          <button
+            type="button"
             onClick={onCancel}
             disabled={isSettling}
+            className="px-4 py-2.5 rounded-lg bg-white hover:bg-[#F8F9F6] border border-[rgba(23,34,29,0.12)] text-[#17221D] text-xs font-bold transition"
           >
             Cancel
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
+          </button>
+          
+          <button
+            type="button"
             onClick={onConfirm}
             disabled={isSettling}
-            icon={<FaIcon name="checkCircle" />}
+            className="px-5 py-2.5 rounded-lg bg-[#1E9B68] hover:bg-[#168557] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50 flex items-center space-x-1.5"
           >
-            {isSettling ? 'Settling Payment & Transfer...' : 'Confirm Purchase'}
-          </Button>
+            <FaIcon name="check" />
+            <span>{isSettling ? 'Settling Trade...' : 'Confirm & Execute Trade'}</span>
+          </button>
         </div>
+
       </div>
     </div>
   );
