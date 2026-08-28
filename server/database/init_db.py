@@ -8,11 +8,14 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-import _bootstrap
-
-from gridshare.backend.app import create_app
-from gridshare.backend.app.models import db
-from gridshare.database.seed_data import seed_database
+try:
+    from app import create_app
+    from app.models import db
+    from database.seed_data import seed_database
+except (ImportError, ModuleNotFoundError):
+    from gridshare.backend.app import create_app  # type: ignore
+    from gridshare.backend.app.models import db  # type: ignore
+    from gridshare.database.seed_data import seed_database  # type: ignore
 
 def initialize_database():
     app = create_app()

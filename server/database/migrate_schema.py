@@ -8,13 +8,17 @@ for p in (root_dir, server_dir):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-import _bootstrap
-
 from sqlalchemy import text
-from gridshare.backend.app import create_app
-from gridshare.backend.app.config import Config
-from gridshare.backend.app.models import db
-from gridshare.database.seed_data import seed_database
+try:
+    from app import create_app
+    from app.config import Config
+    from app.models import db
+    from database.seed_data import seed_database
+except (ImportError, ModuleNotFoundError):
+    from gridshare.backend.app import create_app  # type: ignore
+    from gridshare.backend.app.config import Config  # type: ignore
+    from gridshare.backend.app.models import db  # type: ignore
+    from gridshare.database.seed_data import seed_database  # type: ignore
 
 def migrate_and_seed():
     app = create_app(Config)
