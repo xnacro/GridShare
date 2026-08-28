@@ -315,45 +315,14 @@ export default function DashboardView({ onOpenDemoModal }) {
         </div>
       )}
 
-      {/* 🌟 3. EXPANDED TWO-PANEL CORE WORKSPACE (50/50 Split with Expanded Microgrid & Hornet AI) */}
+      {/* 🌟 3. EXPANDED TWO-PANEL CORE WORKSPACE (65% Full-Bleed 3D Simulation with Glass Overlay | 35% Hornet AI) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Left Expanded Panel: LIVE MICROGRID FLOW (6 cols ~ 50%) */}
-        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4">
-          <div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="h-2 w-2 rounded-full bg-[#1E9B68]" />
-                <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
-                  Live Microgrid Flow
-                </h3>
-              </div>
-
-              <div className="flex items-center space-x-1.5">
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.resetCamera?.()}
-                  className="px-2.5 py-1 text-xs font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-lg border border-[rgba(23,34,29,0.08)] transition flex items-center gap-1"
-                >
-                  <span>↺</span>
-                  <span>Reset</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.setTopDownView?.()}
-                  className="px-2.5 py-1 text-xs font-bold text-[#17221D] bg-[#F6F7F4] hover:bg-white rounded-lg border border-[rgba(23,34,29,0.08)] transition"
-                >
-                  Top-Down
-                </button>
-              </div>
-            </div>
-            <p className="text-xs text-[#5E6963] mt-1">
-              Real-time energy routing & bilateral power exchanges
-            </p>
-          </div>
-
-          {/* Large Expanded 3D Microgrid Viewport */}
-          <div className="h-[340px] sm:h-[380px] w-full relative rounded-2xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
+        {/* Left Expanded Panel: LIVE MICROGRID FLOW (8 cols ~ 65% width, Full-Bleed Glass Canvas) */}
+        <div className="lg:col-span-8 rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs relative overflow-hidden h-[460px] sm:h-[500px] lg:h-[530px] flex flex-col justify-between select-none">
+          
+          {/* Full-Bleed 3D Microgrid Viewport */}
+          <div className="absolute inset-0 w-full h-full">
             <MarketplaceScene3D
               ref={sceneRef}
               households={computedHouseholds}
@@ -365,29 +334,62 @@ export default function DashboardView({ onOpenDemoModal }) {
             />
           </div>
 
-          {/* Bottom 4-Dot Flow Legend */}
-          <div className="grid grid-cols-4 gap-2 text-xs text-[#5E6963] text-center pt-2 border-t border-[rgba(23,34,29,0.06)]">
-            <div className="flex items-center justify-center space-x-1.5">
+          {/* Top Floating Frosted Glass Header Bar */}
+          <div className="relative z-10 m-3 sm:m-4.5 p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 shadow-sm flex items-center justify-between pointer-events-auto">
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#1E9B68] animate-pulse" />
+                <h3 className="font-fjalla text-sm sm:text-base font-normal uppercase tracking-wider text-[#17221D]">
+                  Live Microgrid Flow
+                </h3>
+              </div>
+              <p className="text-xs text-[#5E6963] mt-0.5 hidden sm:block">
+                Real-time energy routing & bilateral power exchanges
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-1.5">
+              <button
+                type="button"
+                onClick={() => sceneRef.current?.resetCamera?.()}
+                className="px-3 py-1.5 text-xs font-bold text-[#17221D] bg-white/95 hover:bg-white rounded-xl border border-[rgba(23,34,29,0.08)] shadow-xs transition flex items-center gap-1.5"
+              >
+                <span>↺</span>
+                <span>Reset</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => sceneRef.current?.setTopDownView?.()}
+                className="px-3 py-1.5 text-xs font-bold text-[#17221D] bg-white/95 hover:bg-white rounded-xl border border-[rgba(23,34,29,0.08)] shadow-xs transition"
+              >
+                Top-Down
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Floating Frosted Glass Legend Bar */}
+          <div className="relative z-10 m-3 sm:m-4.5 self-start p-2 sm:p-2.5 px-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 shadow-sm flex items-center space-x-4 text-xs text-[#5E6963] pointer-events-auto">
+            <div className="flex items-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#1E9B68]" />
-              <span className="font-medium">Surplus</span>
+              <span className="font-medium">Surplus Flow</span>
             </div>
-            <div className="flex items-center justify-center space-x-1.5">
+            <div className="flex items-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#D45C5C]" />
-              <span className="font-medium">Deficit</span>
+              <span className="font-medium">Deficit Flow</span>
             </div>
-            <div className="flex items-center justify-center space-x-1.5">
+            <div className="flex items-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#DDA12A]" />
-              <span className="font-medium">Battery</span>
+              <span className="font-medium">Battery Flow</span>
             </div>
-            <div className="flex items-center justify-center space-x-1.5">
+            <div className="flex items-center space-x-1.5">
               <span className="h-2 w-2 rounded-full bg-[#3C78CC]" />
-              <span className="font-medium">Grid</span>
+              <span className="font-medium">Grid Flow</span>
             </div>
           </div>
         </div>
 
-        {/* Right Expanded Panel: HORNET AI — NEXT 15 MINUTES (6 cols ~ 50%) */}
-        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4">
+        {/* Right Panel: HORNET AI — NEXT 15 MINUTES (4 cols ~ 35% width) */}
+        <div className="lg:col-span-4 rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4 h-[460px] sm:h-[500px] lg:h-[530px]">
           <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -402,45 +404,45 @@ export default function DashboardView({ onOpenDemoModal }) {
               </span>
             </div>
             <p className="text-xs text-[#5E6963] mt-1">
-              Predictive ML forecast, uncertainty corridor & optimal dispatch action
+              Predictive ML forecast, uncertainty corridor & optimal action
             </p>
           </div>
 
           {/* 3 Mini Forecast Boxes */}
-          <div className="grid grid-cols-3 gap-3 text-center p-3.5 rounded-2xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
-            <div className="space-y-1">
-              <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase text-[#5E6963]">
+          <div className="grid grid-cols-3 gap-2 text-center p-3 rounded-2xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
                 <FaIcon name="solar" className="text-[#DDA12A]" />
                 <span>SOLAR</span>
               </div>
-              <div className="font-fjalla text-base sm:text-lg font-normal text-[#DDA12A]">
+              <div className="font-fjalla text-sm sm:text-base font-normal text-[#DDA12A]">
                 {aiForecast.solar_kw?.toFixed(2) || '5.84'} kW
               </div>
             </div>
 
-            <div className="space-y-1 border-x border-[rgba(23,34,29,0.08)]">
-              <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase text-[#5E6963]">
+            <div className="space-y-0.5 border-x border-[rgba(23,34,29,0.08)]">
+              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
                 <FaIcon name="home" className="text-[#17221D]" />
                 <span>DEMAND</span>
               </div>
-              <div className="font-fjalla text-base sm:text-lg font-normal text-[#17221D]">
+              <div className="font-fjalla text-sm sm:text-base font-normal text-[#17221D]">
                 {aiForecast.demand_kw?.toFixed(2) || '4.21'} kW
               </div>
             </div>
 
-            <div className="space-y-1">
-              <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase text-[#5E6963]">
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
                 <FaIcon name="network" className="text-[#1E9B68]" />
                 <span>BALANCE</span>
               </div>
-              <div className="font-fjalla text-base sm:text-lg font-normal text-[#1E9B68]">
+              <div className="font-fjalla text-sm sm:text-base font-normal text-[#1E9B68]">
                 +{aiForecast.balance_kw?.toFixed(2) || '1.63'} kW
               </div>
             </div>
           </div>
 
           {/* Forecast Range (Uncertainty) Slider Bar */}
-          <div className="space-y-1.5 px-1 py-1">
+          <div className="space-y-1.5 px-1">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#5E6963] font-medium">Forecast Range (Uncertainty)</span>
               <span className="font-fjalla font-normal text-[#7358C7]">
@@ -453,7 +455,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
 
           {/* Recommended Action Box */}
-          <div className="p-4 rounded-2xl bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-1.5">
+          <div className="p-3.5 rounded-2xl bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-1">
             <div className="flex items-center justify-between">
               <span className="font-fjalla text-xs font-normal uppercase tracking-wider text-[#1E9B68]">
                 RECOMMENDED ACTION
@@ -462,28 +464,28 @@ export default function DashboardView({ onOpenDemoModal }) {
                 ₹4.50 / kWh
               </span>
             </div>
-            <div className="font-fjalla text-sm sm:text-base font-normal text-[#12392B]">
+            <div className="font-fjalla text-xs sm:text-sm font-normal text-[#12392B]">
               {aiDecision.action_label || 'Trade 1.0 kWh locally (My Home → Eco House)'}
             </div>
-            <p className="text-xs text-[#5E6963] leading-relaxed">
+            <p className="text-[11px] text-[#5E6963] leading-snug">
               Local surplus is available and nearby demand is active. This trade maximizes self-consumption and reduces grid dependence.
             </p>
           </div>
 
           {/* CTAs */}
-          <div className="flex items-center gap-3 pt-1">
+          <div className="flex items-center gap-2 pt-1">
             <button
               type="button"
               onClick={handleExecuteRecommendation}
               disabled={isAiExecuting}
-              className="flex-1 justify-center py-2.5 rounded-xl bg-[#1E9B68] hover:bg-[#168557] text-white text-xs sm:text-sm font-bold shadow-xs transition active:scale-98 disabled:opacity-50"
+              className="flex-1 justify-center py-2.5 rounded-xl bg-[#1E9B68] hover:bg-[#168557] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50"
             >
               {isAiExecuting ? 'Executing...' : 'Review Decision →'}
             </button>
             <button
               type="button"
               onClick={() => navigate('/ai')}
-              className="py-2.5 px-4 rounded-xl bg-white hover:bg-[#F6F7F4] text-[#17221D] text-xs sm:text-sm font-bold border border-[rgba(23,34,29,0.12)] transition"
+              className="py-2.5 px-3.5 rounded-xl bg-white hover:bg-[#F6F7F4] text-[#17221D] text-xs font-bold border border-[rgba(23,34,29,0.12)] transition"
             >
               View Details
             </button>
