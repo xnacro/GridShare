@@ -70,6 +70,11 @@ import {
   faCloudSun,
   faMoon,
   faLeaf,
+  faBars,
+  faChevronDown,
+  faChevronUp,
+  faEllipsis,
+  faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const ICONS = {
@@ -138,14 +143,20 @@ export const ICONS = {
   cloudSun: faCloudSun,
   moon: faMoon,
   
-  // Directional
+  // Directional & Controls
   arrowRight: faArrowRight,
   arrowUpRight: faArrowUpRightFromSquare,
   arrowUp: faArrowUp,
   arrowDown: faArrowDown,
   chevronRight: faChevronRight,
   chevronLeft: faChevronLeft,
+  chevronDown: faChevronDown,
+  chevronUp: faChevronUp,
   close: faXmark,
+  bars: faBars,
+  menu: faBars,
+  ellipsis: faEllipsis,
+  layers: faLayerGroup,
 };
 
 export default function FaIcon({
