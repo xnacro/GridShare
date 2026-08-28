@@ -150,13 +150,13 @@ export default function DashboardView({ onOpenDemoModal }) {
         <div className="relative z-10 flex flex-col lg:flex-row items-stretch" style={{ minHeight: 'calc(100vh - 100px)' }}>
 
           {/* ─── LEFT SIDE: Content & CTAs ─── */}
-          <div className="flex-1 lg:max-w-[50%] p-8 sm:p-10 lg:p-12 flex flex-col justify-center space-y-5">
+          <div className="flex-1 lg:max-w-[50%] p-8 sm:p-10 lg:p-14 lg:pl-16 flex flex-col justify-center pt-10 sm:pt-14 lg:pt-16 space-y-6">
 
-            {/* Greeting Pill Badge */}
-            {/* <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold w-fit shadow-xs">
+            {/* Simulated Data Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold w-fit shadow-xs">
               <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
-              <span>{greeting}, {userName}</span>
-            </div> */}
+              <span>Simulated data</span>
+            </div>
 
             {/* Dynamic Headline — Changa One Typography */}
             <h1 className="font-changa text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-[1.15] tracking-wide">
@@ -216,14 +216,14 @@ export default function DashboardView({ onOpenDemoModal }) {
             </div>
           </div>
 
-          {/* ─── RIGHT SIDE: Hand-Drawn Illustration ─── */}
-          <div className="flex-1 lg:max-w-[50%] relative flex items-center justify-center p-4 lg:p-0">
+          {/* ─── RIGHT SIDE: Hand-Drawn Illustration & Lower Rotating Badge ─── */}
+          <div className="flex-1 lg:max-w-[50%] relative flex items-center justify-center p-4 lg:p-0 pt-8 sm:pt-12 lg:pt-14">
 
             {/* The SVG Illustration */}
             <MicrogridSketchIllustration className="w-full h-auto max-h-[400px] lg:max-h-[440px] object-contain" />
 
-            {/* Spinning Circular Badge (Veluno "Shop now" inspired) */}
-            <div className="absolute top-6 left-6 sm:top-10 sm:left-10 lg:top-12 lg:left-4 w-[90px] h-[90px] sm:w-[100px] sm:h-[100px]">
+            {/* Spinning Circular Badge (Positioned Lower on the left of illustration, matching Veluno) */}
+            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-8 lg:bottom-16 lg:left-2 w-[90px] h-[90px] sm:w-[100px] sm:h-[100px] z-20">
               <svg viewBox="0 0 100 100" className="w-full h-full animate-[spin_12s_linear_infinite]">
                 <defs>
                   <path id="circlePath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
