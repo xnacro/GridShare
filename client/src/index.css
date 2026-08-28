@@ -46,9 +46,10 @@
     overflow-x: hidden;
   }
 
-  .font-oswald {
-    font-family: 'Oswald', sans-serif;
-    letter-spacing: 0.025em;
+  /* Consistent Oswald Font for all display, headings and metric emphasis */
+  h1, h2, h3, h4, .font-oswald, .font-display {
+    font-family: 'Oswald', 'Inter', sans-serif;
+    letter-spacing: 0.02em;
   }
 }
 
