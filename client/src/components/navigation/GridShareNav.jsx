@@ -8,6 +8,7 @@ import NavMobileDrawer from './NavMobileDrawer';
 export default function GridShareNav({
   onOpenDemoModal,
   onOpenHealthModal,
+  onOpenLoginModal,
 }) {
   // Navigation collapse state with persistent localStorage
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -45,8 +46,8 @@ export default function GridShareNav({
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-200 ease-out select-none ${
           isScrolled
-            ? 'py-2 sm:py-2.5 bg-[#F5F6F2]/90 backdrop-blur-md'
-            : 'py-3 sm:py-3.5 bg-[#F5F6F2]'
+            ? 'py-2 sm:py-2.5 bg-[#F5F7F3]/90 backdrop-blur-md'
+            : 'py-3 sm:py-3.5 bg-[#F5F7F3]'
         }`}
       >
         <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 sm:px-8">
@@ -81,7 +82,7 @@ export default function GridShareNav({
 
           {/* RIGHT: MINIMAL UTILITY AREA */}
           <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
-            <NavUtility />
+            <NavUtility onOpenLoginModal={onOpenLoginModal} />
           </div>
 
           {/* MOBILE TOP CONTROLS */}
@@ -109,6 +110,7 @@ export default function GridShareNav({
         onClose={() => setIsMobileDrawerOpen(false)}
         onOpenDemoModal={onOpenDemoModal}
         onOpenHealthModal={onOpenHealthModal}
+        onOpenLoginModal={onOpenLoginModal}
       />
     </>
   );

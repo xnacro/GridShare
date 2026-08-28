@@ -10,9 +10,31 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
+// Dynamic JWT Bearer token interceptor
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('gridshare_access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
 export const api = {
   // System Health
   getHealth: () => apiClient.get('/health'),
+
+  // Authenticated User Identity & Multi-Tenant Scoping
+  getMe: (tokenOverride) => {
+    const headers = tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : {};
+    return apiClient.get('/me', { headers });
+  },
+  getMyHousehold: () => apiClient.get('/my-household'),
+  getMyEnergy: () => apiClient.get('/my-energy'),
+  updateMyEnergySource: (data) => apiClient.post('/my-energy/source', data),
+  getMyTransactions: (limit = 50) => apiClient.get('/my-transactions', { params: { limit } }),
+  getMyDevices: () => apiClient.get('/my-devices'),
 
   // Dashboard & Summaries
   getDashboardSummary: () => apiClient.get('/dashboard/summary'),

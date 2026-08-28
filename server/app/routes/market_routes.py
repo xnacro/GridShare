@@ -19,10 +19,25 @@ def get_offers():
 @market_bp.route("/api/market/offers", methods=["POST"])
 def post_offer():
     """Create a new seller energy offer."""
+    from ..utils.auth import decode_supabase_token, resolve_or_provision_user
+
     data = request.get_json(silent=True) or {}
     household_id = data.get("household_id")
     energy_kwh = data.get("energy_kwh")
     min_price = data.get("min_price_per_kwh", 4.00)
+
+    # If auth header provided, resolve authoritative owned household
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+        auth_user = decode_supabase_token(token)
+        if auth_user and auth_user.get("id"):
+            _, household, _ = resolve_or_provision_user(
+                user_id=auth_user["id"],
+                email=auth_user.get("email"),
+                display_name=auth_user.get("user_metadata", {}).get("display_name"),
+            )
+            household_id = household.id
 
     if not household_id or energy_kwh is None:
         return jsonify({"status": "ERROR", "message": "household_id and energy_kwh are required"}), 400
@@ -54,10 +69,25 @@ def get_requests():
 @market_bp.route("/api/market/requests", methods=["POST"])
 def post_request():
     """Create a new buyer energy request."""
+    from ..utils.auth import decode_supabase_token, resolve_or_provision_user
+
     data = request.get_json(silent=True) or {}
     household_id = data.get("household_id")
     energy_kwh = data.get("energy_kwh")
     max_price = data.get("max_price_per_kwh", 5.00)
+
+    # If auth header provided, resolve authoritative owned household
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+        auth_user = decode_supabase_token(token)
+        if auth_user and auth_user.get("id"):
+            _, household, _ = resolve_or_provision_user(
+                user_id=auth_user["id"],
+                email=auth_user.get("email"),
+                display_name=auth_user.get("user_metadata", {}).get("display_name"),
+            )
+            household_id = household.id
 
     if not household_id or energy_kwh is None:
         return jsonify({"status": "ERROR", "message": "household_id and energy_kwh are required"}), 400

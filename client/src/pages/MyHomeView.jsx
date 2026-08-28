@@ -1,30 +1,65 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 import ResidentialHouseCanvas3D from '../components/home-3d/ResidentialHouseCanvas3D';
 import MetricCard from '../components/ui/MetricCard';
 import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 import FaIcon from '../components/icons/FaIcon';
 
 export default function MyHomeView() {
-  // Household State
-  const [energyMode, setEnergyMode] = useState('AUTO'); // 'AUTO' | 'SELF_USE' | 'BATTERY_FIRST' | 'SELL_SURPLUS' | 'GRID_BACKUP'
-  const [solarBaseKw, setSolarBaseKw] = useState(5.2);
-  const [batterySoc] = useState(68.0);
-  const [statusMessage, setStatusMessage] = useState('');
+  const { user, profile, household, energyNode } = useAuth();
 
-  // Appliance Loads
+  // Operating Mode State
+  const [energyMode, setEnergyMode] = useState('AUTO'); // 'AUTO' | 'SELF_USE' | 'BATTERY_FIRST' | 'SELL_SURPLUS' | 'GRID_BACKUP'
+  const [batterySoc, setBatterySoc] = useState(68.0);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [isSavingSource, setIsSavingSource] = useState(false);
+
+  // Live Backend Energy State
+  const [sourceType, setSourceType] = useState(energyNode?.source_type || 'SIMULATION');
+  const [solarKw, setSolarKw] = useState(household?.id === 'house_b' ? 1.2 : 6.8);
+  const [manualGenInput, setManualGenInput] = useState(6.2);
+  const [manualConInput, setManualConInput] = useState(2.7);
+
+  // Appliance Circuit Loads
   const [appliances, setAppliances] = useState({
     livingRoom: { name: 'Living Room Lights & Media', kw: 0.4, active: true, icon: 'tv' },
     kitchen: { name: 'Kitchen Induction & Refrigerator', kw: 0.8, active: true, icon: 'plug' },
     ac: { name: 'Inverter Air Conditioner (24°C)', kw: 1.2, active: true, icon: 'fan' },
-    ev: { name: 'Level 2 Electric Vehicle Charger', kw: 3.3, active: false, icon: 'charging' },
+    ev: { name: 'Level 2 Electric Vehicle Charger', kw: household?.id === 'house_b' ? 3.3 : 1.5, active: household?.id === 'house_b', icon: 'charging' },
     waterHeater: { name: 'Smart Heat Pump Water Heater', kw: 0.9, active: false, icon: 'plug' },
   });
 
-  const [activityLogs] = useState([
+  const [activityLogs, setActivityLogs] = useState([
     { time: '11:15', action: 'Battery Charge', energy: 1.5, source: 'Rooftop Solar', dest: 'Home Storage', status: 'COMPLETED' },
     { time: '11:45', action: 'P2P Peer Sale', energy: 2.0, source: 'Solar Surplus', dest: 'House B (EV)', status: 'COMPLETED' },
     { time: '12:00', action: 'Auto Load Shift', energy: 1.2, source: 'Solar Array', dest: 'Air Conditioning', status: 'ACTIVE' },
   ]);
+
+  // Fetch verified user energy from backend
+  const fetchEnergy = async () => {
+    try {
+      const res = await api.getMyEnergy();
+      if (res.data?.status === 'SUCCESS') {
+        const e = res.data.energy;
+        const n = res.data.node;
+        setSourceType(n.source_type || 'SIMULATION');
+        setSolarKw(e.generation_kw);
+        setManualGenInput(n.manual_generation_kw || e.generation_kw);
+        setManualConInput(n.manual_consumption_kw || e.consumption_kw);
+        if (e.battery_soc) setBatterySoc(e.battery_soc);
+      }
+    } catch (err) {
+      console.warn('Using local fallback energy state:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchEnergy();
+    const interval = setInterval(fetchEnergy, 6000);
+    return () => clearInterval(interval);
+  }, [household?.id]);
 
   const toggleAppliance = (key) => {
     setAppliances((prev) => {
@@ -39,13 +74,35 @@ export default function MyHomeView() {
     });
   };
 
+  const handleSaveSourceConfig = async () => {
+    setIsSavingSource(true);
+    try {
+      await api.updateMyEnergySource({
+        source_type: sourceType,
+        manual_generation_kw: manualGenInput,
+        manual_consumption_kw: manualConInput,
+      });
+      setStatusMessage(`Energy source updated to ${sourceType} with ${manualGenInput} kW generation.`);
+      await fetchEnergy();
+      setTimeout(() => setStatusMessage(''), 4000);
+    } catch (err) {
+      setStatusMessage('Failed to update energy source configuration.');
+    } finally {
+      setIsSavingSource(false);
+    }
+  };
+
   const totalApplianceKw = useMemo(() => {
+    if (sourceType === 'MANUAL') {
+      return manualConInput;
+    }
     return Object.values(appliances)
       .filter((a) => a.active)
       .reduce((sum, a) => sum + a.kw, 0);
-  }, [appliances]);
+  }, [appliances, sourceType, manualConInput]);
 
-  const netHomeKw = solarBaseKw - totalApplianceKw;
+  const activeGenKw = sourceType === 'MANUAL' ? manualGenInput : solarKw;
+  const netHomeKw = activeGenKw - totalApplianceKw;
   const isSurplus = netHomeKw >= 0;
 
   const energyModes = [
@@ -82,10 +139,13 @@ export default function MyHomeView() {
     },
   ];
 
+  const householdTitle = household?.name || 'My Residence';
+  const householdType = household?.household_type || (isSurplus ? 'PROSUMER' : 'CONSUMER');
+
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
       
-      {/* 🌟 1. FRIENDLY, WARM HOME HERO GREETING */}
+      {/* 🌟 1. USER-SPECIFIC GREETING HERO */}
       <div className="rounded-3xl border border-[#DCE4DE] bg-white p-6 sm:p-8 shadow-card relative overflow-hidden">
         <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[#E7F6EE]/80 blur-3xl pointer-events-none" />
 
@@ -93,19 +153,26 @@ export default function MyHomeView() {
           <div className="space-y-2.5 max-w-3xl">
             <div className="flex items-center space-x-2">
               <span className="px-2.5 py-0.5 rounded-full bg-[#E7F6EE] text-[#209B67] text-[11px] font-bold uppercase tracking-wider">
-                HOUSE A RESIDENCE
+                {householdTitle}
               </span>
-              <Badge variant="surplus" size="xs">
-                PROSUMER
+              <Badge variant={householdType === 'PROSUMER' ? 'surplus' : 'deficit'} size="xs">
+                {householdType}
+              </Badge>
+              <Badge variant="default" size="xs">
+                {sourceType} SOURCE
               </Badge>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-extrabold text-[#15211B] tracking-tight leading-tight">
-              Welcome Home! Rooftop solar is generating {solarBaseKw.toFixed(1)} kW clean power.
+              {isSurplus
+                ? `Welcome Home! Rooftop solar is generating ${activeGenKw.toFixed(1)} kW clean power.`
+                : `Active residential load is ${totalApplianceKw.toFixed(1)} kW with ${Math.abs(netHomeKw).toFixed(1)} kW deficit.`}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#5E6A63] font-medium">
-              You are currently 100% self-powered with +{netHomeKw.toFixed(1)} kW surplus feeding your 10 kWh battery and neighboring prosumers.
+              {isSurplus
+                ? `You are 100% self-powered with +${netHomeKw.toFixed(1)} kW surplus feeding your 10 kWh battery and neighboring prosumers.`
+                : `Drawing clean peer energy from House A @ ₹4.50/kWh to shave peak utility grid costs.`}
             </p>
           </div>
 
@@ -131,28 +198,28 @@ export default function MyHomeView() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <MetricCard
           title="Rooftop Solar Gen"
-          value={`${solarBaseKw.toFixed(1)} kW`}
-          subtitle="Monocrystalline solar yield"
+          value={`${activeGenKw.toFixed(1)} kW`}
+          subtitle={sourceType === 'MANUAL' ? 'Manual user configured' : 'Simulated diurnal physics'}
           iconName="solar"
           variant="solar"
-          delta="Peak irradiance"
+          delta={sourceType}
           deltaType="positive"
         />
 
         <MetricCard
           title="Active Home Load"
           value={`${totalApplianceKw.toFixed(1)} kW`}
-          subtitle={`${Object.values(appliances).filter((a) => a.active).length} active appliances`}
+          subtitle="Household circuits & appliances"
           iconName="home"
           variant="default"
-          delta="Optimized by AI"
+          delta="Real-time draw"
           deltaType="neutral"
         />
 
         <MetricCard
           title="Net Home Balance"
           value={`${isSurplus ? '+' : ''}${netHomeKw.toFixed(1)} kW`}
-          subtitle={isSurplus ? 'Surplus ready for P2P trading' : 'Importing from battery'}
+          subtitle={isSurplus ? 'Surplus ready for P2P trading' : 'Importing from local peers'}
           iconName="network"
           variant={isSurplus ? 'surplus' : 'deficit'}
           badge={isSurplus ? 'SURPLUS' : 'DEFICIT'}
@@ -168,7 +235,118 @@ export default function MyHomeView() {
         />
       </div>
 
-      {/* 🌟 3. SMART OPERATING MODES SELECTOR */}
+      {/* 🌟 3. DATA SOURCE SELECTOR (SIMULATION vs MANUAL) */}
+      <div className="rounded-3xl border border-[#DCE4DE] bg-white p-6 shadow-card space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
+          <div>
+            <h3 className="text-base font-bold text-[#15211B]">
+              Energy Data Source & Ingestion Mode
+            </h3>
+            <p className="text-xs text-[#5E6A63]">
+              Choose whether your household runs on physics-based diurnal simulation or manual test values
+            </p>
+          </div>
+          <Badge variant="ai" size="xs">
+            Multi-Tenant Isolation
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Simulation Mode */}
+          <div
+            onClick={() => setSourceType('SIMULATION')}
+            className={`p-4 rounded-2xl border cursor-pointer transition ${
+              sourceType === 'SIMULATION'
+                ? 'bg-[#E7F6EE]/40 border-[#209B67] ring-2 ring-[#209B67]/20'
+                : 'bg-[#F5F7F3]/40 border-[#DCE4DE] hover:bg-white'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold text-sm text-[#15211B]">SIMULATION Mode</span>
+              <Badge variant={sourceType === 'SIMULATION' ? 'surplus' : 'default'} size="xs">
+                DIURNAL
+              </Badge>
+            </div>
+            <p className="text-xs text-[#5E6A63]">
+              Continuous physical simulation calculated from NSRDB Guwahati satellite irradiance models.
+            </p>
+          </div>
+
+          {/* Manual Mode */}
+          <div
+            onClick={() => setSourceType('MANUAL')}
+            className={`p-4 rounded-2xl border cursor-pointer transition ${
+              sourceType === 'MANUAL'
+                ? 'bg-[#F1EDFF]/40 border-[#7359C8] ring-2 ring-[#7359C8]/20'
+                : 'bg-[#F5F7F3]/40 border-[#DCE4DE] hover:bg-white'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold text-sm text-[#15211B]">MANUAL Override Mode</span>
+              <Badge variant={sourceType === 'MANUAL' ? 'ai' : 'default'} size="xs">
+                CUSTOM kW
+              </Badge>
+            </div>
+            <p className="text-xs text-[#5E6A63]">
+              Manually set generation and demand to stress test microgrid balances, tariffs, and P2P matching.
+            </p>
+          </div>
+        </div>
+
+        {/* Manual Configuration Inputs */}
+        {sourceType === 'MANUAL' && (
+          <div className="p-4 rounded-2xl border border-[#7359C8]/30 bg-[#F1EDFF]/20 space-y-3 animate-in fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-[#15211B]">Manual Solar Generation (kW)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="20"
+                  value={manualGenInput}
+                  onChange={(e) => setManualGenInput(Number(e.target.value))}
+                  className="w-full rounded-xl border border-[#DCE4DE] bg-white px-3 py-2 text-xs font-mono font-bold text-[#15211B] focus:border-[#7359C8] focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-[#15211B]">Manual Household Load (kW)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="20"
+                  value={manualConInput}
+                  onChange={(e) => setManualConInput(Number(e.target.value))}
+                  className="w-full rounded-xl border border-[#DCE4DE] bg-white px-3 py-2 text-xs font-mono font-bold text-[#15211B] focus:border-[#7359C8] focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-xs text-[#5E6A63]">
+                Resulting Balance:{' '}
+                <strong className={manualGenInput - manualConInput >= 0 ? 'text-[#209B67]' : 'text-[#D85D5D]'}>
+                  {manualGenInput - manualConInput >= 0 ? `+${(manualGenInput - manualConInput).toFixed(2)}` : (manualGenInput - manualConInput).toFixed(2)} kW
+                </strong>
+              </span>
+
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSaveSourceConfig}
+                isLoading={isSavingSource}
+                icon={<FaIcon name="check" />}
+              >
+                Apply to Microgrid
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 🌟 4. SMART OPERATING MODES SELECTOR */}
       <div className="rounded-3xl border border-[#DCE4DE] bg-white p-6 shadow-card space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
           <div>
@@ -229,7 +407,7 @@ export default function MyHomeView() {
         </div>
       </div>
 
-      {/* 🌟 4. 3D RESIDENTIAL HOUSE TWIN + APPLIANCE MANAGER */}
+      {/* 🌟 5. 3D RESIDENTIAL HOUSE TWIN + APPLIANCE MANAGER */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* 3D RESIDENTIAL HOUSE CANVAS (7 cols) */}
@@ -249,13 +427,13 @@ export default function MyHomeView() {
               </div>
             </div>
             <Badge variant="surplus" size="xs">
-              House A Twin
+              {householdTitle}
             </Badge>
           </div>
 
           <div className="h-[400px] w-full relative rounded-2xl overflow-hidden bg-[#F5F7F3]">
             <ResidentialHouseCanvas3D
-              solarGen={solarBaseKw}
+              solarGen={activeGenKw}
               consumption={totalApplianceKw}
               batterySoc={batterySoc}
               appliances={appliances}
@@ -325,29 +503,31 @@ export default function MyHomeView() {
             ))}
           </div>
 
-          {/* Quick Solar Slider */}
-          <div className="p-3.5 rounded-2xl bg-[#FFF3D7]/50 border border-[#FDE7B4] space-y-2 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[#E7AA31] flex items-center gap-1.5">
-                <FaIcon name="solar" />
-                Simulate Solar Irradiance
-              </span>
-              <span className="font-mono font-bold text-[#15211B]">{solarBaseKw.toFixed(1)} kW</span>
+          {/* Quick Simulation Slider */}
+          {sourceType === 'SIMULATION' && (
+            <div className="p-3.5 rounded-2xl bg-[#FFF3D7]/50 border border-[#FDE7B4] space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-[#E7AA31] flex items-center gap-1.5">
+                  <FaIcon name="solar" />
+                  Simulate Solar Irradiance
+                </span>
+                <span className="font-mono font-bold text-[#15211B]">{solarKw.toFixed(1)} kW</span>
+              </div>
+              <input
+                type="range"
+                min="0.0"
+                max="8.0"
+                step="0.2"
+                value={solarKw}
+                onChange={(e) => setSolarKw(Number(e.target.value))}
+                className="w-full accent-[#E7AA31] cursor-pointer"
+              />
             </div>
-            <input
-              type="range"
-              min="0.0"
-              max="8.0"
-              step="0.2"
-              value={solarBaseKw}
-              onChange={(e) => setSolarBaseKw(Number(e.target.value))}
-              className="w-full accent-[#E7AA31] cursor-pointer"
-            />
-          </div>
+          )}
         </div>
       </div>
 
-      {/* 🌟 5. HOUSEHOLD RECENT ACTIVITY LOG */}
+      {/* 🌟 6. RECENT HOUSEHOLD ACTIVITY LOG */}
       <div className="rounded-3xl border border-[#DCE4DE] bg-white p-5 sm:p-6 shadow-card space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-[#DCE4DE]">
           <div>
@@ -387,6 +567,7 @@ export default function MyHomeView() {
           ))}
         </div>
       </div>
+
     </div>
   );
 }

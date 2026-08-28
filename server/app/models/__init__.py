@@ -2,7 +2,9 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+from .user_profile import UserProfile
 from .household import Household
+from .energy_node import EnergyNode
 from .energy_reading import EnergyReading
 from .battery import Battery
 from .battery_contribution import BatteryContribution
@@ -15,7 +17,9 @@ from .market_order import MarketOffer, MarketRequest
 
 __all__ = [
     "db",
+    "UserProfile",
     "Household",
+    "EnergyNode",
     "EnergyReading",
     "Battery",
     "BatteryContribution",

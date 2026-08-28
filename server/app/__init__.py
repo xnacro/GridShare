@@ -17,6 +17,7 @@ from .routes.market_routes import market_bp
 from .routes.demo_routes import demo_bp
 from .routes.device_routes import device_bp
 from .routes.copilot_routes import copilot_bp
+from .routes.user_routes import user_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -28,6 +29,7 @@ def create_app(config_class=Config):
 
     # Register Route Blueprints
     app.register_blueprint(health_bp)
+    app.register_blueprint(user_bp)
     app.register_blueprint(household_bp)
     app.register_blueprint(energy_bp)
     app.register_blueprint(battery_bp)

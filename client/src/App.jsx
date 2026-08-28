@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import GridShareNav from './components/navigation/GridShareNav';
 import DemoModal from './components/DemoModal';
 import SystemHealthModal from './components/ui/SystemHealthModal';
+import LoginModal from './components/auth/LoginModal';
 import DashboardView from './pages/DashboardView';
 import InteractiveMicrogridView from './pages/InteractiveMicrogridView';
 import EnergyMapView from './pages/EnergyMapView';
@@ -14,9 +16,10 @@ import DevicesView from './pages/DevicesView';
 import TransactionsView from './pages/TransactionsView';
 import Optimization from './pages/Optimization';
 
-function MainLayout() {
+function AppContent() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [isHealthModalOpen, setIsHealthModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleScenarioExecuted = () => {
@@ -24,12 +27,13 @@ function MainLayout() {
   };
 
   return (
-    <div className="flex min-h-screen w-screen flex-col bg-[#F5F6F2] text-[#142019] overflow-x-hidden antialiased font-sans">
+    <div className="flex min-h-screen w-screen flex-col bg-[#F5F7F3] text-[#15211B] overflow-x-hidden antialiased font-sans">
       
       {/* 🧭 Centered Floating Pill Navigation Header */}
       <GridShareNav
         onOpenDemoModal={() => setIsDemoModalOpen(true)}
         onOpenHealthModal={() => setIsHealthModalOpen(true)}
+        onOpenLoginModal={() => setIsLoginModalOpen(true)}
       />
 
       {/* 📄 Main Content Viewport */}
@@ -65,6 +69,12 @@ function MainLayout() {
         onClose={() => setIsDemoModalOpen(false)}
         onScenarioExecuted={handleScenarioExecuted}
       />
+
+      {/* 👤 Account & Authentication Popup Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </div>
   );
 }
@@ -72,7 +82,9 @@ function MainLayout() {
 export default function App() {
   return (
     <Router>
-      <MainLayout />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Router>
   );
 }

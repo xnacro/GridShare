@@ -1,7 +1,9 @@
 import datetime
 from gridshare.backend.app.models import (
     db,
+    UserProfile,
     Household,
+    EnergyNode,
     EnergyReading,
     Battery,
     BatteryContribution,
@@ -32,12 +34,41 @@ def seed_database(clear_existing=False):
         db.session.query(EnergyTransaction).delete()
         db.session.query(EnergyReading).delete()
         db.session.query(Battery).delete()
+        db.session.query(EnergyNode).delete()
         db.session.query(Household).delete()
+        db.session.query(UserProfile).delete()
         db.session.commit()
     else:
         existing_count = db.session.query(Household).count()
         if existing_count > 0:
             return
+
+    # 0. User Profiles (Demo Accounts)
+    profiles = [
+        UserProfile(
+            user_id="demo_user_a_id",
+            email="house_a@gridshare.io",
+            display_name="House A (Solar Champion)",
+            role="USER",
+            default_household_id="house_a",
+        ),
+        UserProfile(
+            user_id="demo_user_b_id",
+            email="house_b@gridshare.io",
+            display_name="House B (EV Charger)",
+            role="USER",
+            default_household_id="house_b",
+        ),
+        UserProfile(
+            user_id="demo_user_c_id",
+            email="house_c@gridshare.io",
+            display_name="House C (Prosumer)",
+            role="USER",
+            default_household_id="house_c",
+        ),
+    ]
+    db.session.add_all(profiles)
+    db.session.commit()
 
     # 1. Households (5 community members)
     households = [
@@ -46,6 +77,7 @@ def seed_database(clear_existing=False):
             name="House A (Solar Champion - 8kW)",
             location="Plot 101, Green Enclave",
             household_type="PROSUMER",
+            owner_user_id="demo_user_a_id",
             created_at=datetime.datetime(2026, 1, 1, 0, 0, 0),
         ),
         Household(
@@ -53,6 +85,7 @@ def seed_database(clear_existing=False):
             name="House B (Heavy Consumer / EV)",
             location="Plot 102, Green Enclave",
             household_type="CONSUMER",
+            owner_user_id="demo_user_b_id",
             created_at=datetime.datetime(2026, 1, 1, 0, 0, 0),
         ),
         Household(
@@ -60,6 +93,7 @@ def seed_database(clear_existing=False):
             name="House C (Balanced Prosumer - 4kW)",
             location="Plot 103, Green Enclave",
             household_type="PROSUMER",
+            owner_user_id="demo_user_c_id",
             created_at=datetime.datetime(2026, 1, 1, 0, 0, 0),
         ),
         Household(
@@ -78,6 +112,17 @@ def seed_database(clear_existing=False):
         ),
     ]
     db.session.add_all(households)
+    db.session.commit()
+
+    # 1b. Energy Nodes (1 for each household)
+    nodes = [
+        EnergyNode(id="node_house_a", household_id="house_a", node_type="RESIDENTIAL_SOLAR", source_type="SIMULATION", manual_generation_kw=6.8, manual_consumption_kw=2.1),
+        EnergyNode(id="node_house_b", household_id="house_b", node_type="RESIDENTIAL_LOAD", source_type="SIMULATION", manual_generation_kw=1.2, manual_consumption_kw=4.0),
+        EnergyNode(id="node_house_c", household_id="house_c", node_type="RESIDENTIAL_SOLAR", source_type="SIMULATION", manual_generation_kw=3.5, manual_consumption_kw=2.5),
+        EnergyNode(id="node_house_d", household_id="house_d", node_type="RESIDENTIAL_LOAD", source_type="SIMULATION", manual_generation_kw=0.5, manual_consumption_kw=3.0),
+        EnergyNode(id="node_house_e", household_id="house_e", node_type="RESIDENTIAL_SOLAR", source_type="SIMULATION", manual_generation_kw=5.0, manual_consumption_kw=1.8),
+    ]
+    db.session.add_all(nodes)
     db.session.commit()
 
     # 2. Community Battery (Central Energy Storage System)
