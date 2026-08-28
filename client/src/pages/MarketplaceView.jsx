@@ -180,54 +180,61 @@ export default function MarketplaceView() {
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. CENTERED HERO (Clean, Borderless, Grammatically Cased) */}
-      <div className="text-center max-w-3xl mx-auto pt-2 pb-1 space-y-3.5 select-none">
+      {/* 🌟 1. MINIMAL SPACIOUS HERO & ACTION BAR */}
+      <div className="space-y-5 pt-2 select-none">
         
-        {/* Top Status Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
-          <span>Community Energy Market • Active Market</span>
+        {/* Top Centered Clean Heading (No cluttered badges or multi-row buttons) */}
+        <div className="text-center max-w-4xl mx-auto space-y-2">
+          <h1 className="font-changa text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-tight tracking-wide">
+            Share clean energy with the{' '}
+            <span className="text-[#1E9B68] whitespace-nowrap">neighbors who need it.</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-[#5E6963] max-w-xl mx-auto">
+            Trade surplus rooftop solar with nearby homes at fair tariffs instead of sending it back to the grid.
+          </p>
         </div>
 
-        {/* Centered Headline */}
-        <h1 className="font-changa text-3xl sm:text-4xl lg:text-[42px] font-normal text-[#17221D] leading-[1.14] tracking-wide">
-          Share clean energy with the{' '}
-          <span className="text-[#1E9B68] whitespace-nowrap">neighbors who need it.</span>
-        </h1>
+        {/* Horizontal Control & Flow Bar (Utilizing full margin width) */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
+          
+          {/* Left: Scope Control Pill */}
+          <div className="inline-flex items-center p-1 rounded-xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setViewScope('COMMUNITY')}
+              className={`px-4 py-1.5 rounded-lg transition ${
+                viewScope === 'COMMUNITY'
+                  ? 'bg-[#12392B] text-white shadow-xs font-bold'
+                  : 'text-[#5E6963] hover:text-[#17221D]'
+              }`}
+            >
+              Community Market
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewScope('MY_ENERGY')}
+              className={`px-4 py-1.5 rounded-lg transition ${
+                viewScope === 'MY_ENERGY'
+                  ? 'bg-[#12392B] text-white shadow-xs font-bold'
+                  : 'text-[#5E6963] hover:text-[#17221D]'
+              }`}
+            >
+              My Energy ({myEnergy.surplus > 0 ? `+${myEnergy.surplus.toFixed(1)} kW` : 'Demand'})
+            </button>
+          </div>
 
-        {/* Short Subtitle */}
-        <p className="text-xs sm:text-sm text-[#5E6963] max-w-lg mx-auto leading-relaxed">
-          Trade surplus rooftop solar with nearby homes at fair tariffs instead of sending it back to the grid.
-        </p>
+          {/* Center: Clean Energy Route Indicator */}
+          <div className="hidden md:flex items-center space-x-2 text-xs text-[#5E6963]">
+            <span className="font-medium flex items-center gap-1 text-[#DDA12A] bg-[#FFF7E4] px-2.5 py-1 rounded-lg">
+              <FaIcon name="solar" /> Solar Surplus
+            </span>
+            <span className="text-[#1E9B68] font-bold text-xs">────( Local P2P @ ₹4.50/kWh )────→</span>
+            <span className="font-medium flex items-center gap-1 text-[#3C78CC] bg-[#EDF3FD] px-2.5 py-1 rounded-lg">
+              <FaIcon name="home" /> Nearby Demand
+            </span>
+          </div>
 
-        {/* Scope Switch: Community vs My Energy */}
-        <div className="inline-flex items-center p-1 rounded-xl bg-white/80 border border-[rgba(23,34,29,0.08)] shadow-xs text-xs font-semibold">
-          <button
-            type="button"
-            onClick={() => setViewScope('COMMUNITY')}
-            className={`px-3.5 py-1 rounded-lg transition ${
-              viewScope === 'COMMUNITY'
-                ? 'bg-[#12392B] text-white shadow-xs font-bold'
-                : 'text-[#5E6963] hover:text-[#17221D]'
-            }`}
-          >
-            Community Market
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewScope('MY_ENERGY')}
-            className={`px-3.5 py-1 rounded-lg transition ${
-              viewScope === 'MY_ENERGY'
-                ? 'bg-[#12392B] text-white shadow-xs font-bold'
-                : 'text-[#5E6963] hover:text-[#17221D]'
-            }`}
-          >
-            My Energy ({myEnergy.surplus > 0 ? `+${myEnergy.surplus.toFixed(1)} kW` : 'Demand'})
-          </button>
-        </div>
-
-        {/* Primary & Secondary Action CTAs */}
-        <div className="flex items-center justify-center space-x-3 pt-1 flex-wrap gap-y-2">
+          {/* Right: Single Primary CTA */}
           <button
             type="button"
             onClick={() => setIsCreateOfferOpen(true)}
@@ -237,36 +244,6 @@ export default function MarketplaceView() {
             <span>Create Energy Offer</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (aiMatches.length > 0) {
-                handleOpenSettleMatch(aiMatches[0]);
-              }
-            }}
-            className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#F8F9F6] text-[#17221D] text-xs sm:text-sm font-bold border border-[rgba(23,34,29,0.12)] shadow-xs transition flex items-center space-x-1.5 active:scale-98"
-          >
-            <FaIcon name="marketplace" className="text-xs text-[#1E9B68]" />
-            <span>Explore Matches</span>
-          </button>
-        </div>
-
-        {/* Subtle Horizontal Energy Flow Line */}
-        <div className="pt-2 flex items-center justify-center space-x-2 text-xs text-[#5E6963]">
-          <div className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#FFF7E4]/80 text-[#E5A72D]">
-            <FaIcon name="solar" />
-            <span className="font-medium text-[11px]">Solar Surplus</span>
-          </div>
-          <span className="text-[#1E9B68] font-bold text-xs">──( ₹4.50/kWh )──→</span>
-          <div className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#E8F6EE] text-[#1E9B68]">
-            <FaIcon name="network" />
-            <span className="font-medium text-[11px]">Local P2P Match</span>
-          </div>
-          <span className="text-[#1E9B68] font-bold text-xs">──( Clean Power )──→</span>
-          <div className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#EDF3FD] text-[#3C78CC]">
-            <FaIcon name="home" />
-            <span className="font-medium text-[11px]">Nearby Demand</span>
-          </div>
         </div>
 
       </div>
