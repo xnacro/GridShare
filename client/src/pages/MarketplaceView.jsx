@@ -5,10 +5,14 @@ import { api } from '../services/api';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
 import CreateOfferModal from '../components/marketplace/CreateOfferModal';
 import FaIcon from '../components/icons/FaIcon';
+import TransactionsView from './TransactionsView';
 
 export default function MarketplaceView() {
   const navigate = useNavigate();
   const { user, profile, household } = useAuth();
+
+  // Active Sub-Tab: 'exchange' | 'ledger'
+  const [activeMarketTab, setActiveMarketTab] = useState('exchange');
 
   // User Greeting & Household Identity
   const userName = profile?.display_name || user?.email?.split('@')[0] || 'Rahul';
@@ -207,14 +211,40 @@ export default function MarketplaceView() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          {/* Segmented Sub-Tab Switcher */}
+          <div className="inline-flex rounded-xl bg-white border border-[#BED69E] p-1 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setActiveMarketTab('exchange')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                activeMarketTab === 'exchange'
+                  ? 'bg-[#012F13] text-white shadow-xs'
+                  : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
+              }`}
+            >
+              ⚡ Live Exchange
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveMarketTab('ledger')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                activeMarketTab === 'ledger'
+                  ? 'bg-[#012F13] text-white shadow-xs'
+                  : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
+              }`}
+            >
+              📜 Trade History & Ledger
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => {
               setPrefilledOfferKwh(2.0);
               setIsCreateOfferOpen(true);
             }}
-            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs whitespace-nowrap"
           >
             <FaIcon name="plus" className="text-[#8BC53D]" />
             <span>Post Energy Listing</span>
@@ -222,18 +252,25 @@ export default function MarketplaceView() {
         </div>
       </div>
 
-      {/* Dynamic Status Notification */}
-      {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#BED69E] bg-[#E2F0CC] px-4 py-3 text-xs sm:text-sm text-[#012F13] font-bold shadow-xs animate-in fade-in">
-          <div className="flex items-center gap-2">
-            <FaIcon name="check" className="text-[#8BC53D]" />
-            <span>{statusMessage}</span>
-          </div>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#012F13] text-xs p-1 font-bold">
-            ✕
-          </button>
+      {/* Conditional Sub-Tab Render */}
+      {activeMarketTab === 'ledger' ? (
+        <div className="pt-2">
+          <TransactionsView />
         </div>
-      )}
+      ) : (
+        <>
+          {/* Dynamic Status Notification */}
+          {statusMessage && (
+            <div className="flex items-center justify-between rounded-xl border border-[#BED69E] bg-[#E2F0CC] px-4 py-3 text-xs sm:text-sm text-[#012F13] font-bold shadow-xs animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <FaIcon name="check" className="text-[#8BC53D]" />
+                <span>{statusMessage}</span>
+              </div>
+              <button type="button" onClick={() => setStatusMessage('')} className="text-[#012F13] text-xs p-1 font-bold">
+                ✕
+              </button>
+            </div>
+          )}
 
       {/* 🌟 2. QUICK MARKET SUMMARY STRIP */}
       <div className="glass-card rounded-xl p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center">
@@ -730,8 +767,10 @@ export default function MarketplaceView() {
           </div>
         </div>
       </div>
+    </>
+  )}
 
-      {/* 🌟 8. MODALS */}
+  {/* 🌟 8. MODALS */}
       {isConfirmModalOpen && (
         <TradeConfirmationModal
           isOpen={isConfirmModalOpen}

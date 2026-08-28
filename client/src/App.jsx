@@ -41,27 +41,28 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<DashboardView onOpenDemoModal={() => setIsDemoModalOpen(true)} />} />
           <Route path="/dashboard" element={<DashboardView onOpenDemoModal={() => setIsDemoModalOpen(true)} />} />
+          <Route path="/battery" element={<DashboardView onOpenDemoModal={() => setIsDemoModalOpen(true)} />} />
+          <Route path="/community" element={<DashboardView onOpenDemoModal={() => setIsDemoModalOpen(true)} />} />
+          <Route path="/my-home" element={<MyHomeView />} />
+          <Route path="/devices" element={<MyHomeView />} />
           <Route path="/network" element={<InteractiveMicrogridView />} />
           <Route path="/simulation" element={<InteractiveMicrogridView />} />
-          <Route path="/energy-map" element={<EnergyMapView />} />
-          <Route path="/ai" element={<AiForecastView />} />
-          <Route path="/copilot" element={<AiForecastView />} />
+          <Route path="/energy-map" element={<InteractiveMicrogridView />} />
           <Route path="/marketplace" element={<MarketplaceView />} />
-          <Route path="/battery" element={<BatteryView />} />
-          <Route path="/community" element={<BatteryView />} />
-          <Route path="/my-home" element={<MyHomeView />} />
-          <Route path="/devices" element={<DevicesView />} />
-          <Route path="/transactions" element={<TransactionsView />} />
+          <Route path="/transactions" element={<MarketplaceView />} />
+          <Route path="/ai" element={<AiForecastView />} />
+          <Route path="/forecast" element={<AiForecastView />} />
+          <Route path="/copilot" element={<AiForecastView />} />
           <Route path="/optimize" element={<Optimization />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
-      {/* 🩺 System Infrastructure Health Modal */}
+      {/* 🩺 [DISABLED FOR CLEAN PUBLIC UI] System Infrastructure Health Modal
       <SystemHealthModal
         isOpen={isHealthModalOpen}
         onClose={() => setIsHealthModalOpen(false)}
-      />
+      /> */}
 
       {/* 🚀 Global Guided Scenarios Engine Modal */}
       <DemoModal

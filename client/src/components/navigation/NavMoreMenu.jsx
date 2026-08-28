@@ -31,12 +31,15 @@ export default function NavMoreMenu({
         { name: 'Demo Scenarios', action: 'demo', iconName: 'scenarios', desc: 'Guided microgrid weather & load tests' },
       ],
     },
+    /* 
+    // [DISABLED FOR CLEAN PUBLIC UI] System Health diagnostic telemetry
     {
       category: 'System Telemetry',
       items: [
         { name: 'System Health', action: 'health', iconName: 'health', desc: 'PostgreSQL & ML API pipeline status' },
       ],
     },
+    */
   ];
 
   const isMoreActive = location.pathname === '/devices' || location.pathname === '/transactions' || location.pathname === '/optimize';

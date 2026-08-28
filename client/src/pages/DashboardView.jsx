@@ -28,8 +28,35 @@ export default function DashboardView({ onOpenDemoModal }) {
 
   // Master Microgrid State
   const [households] = useState(INITIAL_DEMO_STATE.households);
-  const [battery] = useState(INITIAL_DEMO_STATE.battery);
+  const [battery, setBattery] = useState(INITIAL_DEMO_STATE.battery || { soc: 40, capacity: 20.0, storedKwh: 8.0, minSoc: 20 });
   const [grid] = useState(INITIAL_DEMO_STATE.grid);
+
+  const handleBufferCharge = (kwh = 2.0) => {
+    if (battery.soc >= 95) {
+      setAiExecutionMessage('Central ESS is at 95% maximum operating threshold.');
+      setTimeout(() => setAiExecutionMessage(''), 4000);
+      return;
+    }
+    const nextSoc = Math.min(95, battery.soc + Math.round((kwh / (battery.capacity || 20.0)) * 100));
+    const nextStored = Math.round((((battery.capacity || 20.0) * nextSoc) / 100) * 10) / 10;
+    setBattery((prev) => ({ ...prev, soc: nextSoc, storedKwh: nextStored }));
+    setAiExecutionMessage(`⚡ Buffered +${kwh} kWh solar surplus into Community ESS (SOC now ${nextSoc}%)`);
+    setTimeout(() => setAiExecutionMessage(''), 4500);
+  };
+
+  const handleBufferDischarge = (kwh = 1.5) => {
+    if (battery.soc <= 20) {
+      setAiExecutionMessage('Central ESS reached 20% emergency reserve floor.');
+      setTimeout(() => setAiExecutionMessage(''), 4000);
+      return;
+    }
+    const nextSoc = Math.max(20, battery.soc - Math.round((kwh / (battery.capacity || 20.0)) * 100));
+    const nextStored = Math.round((((battery.capacity || 20.0) * nextSoc) / 100) * 10) / 10;
+    setBattery((prev) => ({ ...prev, soc: nextSoc, storedKwh: nextStored }));
+    setAiExecutionMessage(`🔋 Discharged ${kwh} kWh clean battery reserve to support local peak load (SOC now ${nextSoc}%)`);
+    setTimeout(() => setAiExecutionMessage(''), 4500);
+  };
+
   const [orders] = useState({
     sellOrders: [
       { id: 'GS-SELL-001', household_id: 'house_a', energy_kwh: 2.0, min_price_per_kwh: 4.5, remaining_kwh: 2.0, status: 'OPEN' }
@@ -577,18 +604,113 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       </div>
 
-      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION */}
+      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION: ESS BATTERY HUB & COMMUNITY IMPACT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
-        {/* Left Expanded Card: Today's Community Impact */}
+        {/* Left Card: Community ESS Battery Storage & Buffer Control */}
         <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
-          <div>
-            <h3 className="font-changa text-base font-normal text-[#011207]">
-              Today's Community Impact
-            </h3>
-            <p className="text-xs text-[#4A5B4F] mt-1">
-              Real impact of clean energy sharing & local balancing today
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center space-x-2">
+                <h3 className="font-display text-base font-bold text-[#041D0D]">
+                  Central ESS Battery Buffer
+                </h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+                  20.0 kWh Capacity
+                </span>
+              </div>
+              <p className="text-xs text-[#4A5B4F] mt-0.5">
+                Community energy storage balancing diurnal solar surplus and evening peak loads
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="font-mono text-xl font-bold text-[#8BC53D]">
+                {battery?.soc || 40}%
+              </div>
+              <div className="text-[10px] text-[#4A5B4F] font-medium">
+                {(((battery?.capacity || 20.0) * (battery?.soc || 40)) / 100).toFixed(1)} / 20.0 kWh
+              </div>
+            </div>
+          </div>
+
+          {/* SOC Progress Bar with 20% Emergency Reserve Floor Indicator */}
+          <div className="space-y-1.5">
+            <div className="relative w-full h-3.5 bg-[#F4F9EB] rounded-full border border-[#BED69E] overflow-hidden p-0.5">
+              <div
+                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#8BC53D] to-[#75AA2F]"
+                style={{ width: `${battery?.soc || 40}%` }}
+              />
+              {/* 20% Emergency Reserve Marker */}
+              <div
+                className="absolute top-0 bottom-0 left-[20%] w-0.5 bg-[#D45C5C]/80 z-10"
+                title="20% Emergency Reserve Floor"
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10.5px] text-[#4A5B4F]">
+              <span className="text-[#D45C5C] font-semibold flex items-center gap-1">
+                <span>▲</span> 20% Emergency Floor (4.0 kWh reserve)
+              </span>
+              <span className="font-semibold text-[#012F13]">
+                {Math.max(0, (((battery?.capacity || 20.0) * ((battery?.soc || 40) - 20)) / 100)).toFixed(1)} kWh usable
+              </span>
+            </div>
+          </div>
+
+          {/* Interactive Quick Buffer Actions */}
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            <button
+              type="button"
+              onClick={() => handleBufferCharge(2.0)}
+              className="py-2 px-3 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
+            >
+              <FaIcon name="solar" className="text-[#8BC53D]" />
+              <span>Buffer Solar (+2.0 kWh)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleBufferDischarge(1.5)}
+              className="py-2 px-3 rounded-xl bg-white hover:bg-[#F4F9EB] text-[#011207] border border-[#BED69E] text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
+            >
+              <FaIcon name="battery" className="text-[#012F13]" />
+              <span>Discharge Backup (-1.5 kWh)</span>
+            </button>
+          </div>
+
+          {/* Live ESS Telemetry Strip */}
+          <div className="grid grid-cols-3 gap-2 pt-1 border-t border-[#E2F0CC] text-center">
+            <div>
+              <div className="text-[10px] text-[#7A8C7F] font-bold uppercase">Cell Health</div>
+              <div className="font-mono text-xs font-bold text-[#012F13]">98% SOH</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-[#7A8C7F] font-bold uppercase">Operating Temp</div>
+              <div className="font-mono text-xs font-bold text-[#012F13]">27.5°C</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-[#7A8C7F] font-bold uppercase">DC Bus Voltage</div>
+              <div className="font-mono text-xs font-bold text-[#012F13]">400.0 V</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Expanded Card: Today's Community Impact */}
+        <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-display text-base font-bold text-[#041D0D]">
+                Today's Community Impact
+              </h3>
+              <p className="text-xs text-[#4A5B4F] mt-0.5">
+                Real collective impact of clean energy sharing & storage buffering today
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/marketplace')}
+              className="text-xs font-bold text-[#012F13] hover:text-[#8BC53D] hover:underline"
+            >
+              Market Ledger →
+            </button>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center py-2">
@@ -596,7 +718,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="leaf" />
               </div>
-              <div className="font-changa text-lg sm:text-xl font-normal text-[#011207]">84%</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#011207]">84%</div>
               <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Renewable Self-Consumption</div>
             </div>
 
@@ -604,7 +726,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="users" />
               </div>
-              <div className="font-changa text-lg sm:text-xl font-normal text-[#8BC53D]">2.0 kWh</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#8BC53D]">2.0 kWh</div>
               <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Shared Locally</div>
             </div>
 
@@ -612,7 +734,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="rupee" />
               </div>
-              <div className="font-changa text-lg sm:text-xl font-normal text-[#011207]">₹4.48</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#011207]">₹4.48</div>
               <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Estimated Savings</div>
             </div>
 
@@ -620,64 +742,20 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="shield" />
               </div>
-              <div className="font-changa text-lg sm:text-xl font-normal text-[#011207]">32%</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#011207]">32%</div>
               <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Peak Grid Strain Reduction</div>
             </div>
           </div>
-        </div>
 
-        {/* Right Expanded Card: Recent Community Activity */}
-        <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-changa text-base font-normal text-[#011207]">
-                Recent Community Activity
-              </h3>
-              <p className="text-xs text-[#4A5B4F] mt-1">
-                Live updates from your community ledger
-              </p>
-            </div>
+          <div className="p-3 rounded-xl bg-[#F4F9EB] border border-[#E2F0CC] flex items-center justify-between text-xs text-[#012F13]">
+            <span className="font-medium">Recent bilateral trade settled at ₹4.50/kWh between Anjali & Prince.</span>
             <button
               type="button"
-              onClick={() => navigate('/transactions')}
-              className="text-xs font-bold text-[#012F13] hover:text-[#8BC53D] hover:underline"
+              onClick={() => navigate('/marketplace')}
+              className="font-bold text-[#8BC53D] hover:underline whitespace-nowrap ml-2"
             >
-              View all activity →
+              View Order Book →
             </button>
-          </div>
-
-          <div className="space-y-2">
-            {transactions.slice(0, 4).map((tx) => (
-              <div
-                key={tx.id}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-[#F4F9EB]/90 border border-[#E2F0CC] text-xs hover:bg-[#E2F0CC]/50 transition"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-7 h-7 rounded-lg bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-xs">
-                    <FaIcon name={tx.icon || 'marketplace'} />
-                  </div>
-                  <div>
-                    <div className="font-changa text-xs sm:text-sm font-normal text-[#011207] leading-tight">
-                      {tx.sellerName} {tx.buyerName ? `→ ${tx.buyerName}` : ''}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3.5 text-right">
-                  <div className="font-changa text-xs sm:text-sm font-normal text-[#011207]">
-                    {tx.energyKwh.toFixed(1)} kWh
-                  </div>
-                  {tx.pricePerKwh > 0 && (
-                    <div className="text-[11px] font-mono text-[#4A5B4F]">
-                      ₹{tx.pricePerKwh.toFixed(2)}/kWh
-                    </div>
-                  )}
-                  <div className="text-[10px] text-[#7A8C7F]">
-                    {tx.time}
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
 

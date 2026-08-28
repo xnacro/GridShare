@@ -22,22 +22,13 @@ export default function NavMobileDrawer({
 
   const navGroups = [
     {
-      title: 'Core Surfaces',
+      title: 'Core Public Surfaces',
       items: [
-        { name: 'Overview', path: '/', iconName: 'overview' },
-        { name: 'Energy Network', path: '/network', iconName: 'network' },
-        { name: 'Hornet AI', path: '/ai', iconName: 'ai', isAi: true },
-        { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace' },
-        { name: 'Battery', path: '/battery', iconName: 'battery' },
+        { name: 'Dashboard', path: '/', iconName: 'overview' },
         { name: 'My Home', path: '/my-home', iconName: 'home' },
-      ],
-    },
-    {
-      title: 'Subsystems',
-      items: [
-        { name: 'Devices & Meters', path: '/devices', iconName: 'devices' },
-        { name: 'Transaction Ledger', path: '/transactions', iconName: 'transactions' },
-        { name: 'Optimization', path: '/optimize', iconName: 'sliders' },
+        { name: 'Live Map', path: '/network', iconName: 'network' },
+        { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace' },
+        { name: 'AI Forecast', path: '/ai', iconName: 'ai', isAi: true },
       ],
     },
   ];
@@ -122,6 +113,7 @@ export default function NavMobileDrawer({
             </button>
           )}
 
+          {/* [DISABLED FOR CLEAN PUBLIC UI] System Health action
           {onOpenHealthModal && (
             <button
               type="button"
@@ -134,7 +126,7 @@ export default function NavMobileDrawer({
               <FaIcon name="health" className="text-[#209B67]" />
               <span>System Health</span>
             </button>
-          )}
+          )} */}
         </div>
       </div>
     </div>
