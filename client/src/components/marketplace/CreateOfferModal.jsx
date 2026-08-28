@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import FaIcon from '../icons/FaIcon';
 
@@ -7,12 +7,20 @@ export default function CreateOfferModal({
   onClose,
   onSubmitOffer,
   userSurplusKwh = 2.0,
+  initialPrice = 4.5,
   householdName = 'My Home',
+  isAiRecommended = false,
 }) {
   const [energyKwh, setEnergyKwh] = useState(userSurplusKwh > 0 ? userSurplusKwh : 2.0);
-  const [pricePerKwh, setPricePerKwh] = useState(4.5);
+  const [pricePerKwh, setPricePerKwh] = useState(initialPrice || 4.5);
   const [validHours, setValidHours] = useState(4);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (userSurplusKwh > 0) {
+      setEnergyKwh(userSurplusKwh);
+    }
+  }, [userSurplusKwh]);
 
   if (!isOpen) return null;
 
@@ -39,7 +47,7 @@ export default function CreateOfferModal({
 
   const modalContent = (
     <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm select-none">
-      <div className="relative w-full max-w-lg rounded-xl glass-card p-6 sm:p-7 shadow-2xl border border-white/95 space-y-5 animate-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-lg rounded-xl glass-card p-6 sm:p-7 shadow-2xl border border-white/95 space-y-4 animate-in zoom-in-95 duration-150">
         
         {/* Header */}
         <div className="flex items-start justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
@@ -48,9 +56,16 @@ export default function CreateOfferModal({
               <FaIcon name="solar" />
             </div>
             <div>
-              <h3 className="font-changa text-lg font-normal text-[#17221D]">
-                Post Energy Listing
-              </h3>
+              <div className="flex items-center space-x-2">
+                <h3 className="font-changa text-lg font-normal text-[#17221D]">
+                  Post Energy Listing
+                </h3>
+                {isAiRecommended && (
+                  <span className="text-[10px] font-bold text-[#7358C7] bg-[#F1EDFF] px-2 py-0.5 rounded-md border border-[#7358C7]/20">
+                    AI Guided Headroom
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-[#5E6963]">
                 Share your surplus solar with nearby community members
               </p>
@@ -66,14 +81,14 @@ export default function CreateOfferModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
           
           {/* Energy Available Input */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs font-semibold text-[#17221D]">
               <label htmlFor="offer-energy-kwh">Energy Available to Share</label>
               <span className="text-[#5E6963] font-normal">
-                Max surplus: <strong className="text-[#1E9B68] font-mono">{userSurplusKwh.toFixed(1)} kWh</strong>
+                Safe headroom: <strong className="text-[#1E9B68] font-mono">{userSurplusKwh.toFixed(2)} kWh</strong>
               </span>
             </div>
             <div className="relative flex items-center">
@@ -81,7 +96,7 @@ export default function CreateOfferModal({
                 id="offer-energy-kwh"
                 type="number"
                 step="0.1"
-                min="0.5"
+                min="0.1"
                 max="50.0"
                 value={energyKwh}
                 onChange={(e) => setEnergyKwh(Math.max(0.1, Number(e.target.value)))}
@@ -126,15 +141,15 @@ export default function CreateOfferModal({
               onChange={(e) => setValidHours(Number(e.target.value))}
               className="w-full px-3.5 py-2.5 rounded-lg bg-[#F8F9F6] border border-[rgba(23,34,29,0.1)] text-[#17221D] text-xs font-medium focus:outline-none focus:border-[#1E9B68] transition"
             >
-              <option value={1}>1 Hour (Immediate Dispatch)</option>
+              <option value={1}>1 Hour (Immediate 15-min Horizon)</option>
               <option value={2}>2 Hours</option>
-              <option value={4}>4 Hours (Standard Solar Window)</option>
+              <option value={4}>4 Hours (Solar Peak Window)</option>
               <option value={8}>8 Hours (Until Sunset)</option>
             </select>
           </div>
 
           {/* Real-time Economic Comparison Box */}
-          <div className="p-3.5 rounded-lg bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] space-y-2 text-xs">
+          <div className="p-3 rounded-lg bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] space-y-1.5 text-xs">
             <div className="flex items-center justify-between">
               <span className="text-[#5E6963]">Estimated Local P2P Value:</span>
               <span className="font-changa font-bold text-sm text-[#1E9B68]">
@@ -142,7 +157,7 @@ export default function CreateOfferModal({
               </span>
             </div>
             <div className="flex items-center justify-between text-[11px] text-[#5E6963]">
-              <span>Grid Utility Benchmark Value:</span>
+              <span>Grid Benchmark Value:</span>
               <span className="font-mono line-through text-[#89938D]">₹{gridBenchmarkValue.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[rgba(23,34,29,0.06)]">
@@ -152,7 +167,7 @@ export default function CreateOfferModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end space-x-3 pt-2">
+          <div className="flex items-center justify-end space-x-3 pt-1">
             <button
               type="button"
               onClick={onClose}
@@ -166,7 +181,7 @@ export default function CreateOfferModal({
               className="px-5 py-2.5 rounded-lg bg-[#12392B] hover:bg-[#174A37] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50 flex items-center space-x-1.5"
             >
               <FaIcon name="plus" className="text-[#43CB8C]" />
-              <span>{isSubmitting ? 'Publishing Listing...' : 'Publish Energy Listing'}</span>
+              <span>{isSubmitting ? 'Publishing...' : 'Publish Energy Listing'}</span>
             </button>
           </div>
 
