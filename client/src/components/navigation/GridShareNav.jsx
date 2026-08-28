@@ -46,8 +46,8 @@ export default function GridShareNav({
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-200 ease-out select-none ${
           isScrolled
-            ? 'py-2 sm:py-2.5 bg-[#F5F7F3]/90 backdrop-blur-md'
-            : 'py-3 sm:py-3.5 bg-[#F5F7F3]'
+            ? 'py-2 sm:py-2.5 bg-[#F8F9F6]/90 backdrop-blur-md border-b border-[rgba(23,34,29,0.06)]'
+            : 'py-3 sm:py-3.5 bg-[#F8F9F6]'
         }`}
       >
         <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 sm:px-8">

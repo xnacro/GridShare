@@ -31,7 +31,7 @@ export default function NavPill({
   const navItems = [
     { name: 'Overview', path: '/', iconName: 'overview', tooltip: 'Command center & community state' },
     { name: 'Energy Network', path: '/network', iconName: 'network', tooltip: '3D spatial microgrid digital twin' },
-    { name: 'Hornet AI', path: '/ai', iconName: 'ai', isAi: true, tooltip: 'Hornet AI predictive energy orchestration' },
+    { name: 'Hornet AI', path: '/ai', iconName: 'ai', isAi: true, tooltip: 'Hornet AI predictive orchestration' },
     { name: 'Marketplace', path: '/marketplace', iconName: 'marketplace', tooltip: 'AI-matched P2P energy exchange' },
     { name: 'Battery', path: '/battery', iconName: 'battery', tooltip: '50 kWh storage asset & reserve floor' },
     { name: 'My Home', path: '/my-home', iconName: 'home', tooltip: '3D residential energy cockpit' },
@@ -40,7 +40,7 @@ export default function NavPill({
   return (
     <nav
       aria-label="Main Navigation"
-      className={`inline-flex items-center rounded-full gs-glass p-1.5 shadow-sm transition-all duration-300 ease-out select-none ${
+      className={`inline-flex items-center rounded-2xl bg-white/95 backdrop-blur-xl border border-[rgba(23,34,29,0.08)] p-1.5 shadow-sm transition-all duration-300 ease-out select-none ${
         isCollapsed ? 'space-x-1' : 'space-x-1 sm:space-x-1.5'
       }`}
     >
@@ -68,7 +68,7 @@ export default function NavPill({
       </div>
 
       {/* SEPARATOR */}
-      <div className="h-5 w-[1px] bg-[#DDE4DF] mx-1" />
+      <div className="h-5 w-[1px] bg-[rgba(23,34,29,0.08)] mx-1" />
 
       {/* COLLAPSE / EXPAND TOGGLE */}
       <NavToggle
