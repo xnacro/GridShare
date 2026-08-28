@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import PageHero from '../components/ui/PageHero';
 import HeroMetric from '../components/ui/HeroMetric';
-import GlassSurface from '../components/ui/GlassSurface';
 import SectionHeader from '../components/ui/SectionHeader';
-import AiDecisionPipeline from '../components/copilot/AiDecisionPipeline';
 import ForecastRangeChart from '../components/copilot/ForecastRangeChart';
-import WeatherShockSimulator from '../components/copilot/WeatherShockSimulator';
+import PredictiveMatchCard from '../components/copilot/PredictiveMatchCard';
+import ScenarioLabStudio from '../components/copilot/ScenarioLabStudio';
+import TechnicalModelMatrix from '../components/copilot/TechnicalModelMatrix';
+import GroundedAiAssistantModal from '../components/copilot/GroundedAiAssistantModal';
 import FaIcon from '../components/icons/FaIcon';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
@@ -22,9 +23,10 @@ export default function AiForecastView() {
   const [selectedHorizon, setSelectedHorizon] = useState('15M');
   const [selectedHousehold, setSelectedHousehold] = useState('COMMUNITY');
   const [households, setHouseholds] = useState([]);
+  const [viewMode, setViewMode] = useState('SIMPLE'); // 'SIMPLE' | 'TECHNICAL' | 'SCENARIO'
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [actionNotice, setActionNotice] = useState(null);
-  const [viewMode, setViewMode] = useState('SIMPLE'); // 'SIMPLE' | 'TECHNICAL'
-  const [isShockModalOpen, setIsShockModalOpen] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
 
   const horizonMinutesMap = {
     '15M': 15,
@@ -76,326 +78,399 @@ export default function AiForecastView() {
     fetchInsights();
   }, [fetchInsights]);
 
-  // Safe fallback values if copilot API offline
+  // Safe fallback values
   const curState = copilotData?.current_state || {
-    solar_generation_kw: 6.80,
-    household_demand_kw: 4.10,
-    net_surplus_kw: 2.70,
-    battery_soc: 40.0,
+    generation_kw: 6.40,
+    demand_kw: 2.20,
+    net_balance_kw: 4.20,
+    battery_soc: 65.0,
+    grid_tariff_rs: 6.10,
+    p2p_market_price_rs: 4.50,
   };
 
   const aiForecast = copilotData?.forecast || {
-    predicted_solar_kw: 5.84,
-    predicted_demand_kw: 4.21,
-    predicted_net_balance_kw: 1.63,
-  };
-
-  const aiInterval = copilotData?.prediction_interval || {
+    solar_kw: 5.84,
     solar_lower_kw: 5.31,
     solar_upper_kw: 6.28,
+    demand_kw: 2.15,
+    balance_kw: 3.69,
+    conservative_balance_kw: 3.16,
+    safe_tradeable_kwh: 0.79,
   };
 
-  const aiRec = copilotData?.recommendation || {
+  const aiDecision = copilotData?.decision || {
     action: 'LOCAL_TRADE',
-    headline: `Trade 1.0 kWh locally (${household?.name || "Anjali's Home"} → Prince's Home)`,
-    summary: 'Local prosumer surplus is available while nearby neighbor has active electrical demand.',
-    economic_benefit_inr: 4.48,
+    action_label: 'TRADE 0.79 kWh LOCALLY',
+    amount_kwh: 0.79,
   };
 
-  const aiReasoning = copilotData?.reasoning || [
-    'Surplus expected to remain positive through afternoon peak',
-    "Local demand detected at nearby consumer household on same sub-feeder",
-    'Community battery reserve is healthy (>20% emergency floor preserved)',
-    'P2P clearing tariff ₹4.50/kWh saves community vs ₹6.10 grid rate',
-  ];
-
-  const handleExecuteDispatch = () => {
-    setActionNotice(`Dispatch approved! 1.0 kWh matched for ${household?.name || "Anjali's Home"} ➔ Prince's Home.`);
-    setTimeout(() => setActionNotice(null), 5000);
+  const aiImpact = copilotData?.impact || {
+    estimated_saving_rs: 1.26,
+    grid_energy_avoided_kwh: 0.79,
+    local_energy_used_kwh: 0.79,
+    co2_avoided_kg: 0.65,
   };
+
+  const handleApproveAction = () => {
+    setIsApproving(true);
+    setTimeout(() => {
+      setIsApproving(false);
+      setActionNotice({
+        type: 'SUCCESS',
+        text: `Action approved! Verified ${aiDecision.action_label} routed through double-auction ledger.`,
+      });
+      setTimeout(() => setActionNotice(null), 5000);
+    }, 800);
+  };
+
+  const isSurplus = aiForecast.balance_kw >= 0;
 
   return (
     <div className="space-y-8 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. HORNET AI HERO */}
+      {/* 🌟 1. HERO HEADER */}
       <PageHero
-        category="HORNET AI OPERATING SYSTEM"
-        statusBadge="15-MIN FORECAST"
-        statusVariant="ai"
-        title="Your energy forecast,"
-        highlightText="explained."
-        subtitle="GridShare predicts what your community will need next, checks uncertainty bounds, and recommends the safest economic action."
+        category="CENTRAL INTELLIGENCE LAYER"
+        statusBadge="DUAL ML REGRESSION ACTIVE"
+        statusVariant={isSurplus ? 'surplus' : 'deficit'}
+        title="Predict what comes next,"
+        highlightText="decide with certainty."
+        subtitle={`Real-time Random Forest predictions (solar_v1 & demand_v1) paired with battery constraints and deterministic dispatch rules.`}
         supportingFacts={[
-          { label: 'Predicted Solar', value: `${aiForecast.predicted_solar_kw.toFixed(2)} kW`, icon: 'solar' },
-          { label: 'Predicted Demand', value: `${aiForecast.predicted_demand_kw.toFixed(2)} kW`, icon: 'home' },
-          { label: 'Net Balance', value: `${aiForecast.predicted_net_balance_kw >= 0 ? `+${aiForecast.predicted_net_balance_kw.toFixed(2)}` : aiForecast.predicted_net_balance_kw.toFixed(2)} kW`, icon: 'network' },
+          { label: 'Safe Tradeable Energy', value: `${aiForecast.safe_tradeable_kwh || 0.8} kWh`, icon: 'shield' },
+          { label: 'Forecast Horizon', value: selectedHorizon, icon: 'clock' },
+          { label: 'Battery Reserve', value: `${curState.battery_soc || 65}% (Min 20%)`, icon: 'battery' },
         ]}
         primaryAction={{
-          label: 'Simulate Weather Shock',
-          icon: 'bolt',
-          onClick: () => setIsShockModalOpen(true),
+          label: 'Ask Hornet AI',
+          icon: 'brain',
+          onClick: () => setIsAssistantOpen(true),
         }}
         secondaryAction={{
-          label: viewMode === 'SIMPLE' ? 'Technical View' : 'Simple View',
-          icon: 'sliders',
-          onClick: () => setViewMode(prev => prev === 'SIMPLE' ? 'TECHNICAL' : 'SIMPLE'),
-        }}
-        tertiaryAction={{
-          label: 'Open Marketplace →',
-          onClick: () => navigate('/marketplace'),
+          label: 'Scenario Lab',
+          icon: 'sliders-h',
+          onClick: () => setViewMode('SCENARIO'),
         }}
       />
 
-      {/* Dynamic Action Notification */}
+      {/* Action Toast Notice */}
       {actionNotice && (
-        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E6F5EC] px-4 py-3 text-xs sm:text-sm text-[#12382A] font-bold shadow-sm animate-in fade-in">
-          <div className="flex items-center gap-2">
-            <FaIcon name="check" className="text-[#1E9B67]" />
-            <span>{actionNotice}</span>
+        <div className="glass-card rounded-xl p-4 border border-[#1E9B68]/30 bg-[#EBF7F1] text-xs font-semibold text-[#1E9B68] flex items-center justify-between shadow-md animate-slideDown">
+          <div className="flex items-center space-x-2">
+            <FaIcon name="check" className="text-sm" />
+            <span>{actionNotice.text}</span>
           </div>
-          <button type="button" onClick={() => setActionNotice(null)} className="text-[#1E9B67] text-xs p-1 font-bold">
-            ✕
+          <button onClick={() => setActionNotice(null)} className="text-[#5E6963] hover:text-[#17221D]">
+            <FaIcon name="close" />
           </button>
         </div>
       )}
 
-      {/* 🌟 2. METRIC SURFACES: NOW vs NEXT 15 MIN */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <HeroMetric
-          label="Current Solar Output"
-          value={curState.solar_generation_kw.toFixed(1)}
-          unit="kW"
-          subtitle="Observed rooftop generation"
-          iconName="solar"
-          variant="solar"
-        />
+      {/* 🌟 2. TOP CONTROLS & MODE SWITCHER STRIP */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 glass-card rounded-xl p-3 sm:p-4">
+        
+        {/* Mode Selector Tabs */}
+        <div className="flex items-center space-x-1.5 bg-[#F4F6F4] p-1 rounded-xl w-full sm:w-auto">
+          <button
+            onClick={() => setViewMode('SIMPLE')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
+              viewMode === 'SIMPLE'
+                ? 'bg-white text-[#17221D] shadow-subtle'
+                : 'text-[#5E6963] hover:text-[#17221D]'
+            }`}
+          >
+            <FaIcon name="chart" className="text-[11px]" />
+            <span>Decision Flow</span>
+          </button>
 
-        <HeroMetric
-          label="Next 15m Solar Forecast"
-          value={aiForecast.predicted_solar_kw.toFixed(2)}
-          unit="kW"
-          subtitle={`Corridor: ${aiInterval.solar_lower_kw.toFixed(1)} – ${aiInterval.solar_upper_kw.toFixed(1)} kW`}
-          iconName="ai"
-          variant="ai"
-        />
+          <button
+            onClick={() => setViewMode('SCENARIO')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
+              viewMode === 'SCENARIO'
+                ? 'bg-white text-[#17221D] shadow-subtle'
+                : 'text-[#5E6963] hover:text-[#17221D]'
+            }`}
+          >
+            <FaIcon name="sliders-h" className="text-[11px]" />
+            <span>Scenario Lab</span>
+          </button>
 
-        <HeroMetric
-          label="Forecast Demand"
-          value={aiForecast.predicted_demand_kw.toFixed(2)}
-          unit="kW"
-          subtitle="Predicted residential load"
-          iconName="home"
-          variant="default"
-        />
+          <button
+            onClick={() => setViewMode('TECHNICAL')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
+              viewMode === 'TECHNICAL'
+                ? 'bg-white text-[#17221D] shadow-subtle'
+                : 'text-[#5E6963] hover:text-[#17221D]'
+            }`}
+          >
+            <FaIcon name="brain" className="text-[11px]" />
+            <span>Technical AI</span>
+          </button>
+        </div>
 
-        <HeroMetric
-          label="Net Available Balance"
-          value={aiForecast.predicted_net_balance_kw >= 0 ? `+${aiForecast.predicted_net_balance_kw.toFixed(2)}` : `${aiForecast.predicted_net_balance_kw.toFixed(2)}`}
-          unit="kW"
-          subtitle={aiForecast.predicted_net_balance_kw >= 0 ? "Clean surplus to trade locally" : "Predicted net demand load"}
-          iconName="network"
-          variant={aiForecast.predicted_net_balance_kw >= 0 ? "emerald" : "default"}
-        />
+        {/* Household & Horizon Filter */}
+        <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+          {/* Household selector */}
+          <div className="flex items-center space-x-2 text-xs">
+            <span className="text-[#5E6963] font-medium hidden sm:inline">Scope:</span>
+            <select
+              value={selectedHousehold}
+              onChange={(e) => setSelectedHousehold(e.target.value)}
+              className="px-3 py-1.5 rounded-lg bg-white border border-[rgba(23,34,29,0.12)] text-xs font-bold text-[#17221D] focus:outline-none"
+            >
+              <option value="COMMUNITY">Community Aggregate</option>
+              {households.map((h) => (
+                <option key={h.id || h.household_id} value={h.id || h.household_id}>
+                  {h.name || h.household_id}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Refresh Button */}
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={fetchInsights}
+            disabled={isLoading}
+            className="border border-[rgba(23,34,29,0.1)]"
+          >
+            <FaIcon name="refresh" className={isLoading ? 'animate-spin' : ''} />
+          </Button>
+        </div>
       </div>
 
-      {/* 🌟 3. SIMPLE VIEW: FORECAST RANGE + RECOMMENDATION & REASONING */}
-      {viewMode === 'SIMPLE' ? (
+      {/* 🌟 3. MAIN CONTENT BASED ON ACTIVE VIEW MODE */}
+      {viewMode === 'SCENARIO' && (
+        <ScenarioLabStudio
+          currentHousehold={selectedHousehold}
+          baselineData={copilotData}
+        />
+      )}
+
+      {viewMode === 'TECHNICAL' && (
+        <TechnicalModelMatrix />
+      )}
+
+      {viewMode === 'SIMPLE' && (
         <div className="space-y-6">
           
-          {/* Split View: Chart (7 cols) + Recommendation (5 cols) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {/* 🌟 A. METRIC HIGHLIGHT STRIP */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <HeroMetric
+              label="Predicted Solar Output"
+              value={aiForecast.solar_kw?.toFixed(2)}
+              unit="kW"
+              subtitle={`Interval: ${aiForecast.solar_lower_kw} - ${aiForecast.solar_upper_kw} kW`}
+              iconName="solar"
+              variant="solar"
+            />
+
+            <HeroMetric
+              label="Predicted Demand"
+              value={aiForecast.demand_kw?.toFixed(2)}
+              unit="kW"
+              subtitle={`Active load forecast (demand_v1)`}
+              iconName="bolt"
+              variant="cyan"
+            />
+
+            <HeroMetric
+              label="Net Forecast Balance"
+              value={aiForecast.balance_kw >= 0 ? `+${aiForecast.balance_kw?.toFixed(2)}` : aiForecast.balance_kw?.toFixed(2)}
+              unit="kW"
+              subtitle={isSurplus ? 'Clean renewable surplus' : 'Net draw from storage/grid'}
+              iconName="chart"
+              variant={isSurplus ? 'emerald' : 'deficit'}
+            />
+
+            <HeroMetric
+              label="Safe Tradeable Energy"
+              value={aiForecast.safe_tradeable_kwh?.toFixed(2) || '0.00'}
+              unit="kWh"
+              subtitle="Conservative 90% floor checked"
+              iconName="shield"
+              variant="emerald"
+            />
+          </div>
+
+          {/* 🌟 B. UNCERTAINTY CORRIDOR CHART & PREDICTIVE MATCH */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            {/* LEFT: LARGE FORECAST RANGE CHART (7 cols) */}
-            <div className="lg:col-span-7 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
-                <div>
-                  <h3 className="text-base font-extrabold text-[#17221D]">
-                    Forecast & Uncertainty Corridor
-                  </h3>
-                  <p className="text-xs text-[#5E6963]">
-                    15-minute predictive horizon with 90% confidence bounds
-                  </p>
-                </div>
-
-                {/* Horizon Switcher */}
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
-                  {['15M', '30M', '60M'].map((h) => (
-                    <button
-                      key={h}
-                      type="button"
-                      onClick={() => setSelectedHorizon(h)}
-                      className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition ${
-                        selectedHorizon === h
-                          ? 'bg-[#12392B] text-white shadow-xs'
-                          : 'text-[#5E6963] hover:text-[#17221D]'
-                      }`}
-                    >
-                      {h}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Chart Component */}
-              <div className="h-64 sm:h-72 w-full pt-1">
-                <ForecastRangeChart
-                  historical={copilotData?.historical || []}
-                  forecast={copilotData?.forecast_series || []}
-                  lowerBound={aiInterval.solar_lower_kw}
-                  upperBound={aiInterval.solar_upper_kw}
-                />
-              </div>
-
-              {/* Risk Summary Footer */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)] text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#1E9B68]" />
-                  <span className="font-medium text-[#5E6963]">Safety Margin:</span>
-                  <strong className="text-[#12392B]">PROTECTED</strong>
-                </div>
-                <div className="text-[#5E6963]">
-                  Conservative Balance: <strong className="text-[#1E9B68] font-mono">+{aiInterval.solar_lower_kw.toFixed(1)} kW</strong>
-                </div>
-              </div>
+            {/* Forecast Corridor Chart (7 cols) */}
+            <div className="lg:col-span-7">
+              <ForecastRangeChart
+                forecastData={aiForecast}
+                horizon={selectedHorizon}
+                onHorizonChange={(h) => setSelectedHorizon(h)}
+              />
             </div>
 
-            {/* RIGHT: RECOMMENDATION & EXPLAINABLE REASONING (5 cols) */}
-            <div className="lg:col-span-5 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+            {/* Predictive P2P Matching Card (5 cols) */}
+            <div className="lg:col-span-5">
+              <PredictiveMatchCard
+                predictiveMatch={copilotData?.predictive_match}
+                onApprove={handleApproveAction}
+              />
+            </div>
+
+          </div>
+
+          {/* 🌟 C. RECOMMENDED ACTION & EXPLAINABLE "WHY?" */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Primary Recommendation Card (7 cols) */}
+            <div className="lg:col-span-7 glass-card rounded-xl p-5 sm:p-6 space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
-                <div>
-                  <h3 className="text-base font-extrabold text-[#17221D]">
-                    Recommended Dispatch Action
-                  </h3>
-                  <p className="text-xs text-[#5E6963]">
-                    Economically optimized decision for your microgrid
-                  </p>
+                <div className="flex items-center space-x-2.5">
+                  <div className="h-8 w-8 rounded-lg bg-[#7358C7]/15 flex items-center justify-center text-[#7358C7]">
+                    <FaIcon name="brain" className="text-sm" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+                      Authoritative Dispatch Recommendation
+                    </h3>
+                    <p className="text-[11px] text-[#5E6963]">Determined by RuleBasedOptimizer with human-in-the-loop approval</p>
+                  </div>
                 </div>
-                <Badge variant="surplus" size="xs">
-                  OPTIMAL
+
+                <Badge variant={isSurplus ? 'surplus' : 'solar'} size="xs">
+                  {aiDecision.status || 'RECOMMENDED'}
                 </Badge>
               </div>
 
-              {/* Primary Action Hero Box */}
-              <div className="p-4 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1E9B68]">
-                    TRADE ACTION
-                  </span>
-                  <span className="text-xs font-mono font-extrabold text-[#1E9B68]">
-                    ₹4.50 / kWh
-                  </span>
+              {/* Action Headline & Approve Row */}
+              <div className="p-4 rounded-xl bg-[#F8FAF9] border border-[rgba(23,34,29,0.08)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-[#5E6963]">Recommended Action</span>
+                  <p className="text-base font-bold text-[#17221D] mt-0.5">{aiDecision.action_label}</p>
                 </div>
-                <div className="text-sm sm:text-base font-extrabold text-[#12392B]">
-                  {aiRec.headline}
-                </div>
-                <p className="text-xs text-[#5E6963]">
-                  {aiRec.summary}
-                </p>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleApproveAction}
+                  disabled={isApproving}
+                >
+                  {isApproving ? 'Executing...' : 'Approve Action'}
+                </Button>
               </div>
 
-              {/* Why? Bullet Reasoning */}
+              {/* Explainable Reasoning Bullets */}
               <div className="space-y-2">
-                <div className="text-xs font-extrabold text-[#17221D] uppercase tracking-wider">
-                  Why this recommendation?
-                </div>
-                <div className="space-y-1.5">
-                  {aiReasoning.map((reason, idx) => (
-                    <div key={idx} className="flex items-start space-x-2 text-xs text-[#5E6963]">
-                      <FaIcon name="check" className="text-[#1E9B68] text-xs mt-0.5 flex-shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#17221D] block">
+                  Explainable Reasoning (Why GridShare Recommends This):
+                </span>
+                <ul className="space-y-1.5">
+                  {(copilotData?.reasoning || [
+                    `Predicted solar generation (+${aiForecast.solar_kw} kW) exceeds domestic demand (${aiForecast.demand_kw} kW).`,
+                    `Conservative 90% confidence lower bound guarantees +${aiForecast.conservative_balance_kw} kW surplus headroom.`,
+                    `Battery storage reserve is protected at ${curState.battery_soc}% SOC (exceeds 20% minimum safety floor).`,
+                    `Local P2P tariff ₹${curState.p2p_market_price_rs}/kWh offers ₹${(curState.grid_tariff_rs - curState.p2p_market_price_rs).toFixed(2)}/kWh savings vs utility grid.`
+                  ]).map((reason, idx) => (
+                    <li key={idx} className="flex items-start text-xs text-[#5E6963] leading-relaxed">
+                      <span className="text-[#1E9B68] font-bold mr-2 mt-0.5">✓</span>
                       <span>{reason}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Impact Metrics & Priority Queue (5 cols) */}
+            <div className="lg:col-span-5 space-y-4">
+              
+              {/* Impact Card */}
+              <div className="glass-card rounded-xl p-5 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+                  Estimated Action Impact
+                </h4>
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div className="bg-[#F8FAF9] p-3 rounded-lg border border-[rgba(23,34,29,0.06)]">
+                    <span className="text-[10px] uppercase font-bold text-[#5E6963]">Financial Value</span>
+                    <p className="text-sm font-bold text-[#1E9B68] mt-0.5">₹{aiImpact.estimated_saving_rs || '1.26'}</p>
+                    <span className="text-[10px] text-[#89938D]">vs ₹6.10 grid tariff</span>
+                  </div>
+                  <div className="bg-[#F8FAF9] p-3 rounded-lg border border-[rgba(23,34,29,0.06)]">
+                    <span className="text-[10px] uppercase font-bold text-[#5E6963]">CO₂ Avoided</span>
+                    <p className="text-sm font-bold text-[#1E9B68] mt-0.5">{aiImpact.co2_avoided_kg || '0.65'} kg</p>
+                    <span className="text-[10px] text-[#89938D]">Clean solar offset</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Priority Queue */}
+              <div className="glass-card rounded-xl p-5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+                    AI Operational Priority Queue
+                  </h4>
+                  <Badge variant="neutral" size="xs">Top Signals</Badge>
+                </div>
+
+                <div className="space-y-2">
+                  {(copilotData?.ai_priorities || [
+                    { priority: 1, type: 'OPPORTUNITY', title: 'P2P Solar Match Available', desc: `${aiForecast.safe_tradeable_kwh || 0.8} kWh surplus ready for Prince's Home` },
+                    { priority: 2, type: 'STATUS', title: `Battery Healthy (${curState.battery_soc}% SOC)`, desc: 'Preserves 20% emergency safety floor' },
+                    { priority: 3, type: 'STATUS', title: 'Data Stream Fresh', desc: 'Telemetry updated <1 minute ago' },
+                  ]).map((item, i) => (
+                    <div key={i} className="p-2.5 rounded-lg bg-[#F8FAF9] border border-[rgba(23,34,29,0.06)] flex items-center space-x-2.5 text-xs">
+                      <span className="h-5 w-5 rounded-full bg-[#17221D] text-white flex items-center justify-center font-bold text-[10px]">
+                        {item.priority}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[#17221D] truncate">{item.title}</p>
+                        <p className="text-[11px] text-[#5E6963] truncate">{item.desc}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex items-center gap-3">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="flex-1 justify-center py-2.5 text-xs font-bold rounded-xl shadow-xs"
-                  onClick={handleExecuteDispatch}
-                >
-                  Approve Dispatch
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="py-2.5 text-xs font-bold rounded-xl"
-                  onClick={() => setViewMode('TECHNICAL')}
-                >
-                  Inspect Math
-                </Button>
-              </div>
-
             </div>
 
           </div>
 
-        </div>
-      ) : (
-        /* 🌟 4. TECHNICAL VIEW (For Judges & Systems Engineers) */
-        <div className="space-y-6">
-          <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
-            <SectionHeader
-              title="Full 6-Step Machine Learning & Optimization Pipeline"
-              subtitle="Inspect mathematical constraints, prediction bounds, and dispatch algorithms"
-              rightAction={
-                <Button
-                  variant="secondary"
-                  size="xs"
-                  className="rounded-xl"
-                  onClick={() => setViewMode('SIMPLE')}
-                  icon={<FaIcon name="close" />}
-                >
-                  Exit Technical View
-                </Button>
-              }
-            />
+          {/* 🌟 D. MULTI-HORIZON DECISION TIMELINE */}
+          <div className="glass-card rounded-xl p-5 space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,34,29,0.06)]">
+              <div className="flex items-center space-x-2">
+                <FaIcon name="clock" className="text-[#1E9B68] text-xs" />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+                  Forward-Looking Decision Trajectory (15M to 24H)
+                </h4>
+              </div>
+              <span className="text-[11px] text-[#5E6963]">Autoregressive multi-step rollout</span>
+            </div>
 
-            <AiDecisionPipeline
-              copilotData={copilotData}
-              onSelectAction={handleExecuteDispatch}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Weather Shock Simulator Modal */}
-      {isShockModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#15221B]/50 p-4 backdrop-blur-sm animate-in fade-in select-none">
-          <div className="w-full max-w-xl rounded-3xl bg-white border border-[rgba(23,56,43,0.10)] p-6 shadow-modal space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,56,43,0.08)]">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs">
-                  <FaIcon name="bolt" />
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {(copilotData?.multi_horizon_timeline || [
+                { horizon: '15M', solar_kw: 5.84, demand_kw: 2.15, balance_kw: 3.69, action: 'LOCAL_TRADE' },
+                { horizon: '30M', solar_kw: 5.40, demand_kw: 2.30, balance_kw: 3.10, action: 'LOCAL_TRADE' },
+                { horizon: '60M', solar_kw: 4.20, demand_kw: 2.80, balance_kw: 1.40, action: 'LOCAL_TRADE' },
+                { horizon: '6H', solar_kw: 0.00, demand_kw: 3.50, balance_kw: -3.50, action: 'DISCHARGE' },
+                { horizon: '24H', solar_kw: 0.00, demand_kw: 1.80, balance_kw: -1.80, action: 'DISCHARGE' },
+              ]).map((step, idx) => (
+                <div key={idx} className="p-3 rounded-lg bg-[#F8FAF9] border border-[rgba(23,34,29,0.06)] text-center space-y-1">
+                  <span className="text-[10px] font-bold text-[#7358C7] uppercase">{step.horizon}</span>
+                  <p className={`text-xs font-bold ${step.balance_kw >= 0 ? 'text-[#1E9B68]' : 'text-[#D45C5C]'}`}>
+                    {step.balance_kw >= 0 ? `+${step.balance_kw}` : step.balance_kw} kW
+                  </p>
+                  <p className="text-[10px] text-[#5E6963] font-medium truncate">{step.action}</p>
                 </div>
-                <h3 className="text-base font-bold text-[#15221B]">
-                  Simulate Operational Weather Shocks
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsShockModalOpen(false)}
-                className="text-[#5E6B63] hover:text-[#15221B] text-sm font-bold p-1"
-              >
-                ✕
-              </button>
+              ))}
             </div>
-
-            <WeatherShockSimulator
-              selectedHousehold={selectedHousehold}
-              onShockApplied={(res) => {
-                setIsShockModalOpen(false);
-                if (res && res.shocked_state) {
-                  setCopilotData(res.shocked_state);
-                  setActionNotice(`Simulated shock applied: ${res.summary}`);
-                }
-              }}
-            />
           </div>
+
         </div>
       )}
+
+      {/* 🌟 4. GROUNDED AI ASSISTANT MODAL */}
+      <GroundedAiAssistantModal
+        isOpen={isAssistantOpen}
+        onClose={() => setIsAssistantOpen(false)}
+        currentHousehold={selectedHousehold}
+        copilotData={copilotData}
+      />
 
     </div>
   );

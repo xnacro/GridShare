@@ -68,6 +68,9 @@ export const api = {
   // AI Prediction, Optimizer & Copilot
   getCopilotInsights: (params) => apiClient.get('/copilot/insights', { params }),
   simulateCopilotShock: (data) => apiClient.post('/copilot/simulate-shock', data),
+  simulateScenario: (data) => apiClient.post('/copilot/scenario', data),
+  queryCopilot: (data) => apiClient.post('/copilot/query', data),
+  getModelHealth: () => apiClient.get('/copilot/model-health'),
   getPredictions: (params) => apiClient.get('/predictions', { params }),
   getLatestPredictions: (params) => apiClient.get('/predictions', { params }),
   runPredictionPipeline: () => apiClient.post('/predictions/run'),

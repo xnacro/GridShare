@@ -157,20 +157,27 @@ class SolarPredictor:
         else:
             g_list = [0.0]
 
-        steps_needed = max(1, horizon_minutes // 15)
+        steps_needed = min(4, max(1, horizon_minutes // 15))
         history_buffer = list(g_list)
         sim_time = current_time
 
-        predicted_ghi = 0.0
+        predicted_ghi = float(g_list[-1]) if g_list else 0.0
         tree_std = None
 
         for step in range(1, steps_needed + 1):
             feat_df = self.build_feature_vector(sim_time, history_buffer)
-            pred_point, step_std = self._predict_with_uncertainty(feat_df)
+            is_final = (step == steps_needed)
+            pred_point, step_std = self._predict_with_uncertainty(feat_df, compute_ensemble_std=is_final)
             predicted_ghi = pred_point
             tree_std = step_std
             history_buffer.append(pred_point)
             sim_time = sim_time + timedelta(minutes=15)
+
+        # If horizon > 60m (e.g. 6H or 24H), evaluate target time features directly
+        if horizon_minutes > 60:
+            target_time = current_time + timedelta(minutes=horizon_minutes)
+            feat_df = self.build_feature_vector(target_time, history_buffer)
+            predicted_ghi, tree_std = self._predict_with_uncertainty(feat_df, compute_ensemble_std=True)
 
         # Solar geometry night zero clamp (if solar elevation is 0, clamp to 0)
         target_time = current_time + timedelta(minutes=horizon_minutes)
@@ -211,17 +218,17 @@ class SolarPredictor:
             "prediction_timestamp": target_time.isoformat()
         }
 
-    def _predict_with_uncertainty(self, feature_df: pd.DataFrame) -> tuple[float, Optional[float]]:
+    def _predict_with_uncertainty(self, feature_df: pd.DataFrame, compute_ensemble_std: bool = True) -> tuple[float, Optional[float]]:
         feature_cols = self.metadata.get("features", SOLAR_FEATURE_NAMES)
-        X_arr = feature_df[feature_cols].values
+        X_df = feature_df[feature_cols]
 
-        if hasattr(self.model, "estimators_") and len(self.model.estimators_) > 0:
+        mean_pred = float(self.model.predict(X_df)[0])
+        std_err = None
+
+        if compute_ensemble_std and hasattr(self.model, "estimators_") and len(self.model.estimators_) > 0:
+            X_arr = X_df.values
             tree_preds = [tree.predict(X_arr)[0] for tree in self.model.estimators_]
-            mean_pred = float(np.mean(tree_preds))
             std_err = float(np.std(tree_preds))
-        else:
-            mean_pred = float(self.model.predict(X_arr)[0])
-            std_err = None
 
         return max(0.0, round(mean_pred, 2)), round(std_err, 2) if std_err is not None else None
 

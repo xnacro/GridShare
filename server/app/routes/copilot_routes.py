@@ -1,12 +1,11 @@
 """
-AI Copilot Routes for GridShare.
-Exposes the authoritative 6-step AI decision loop:
-1. Current State (OBSERVE)
-2. Demand & Solar Forecasts (PREDICT)
-3. Forecast Range & Uncertainty
-4. Dispatch Recommendation (OPTIMIZE)
-5. Explainable Reasoning
-6. Impact Metrics
+AI Copilot & Master Intelligence Routes for GridShare.
+Exposes:
+1. /api/copilot/insights (GET - Authoritative 10-step intelligence loop)
+2. /api/copilot/simulate-shock (POST - Weather / demand shock simulations)
+3. /api/copilot/scenario (POST - Custom parameter slider simulations)
+4. /api/copilot/query (POST - Grounded conversational Q&A assistant)
+5. /api/copilot/model-health (GET - Technical ML accuracy & baseline comparisons)
 """
 
 from flask import Blueprint, jsonify, request
@@ -22,7 +21,6 @@ def get_copilot_insights():
     """
     household_id = request.args.get("household_id")
     
-    # If no household_id query param, attempt to resolve from auth token
     if not household_id:
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
@@ -67,4 +65,43 @@ def simulate_weather_shock():
         severity=severity,
         household_id=household_id
     )
+    return jsonify(res), 200
+
+@copilot_bp.route("/api/copilot/scenario", methods=["POST"])
+def simulate_custom_scenario():
+    """
+    Simulate custom scenario using arbitrary user parameter sliders.
+    """
+    data = request.get_json() or {}
+    solar_delta = float(data.get("solar_delta_percent", 0.0))
+    demand_delta = float(data.get("demand_delta_percent", 0.0))
+    battery_soc = float(data["battery_soc"]) if "battery_soc" in data and data["battery_soc"] is not None else None
+    household_id = data.get("household_id")
+
+    res = CopilotService.simulate_custom_scenario(
+        solar_delta_percent=solar_delta,
+        demand_delta_percent=demand_delta,
+        battery_soc=battery_soc,
+        household_id=household_id
+    )
+    return jsonify(res), 200
+
+@copilot_bp.route("/api/copilot/query", methods=["POST"])
+def answer_copilot_query():
+    """
+    Answer grounded conversational energy questions without LLM hallucination.
+    """
+    data = request.get_json() or {}
+    query = data.get("query", "")
+    household_id = data.get("household_id")
+
+    res = CopilotService.answer_copilot_query(query=query, household_id=household_id)
+    return jsonify(res), 200
+
+@copilot_bp.route("/api/copilot/model-health", methods=["GET"])
+def get_model_health():
+    """
+    Retrieve empirical model metrics, accuracy benchmarks, and baseline comparisons.
+    """
+    res = CopilotService.get_model_health_and_benchmarks()
     return jsonify(res), 200
