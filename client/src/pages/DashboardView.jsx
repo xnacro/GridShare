@@ -148,11 +148,11 @@ export default function DashboardView({ onOpenDemoModal }) {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. EXPANDED HERO SECTION WITH LEFTWARD FADING 3D MICROGRID */}
+      {/* 🌟 1. SEAMLESS HERO SECTION (Clean, Airy Typography with Fading 3D Microgrid) */}
       <div className="relative overflow-hidden rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs">
         
         {/* Background Expanded 3D Scene anchored to the right with smooth leftward fade */}
-        <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[62%] pointer-events-auto">
+        <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[60%] pointer-events-auto">
           <OverviewHero3D
             generation={totalGen}
             myHomeNet={4.7}
@@ -162,38 +162,43 @@ export default function DashboardView({ onOpenDemoModal }) {
           />
         </div>
 
-        {/* Foreground Content (Left side, layered over the gradient fade) */}
-        <div className="relative z-10 p-6 sm:p-8 lg:p-10 max-w-2xl pointer-events-auto space-y-4">
+        {/* Foreground Content: Refined, Non-Cluttered Editorial Typography */}
+        <div className="relative z-10 p-6 sm:p-8 lg:p-9 max-w-xl pointer-events-auto space-y-3.5">
           
-          {/* Category Tag */}
-          <div className="text-xs font-bold uppercase tracking-widest text-[#5E6963]">
-            COMMUNITY OVERVIEW
+          {/* Top Breadcrumb / Status */}
+          <div className="flex items-center space-x-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
+              COMMUNITY OVERVIEW
+            </span>
+            <span className="text-[#89938D]">•</span>
+            <span className="text-[11px] font-semibold text-[#1E9B68] bg-[#E8F6EE] px-2 py-0.5 rounded-full border border-[#1E9B68]/20">
+              Surplus Active
+            </span>
           </div>
 
-          {/* Clean Greeting */}
-          <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#17221D]">
+          {/* Clean, Friendly Greeting */}
+          <div className="text-sm sm:text-base font-semibold text-[#5E6963]">
             {greeting}, {userName} <span className="inline-block">👋</span>
-          </h2>
+          </div>
 
-          {/* Redesigned Punchy, Non-Cluttered Headline */}
-          <div className="space-y-1">
-            <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-[44px] tracking-tight text-[#17221D] leading-[1.15]">
+          {/* Balanced, Clean Headline (2 Natural Lines) */}
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#17221D] leading-tight tracking-tight">
               Your community has{' '}
-              <span className="text-[#1E9B68] font-black inline-flex items-center gap-1.5">
-                +{netCommunity.toFixed(1)} kW 🍃
-              </span>
-              <br />
+              <span className="text-[#1E9B68] font-extrabold whitespace-nowrap">
+                +{netCommunity.toFixed(1)} kW
+              </span>{' '}
               of clean energy available to share.
             </h1>
           </div>
 
-          {/* Minimal, Spaced Subtitle Note */}
-          <p className="text-xs sm:text-sm text-[#5E6963] font-medium max-w-md pt-1">
-            Real-time renewable generation, shared battery buffering, and peer matching.
+          {/* Minimal Subtitle */}
+          <p className="text-xs sm:text-sm text-[#5E6963] leading-relaxed max-w-md pt-0.5">
+            Intelligently balancing solar generation, shared storage, and peer trading.
           </p>
 
           {/* Action Row */}
-          <div className="flex items-center space-x-3 pt-3 flex-wrap gap-y-2">
+          <div className="flex items-center space-x-3 pt-2 flex-wrap gap-y-2">
             <button
               type="button"
               onClick={() => navigate('/ai')}
@@ -232,7 +237,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
             NET COMMUNITY BALANCE
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-black text-[#1E9B68] mt-0.5">
+          <div className="text-2xl sm:text-3xl font-extrabold text-[#1E9B68] mt-0.5">
             +{netCommunity.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#5E6963] font-medium mt-0.5">
@@ -245,7 +250,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
             TOTAL GENERATION
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-black text-[#17221D] mt-0.5">
+          <div className="text-2xl sm:text-3xl font-extrabold text-[#17221D] mt-0.5">
             {totalGen.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
@@ -259,7 +264,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
             TOTAL DEMAND
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-black text-[#17221D] mt-0.5">
+          <div className="text-2xl sm:text-3xl font-extrabold text-[#17221D] mt-0.5">
             {totalCon.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
@@ -273,7 +278,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
             BATTERY STATE
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-black text-[#1E9B68] mt-0.5">
+          <div className="text-2xl sm:text-3xl font-extrabold text-[#1E9B68] mt-0.5">
             {battery.soc.toFixed(0)}%
           </div>
           <div className="text-xs text-[#5E6963] font-medium mt-0.5">
@@ -338,7 +343,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="h-2 w-2 rounded-full bg-[#1E9B68]" />
-                <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
                   Live Microgrid Flow
                 </h3>
               </div>
@@ -406,7 +411,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="h-2 w-2 rounded-full bg-[#7358C7]" />
-                <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
                   Hornet AI — Next 15 Minutes
                 </h3>
               </div>
@@ -476,7 +481,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 ₹4.50 / kWh
               </span>
             </div>
-            <div className="font-display text-xs sm:text-sm font-bold text-[#12392B]">
+            <div className="text-xs sm:text-sm font-bold text-[#12392B]">
               {aiDecision.action_label || 'Trade 1.0 kWh locally (My Home → Eco House)'}
             </div>
             <p className="text-[11px] text-[#5E6963] leading-snug">
@@ -517,7 +522,7 @@ export default function DashboardView({ onOpenDemoModal }) {
         {/* Card 1: TODAY'S COMMUNITY IMPACT (4 cols ~ 33%) */}
         <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
           <div>
-            <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+            <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
               Today's Community Impact
             </h3>
             <p className="text-xs text-[#5E6963] mt-0.5">
@@ -530,7 +535,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5">
                 <FaIcon name="leaf" />
               </div>
-              <div className="font-display text-base sm:text-lg font-black text-[#17221D]">84%</div>
+              <div className="text-base sm:text-lg font-extrabold text-[#17221D]">84%</div>
               <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Renewable Self-Consumption</div>
             </div>
 
@@ -538,7 +543,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1.5">
                 <FaIcon name="users" />
               </div>
-              <div className="font-display text-base sm:text-lg font-black text-[#1E9B68]">2.0 kWh</div>
+              <div className="text-base sm:text-lg font-extrabold text-[#1E9B68]">2.0 kWh</div>
               <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Shared Locally</div>
             </div>
 
@@ -546,7 +551,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-8 h-8 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs mb-1.5">
                 <FaIcon name="rupee" />
               </div>
-              <div className="font-display text-base sm:text-lg font-black text-[#17221D]">₹4.48</div>
+              <div className="text-base sm:text-lg font-extrabold text-[#17221D]">₹4.48</div>
               <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Estimated Savings</div>
             </div>
 
@@ -554,7 +559,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-8 h-8 rounded-xl bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs mb-1.5">
                 <FaIcon name="shield" />
               </div>
-              <div className="font-display text-base sm:text-lg font-black text-[#17221D]">32%</div>
+              <div className="text-base sm:text-lg font-extrabold text-[#17221D]">32%</div>
               <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Peak Grid Strain Reduction</div>
             </div>
           </div>
@@ -564,7 +569,7 @@ export default function DashboardView({ onOpenDemoModal }) {
         <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-2.5">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+              <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
                 Recent Community Activity
               </h3>
               <p className="text-xs text-[#5E6963] mt-0.5">
@@ -618,7 +623,7 @@ export default function DashboardView({ onOpenDemoModal }) {
         {/* Card 3: QUICK ACTIONS (4 cols ~ 33%) */}
         <div className="lg:col-span-4 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 shadow-xs flex flex-col justify-between space-y-3">
           <div>
-            <h3 className="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
+            <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#17221D]">
               Quick Actions
             </h3>
             <p className="text-xs text-[#5E6963] mt-0.5">
