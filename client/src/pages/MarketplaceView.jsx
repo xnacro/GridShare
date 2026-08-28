@@ -177,11 +177,11 @@ export default function MarketplaceView() {
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. MINIMAL SPACIOUS HERO (Clean Heading, Direct Action, Full Width) */}
-      <div className="space-y-4 pt-2 select-none">
+      {/* 🌟 1. MINIMAL SPACIOUS CENTERED HERO */}
+      <div className="text-center max-w-4xl mx-auto space-y-4 pt-2 select-none">
         
         {/* Top Centered Clean Heading */}
-        <div className="text-center max-w-4xl mx-auto space-y-2">
+        <div className="space-y-2">
           <h1 className="font-changa text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-tight tracking-wide">
             Share clean energy with the{' '}
             <span className="text-[#1E9B68] whitespace-nowrap">neighbors who need it.</span>
@@ -191,30 +191,27 @@ export default function MarketplaceView() {
           </p>
         </div>
 
-        {/* Horizontal Action Bar: Flow Diagram on Left/Center + Premium Listing Button on Right */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1 border-b border-[rgba(23,34,29,0.06)] pb-4">
-          
-          {/* Left/Center: Clean Bilateral Energy Route Indicator */}
-          <div className="flex items-center space-x-2 text-xs text-[#5E6963] flex-wrap gap-y-1">
-            <span className="font-medium flex items-center gap-1 text-[#DDA12A] bg-[#FFF7E4] px-3 py-1.5 rounded-lg border border-[#DDA12A]/20">
-              <FaIcon name="solar" /> Rooftop Solar Surplus
-            </span>
-            <span className="text-[#1E9B68] font-bold text-xs hidden sm:inline">────( Local P2P @ ₹4.50/kWh )────→</span>
-            <span className="font-medium flex items-center gap-1 text-[#3C78CC] bg-[#EDF3FD] px-3 py-1.5 rounded-lg border border-[#3C78CC]/20">
-              <FaIcon name="home" /> Nearby Demand
-            </span>
-          </div>
+        {/* Centered Bilateral Energy Route Indicator */}
+        <div className="flex items-center justify-center space-x-2 text-xs text-[#5E6963] flex-wrap gap-y-2 pt-1">
+          <span className="font-medium flex items-center gap-1.5 text-[#DDA12A] bg-[#FFF7E4] px-3.5 py-1.5 rounded-lg border border-[#DDA12A]/20">
+            <FaIcon name="solar" /> Rooftop Solar Surplus
+          </span>
+          <span className="text-[#1E9B68] font-bold text-xs">────( Local P2P @ ₹4.50/kWh )────→</span>
+          <span className="font-medium flex items-center gap-1.5 text-[#3C78CC] bg-[#EDF3FD] px-3.5 py-1.5 rounded-lg border border-[#3C78CC]/20">
+            <FaIcon name="home" /> Nearby Demand
+          </span>
+        </div>
 
-          {/* Right: High-End Post Energy Listing CTA */}
+        {/* Centered High-End Post Energy Listing CTA */}
+        <div className="pt-2 flex justify-center">
           <button
             type="button"
             onClick={() => setIsCreateOfferOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-[#12392B] hover:bg-[#174A37] text-white text-xs sm:text-sm font-bold shadow-xs transition active:scale-98 flex items-center space-x-2 border border-[rgba(255,255,255,0.1)]"
+            className="px-6 py-2.5 rounded-xl bg-[#12392B] hover:bg-[#174A37] text-white text-xs sm:text-sm font-bold shadow-xs transition active:scale-98 flex items-center space-x-2 border border-[rgba(255,255,255,0.1)]"
           >
             <FaIcon name="plus" className="text-[#43CB8C]" />
             <span>Post Energy Listing</span>
           </button>
-
         </div>
 
       </div>
