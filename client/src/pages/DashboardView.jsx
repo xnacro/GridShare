@@ -148,10 +148,10 @@ export default function DashboardView({ onOpenDemoModal }) {
         <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[65%] pointer-events-auto">
           <OverviewHero3D
             generation={totalGen}
-            myHomeNet={4.7}
+            myHomeNet={computedHouseholds.find(h => h.id === household?.id)?.netEnergy ?? (household?.household_type === 'CONSUMER' ? -4.0 : 4.2)}
             batterySoc={battery.soc}
-            heavyLoadNet={-2.8}
-            gridExchange={-0.8}
+            heavyLoadNet={-3.4}
+            gridExchange={netCommunity < 0 ? netCommunity : -0.8}
           />
         </div>
 
@@ -167,11 +167,23 @@ export default function DashboardView({ onOpenDemoModal }) {
           {/* Main Headline in Crisp Changa One Typography */}
           <div className="space-y-1">
             <h1 className="font-changa text-3xl sm:text-4xl lg:text-[42px] font-normal text-[#17221D] leading-[1.18] tracking-wide">
-              Your community has{' '}
-              <span className="text-[#1E9B68] whitespace-nowrap">
-                +{netCommunity.toFixed(1)} kW
-              </span>{' '}
-              of clean energy available to share.
+              {netCommunity >= 0 ? (
+                <>
+                  Your community has{' '}
+                  <span className="text-[#1E9B68] whitespace-nowrap">
+                    +{netCommunity.toFixed(1)} kW
+                  </span>{' '}
+                  of clean energy available to share.
+                </>
+              ) : (
+                <>
+                  Your community has{' '}
+                  <span className="text-[#3C78CC] whitespace-nowrap">
+                    {Math.abs(netCommunity).toFixed(1)} kW
+                  </span>{' '}
+                  of active load drawing from microgrid & storage.
+                </>
+              )}
             </h1>
           </div>
 
@@ -215,11 +227,11 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-xs font-bold text-[#5E6963]">
             Net Community Balance
           </div>
-          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
-            +{netCommunity.toFixed(1)} kW
+          <div className={`font-changa text-2xl sm:text-3xl font-normal mt-0.5 ${netCommunity >= 0 ? 'text-[#1E9B68]' : 'text-[#3C78CC]'}`}>
+            {netCommunity >= 0 ? `+${netCommunity.toFixed(1)}` : `${netCommunity.toFixed(1)}`} kW
           </div>
           <div className="text-xs text-[#5E6963] font-medium mt-0.5">
-            Clean surplus
+            {netCommunity >= 0 ? 'Clean surplus' : 'Net community load'}
           </div>
         </div>
 

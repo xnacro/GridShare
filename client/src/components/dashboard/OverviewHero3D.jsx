@@ -58,12 +58,12 @@ export default function OverviewHero3D({
 
       {/* 🌟 3. Bottom-Left Floating Badge: My Home */}
       <div className="absolute bottom-8 left-8 sm:bottom-10 sm:left-12 flex items-center space-x-2.5 px-3.5 py-1.5 rounded-xl gs-glass-badge transition-transform hover:scale-105 z-10">
-        <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs flex-shrink-0">
+        <div className={`w-6 h-6 rounded-lg ${myHomeNet >= 0 ? 'bg-[#E8F6EE] text-[#1E9B68]' : 'bg-[#FCECEC] text-[#D45C5C]'} flex items-center justify-center text-xs flex-shrink-0`}>
           <FaIcon name="home" />
         </div>
         <div>
-          <div className="font-changa text-sm sm:text-base font-normal text-[#1E9B68] leading-tight">
-            +{myHomeNet.toFixed(1)} kW
+          <div className={`font-changa text-sm sm:text-base font-normal ${myHomeNet >= 0 ? 'text-[#1E9B68]' : 'text-[#D45C5C]'} leading-tight`}>
+            {myHomeNet >= 0 ? `+${myHomeNet.toFixed(1)}` : `${myHomeNet.toFixed(1)}`} kW
           </div>
           <div className="text-[9px] font-bold text-[#5E6963] uppercase tracking-wider leading-none">
             My Home
@@ -93,7 +93,7 @@ export default function OverviewHero3D({
         </div>
         <div>
           <div className="font-changa text-sm sm:text-base font-normal text-[#D45C5C] leading-tight">
-            {heavyLoadNet.toFixed(1)} kW
+            {heavyLoadNet >= 0 ? `+${heavyLoadNet.toFixed(1)}` : `${heavyLoadNet.toFixed(1)}`} kW
           </div>
           <div className="text-[9px] font-bold text-[#5E6963] uppercase tracking-wider leading-none">
             Heavy Load Home

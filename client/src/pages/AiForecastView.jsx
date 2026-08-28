@@ -128,7 +128,7 @@ export default function AiForecastView() {
         supportingFacts={[
           { label: 'Predicted Solar', value: `${aiForecast.predicted_solar_kw.toFixed(2)} kW`, icon: 'solar' },
           { label: 'Predicted Demand', value: `${aiForecast.predicted_demand_kw.toFixed(2)} kW`, icon: 'home' },
-          { label: 'Net Balance', value: `+${aiForecast.predicted_net_balance_kw.toFixed(2)} kW`, icon: 'network' },
+          { label: 'Net Balance', value: `${aiForecast.predicted_net_balance_kw >= 0 ? `+${aiForecast.predicted_net_balance_kw.toFixed(2)}` : aiForecast.predicted_net_balance_kw.toFixed(2)} kW`, icon: 'network' },
         ]}
         primaryAction={{
           label: 'Simulate Weather Shock',
@@ -190,11 +190,11 @@ export default function AiForecastView() {
 
         <HeroMetric
           label="Net Available Balance"
-          value={`+${aiForecast.predicted_net_balance_kw.toFixed(2)}`}
+          value={aiForecast.predicted_net_balance_kw >= 0 ? `+${aiForecast.predicted_net_balance_kw.toFixed(2)}` : `${aiForecast.predicted_net_balance_kw.toFixed(2)}`}
           unit="kW"
-          subtitle="Clean surplus to trade locally"
+          subtitle={aiForecast.predicted_net_balance_kw >= 0 ? "Clean surplus to trade locally" : "Predicted net demand load"}
           iconName="network"
-          variant="emerald"
+          variant={aiForecast.predicted_net_balance_kw >= 0 ? "emerald" : "default"}
         />
       </div>
 
