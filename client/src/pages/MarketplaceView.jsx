@@ -6,14 +6,10 @@ import {
   validatePurchaseOrder,
 } from '../services/marketEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
-import CompactSellCard from '../components/marketplace/CompactSellCard';
-import MarketplaceOrdersPanel from '../components/marketplace/MarketplaceOrdersPanel';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
-import TransactionLedger from '../components/marketplace/TransactionLedger';
-import MarketplaceTradeChart from '../components/marketplace/MarketplaceTradeChart';
 import MetricCard from '../components/ui/MetricCard';
 import Badge from '../components/ui/Badge';
-import Button, { IconButton } from '../components/ui/Button';
+import Button from '../components/ui/Button';
 import FaIcon from '../components/icons/FaIcon';
 
 export default function MarketplaceView() {
@@ -22,527 +18,334 @@ export default function MarketplaceView() {
   const [battery, setBattery] = useState(INITIAL_DEMO_STATE.battery);
   const [grid, setGrid] = useState(INITIAL_DEMO_STATE.grid);
 
-  const [orders, setOrders] = useState({
-    sellOrders: [
-      { id: 'GS-SELL-001', household_id: 'house_a', energy_kwh: 2.0, min_price_per_kwh: 7.0, remaining_kwh: 2.0, status: 'OPEN', created_at: '10:15' },
-      { id: 'GS-SELL-002', household_id: 'house_c', energy_kwh: 1.0, min_price_per_kwh: 6.5, remaining_kwh: 1.0, status: 'OPEN', created_at: '10:20' },
-    ],
-    buyOrders: [],
-  });
-
-  const [transactions, setTransactions] = useState([
-    { id: 'TXN-001', time: '10:00', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.0, pricePerKwh: 7.0, totalValue: 14.0, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' },
-    { id: 'TXN-002', time: '10:30', sellerId: 'HOUSE_C', buyerId: 'HOUSE_B', energyKwh: 1.2, pricePerKwh: 6.5, totalValue: 7.8, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' },
+  const [aiMatches, setAiMatches] = useState([
+    {
+      id: 'MATCH-001',
+      sellerId: 'house_a',
+      sellerName: 'House A (Solar Champion)',
+      surplusKwh: 2.8,
+      buyerId: 'house_b',
+      buyerName: 'House B (EV Charger)',
+      demandKwh: 2.8,
+      pricePerKwh: 4.5,
+      gridPrice: 6.1,
+      distanceMeters: 45,
+      circuit: 'Feeder Sub-branch A',
+      matchQuality: 98,
+      expectedSaving: 4.48,
+      status: 'READY_TO_SETTLE',
+    },
+    {
+      id: 'MATCH-002',
+      sellerId: 'house_c',
+      sellerName: 'House C (Prosumer)',
+      surplusKwh: 1.5,
+      buyerId: 'house_d',
+      buyerName: 'House D (Smart Apartment)',
+      demandKwh: 1.5,
+      pricePerKwh: 4.8,
+      gridPrice: 6.1,
+      distanceMeters: 80,
+      circuit: 'Feeder Sub-branch B',
+      matchQuality: 94,
+      expectedSaving: 1.95,
+      status: 'READY_TO_SETTLE',
+    },
   ]);
 
-  const [activeBuyerId, setActiveBuyerId] = useState('house_b');
-  const [selectedNode, setSelectedNode] = useState('house_a');
-  const [activeFlows, setActiveFlows] = useState([]);
-  const [statusMessage, setStatusMessage] = useState('');
-  const [tradeStep, setTradeStep] = useState(0); // 0: Idle, 1: Selected, 2: Confirmed, 3: Settled, 4: Transferred, 5: Completed
+  const [transactions, setTransactions] = useState([
+    { id: 'TXN-001', time: '10:00', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' },
+    { id: 'TXN-002', time: '10:30', sellerId: 'HOUSE_C', buyerId: 'HOUSE_D', energyKwh: 1.2, pricePerKwh: 4.8, totalValue: 5.76, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' },
+  ]);
 
-  // Purchase Modal State
   const [activePurchase, setActivePurchase] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isSettling, setIsSettling] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [activeFlows, setActiveFlows] = useState([]);
 
   const sceneRef = useRef();
 
-  // Compute live household balances & wallets
   const computedHouseholds = useMemo(() => {
-    return computeHouseholdStates(households, orders.sellOrders, orders.buyOrders, transactions);
-  }, [households, orders, transactions]);
+    return computeHouseholdStates(households, [], [], transactions);
+  }, [households, transactions]);
 
-  // Market KPIs Calculation
-  const openSellOrders = (orders.sellOrders || []).filter(
-    (o) => o.status === 'OPEN' || o.status === 'PARTIALLY_FILLED' || o.status === 'AVAILABLE'
-  );
-  const totalAvailableEnergy = openSellOrders.reduce((sum, o) => sum + (o.remaining_kwh || 0), 0);
   const totalEnergyTraded = transactions.reduce((sum, t) => sum + (t.energyKwh || 0), 0);
   const totalTradeValue = transactions.reduce((sum, t) => sum + (t.totalValue || 0), 0);
+  const totalHeadroom = aiMatches.reduce((sum, m) => sum + m.surplusKwh, 0);
 
-  const prices = openSellOrders.map((o) => o.min_price_per_kwh);
-  const lowestPrice = prices.length > 0 ? Math.min(...prices) : 6.0;
-  const highestPrice = prices.length > 0 ? Math.max(...prices) : 7.0;
-  const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 6.75;
-
-  // 1. Seller lists energy
-  const handleCreateSellListing = ({ householdId, energyKwh, pricePerKwh }) => {
-    const errors = validateSellOrder({ householdId, energyKwh, pricePerKwh }, computedHouseholds);
-    if (errors) {
-      setStatusMessage(`⚠️ Cannot list energy: ${Object.values(errors).join(', ')}`);
-      return;
-    }
-
-    const newOrder = {
-      id: `GS-SELL-${String(orders.sellOrders.length + 1).padStart(3, '0')}`,
-      household_id: householdId,
-      energy_kwh: Number(energyKwh),
-      min_price_per_kwh: Number(pricePerKwh),
-      remaining_kwh: Number(energyKwh),
-      status: 'OPEN',
-      created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setOrders((prev) => ({
-      ...prev,
-      sellOrders: [newOrder, ...prev.sellOrders],
-    }));
-
-    setStatusMessage(`✅ Order ${newOrder.id} Created: ${householdId.toUpperCase()} listed ${energyKwh} kWh @ ₹${Number(pricePerKwh).toFixed(2)}/kWh.`);
-    setSelectedNode(householdId);
-  };
-
-  // 2. Cancel an open listing
-  const handleCancelListing = (orderId) => {
-    setOrders((prev) => ({
-      ...prev,
-      sellOrders: prev.sellOrders.map((o) =>
-        o.id === orderId ? { ...o, status: 'CANCELLED', remaining_kwh: 0 } : o
-      ),
-    }));
-    setStatusMessage(`Order ${orderId} has been cancelled. Reserved energy returned to seller.`);
-  };
-
-  // 3. Initiate purchase from Marketplace
-  const handleInitiatePurchase = ({ buyerId, sellOrder, quantityKwh }) => {
-    const errors = validatePurchaseOrder({ buyerId, sellOrder, quantityKwh }, computedHouseholds);
-    if (errors) {
-      setStatusMessage(`⚠️ Cannot purchase: ${Object.values(errors).join(', ')}`);
-      return;
-    }
-
+  const handleSettleAiMatch = (match) => {
     setActivePurchase({
-      buyerId,
-      sellOrder,
-      quantityKwh: Number(quantityKwh) || sellOrder.remaining_kwh,
+      buyerId: match.buyerId,
+      sellOrder: {
+        id: match.id,
+        household_id: match.sellerId,
+        min_price_per_kwh: match.pricePerKwh,
+        remaining_kwh: match.surplusKwh,
+      },
+      quantityKwh: match.surplusKwh,
     });
-    setTradeStep(1); // 1. Order Selected
     setIsConfirmModalOpen(true);
   };
 
-  // 4. Confirm purchase settlement & 3D transfer
-  const handleConfirmPurchase = async () => {
+  const handleConfirmTrade = () => {
     if (!activePurchase) return;
-    setIsSettling(true);
-    setTradeStep(2); // 2. Buyer Confirmed
-
-    const { buyerId, sellOrder, quantityKwh } = activePurchase;
-    const sellerId = sellOrder.household_id;
-    const unitPrice = sellOrder.min_price_per_kwh;
-    const qty = Number(quantityKwh) || sellOrder.remaining_kwh;
-    const totalAmount = Math.round(qty * unitPrice * 100) / 100;
-
-    // Settle wallets & energy balances
-    setHouseholds((prev) =>
-      prev.map((h) => {
-        if (h.id === sellerId) {
-          return {
-            ...h,
-            wallet: Math.round((h.wallet + totalAmount) * 100) / 100,
-            moneyEarned: Math.round((h.moneyEarned + totalAmount) * 100) / 100,
-            soldKwh: Math.round((h.soldKwh + qty) * 100) / 100,
-          };
-        }
-        if (h.id === buyerId) {
-          return {
-            ...h,
-            wallet: Math.round((h.wallet - totalAmount) * 100) / 100,
-            moneySpent: Math.round((h.moneySpent + totalAmount) * 100) / 100,
-            boughtKwh: Math.round((h.boughtKwh + qty) * 100) / 100,
-          };
-        }
-        return h;
-      })
-    );
-
-    // Update order status
-    setOrders((prev) => {
-      const updated = prev.sellOrders.map((o) => {
-        if (o.id === sellOrder.id) {
-          const remaining = Math.max(0, Math.round((o.remaining_kwh - qty) * 100) / 100);
-          return {
-            ...o,
-            remaining_kwh: remaining,
-            status: remaining <= 0.001 ? 'COMPLETED' : 'PARTIALLY_FILLED',
-          };
-        }
-        return o;
-      });
-      return { ...prev, sellOrders: updated };
-    });
-
-    // Create new transaction
-    const newTxId = `TXN-${String(transactions.length + 1).padStart(3, '0')}`;
-    const newTx = {
-      id: newTxId,
+    const newTxn = {
+      id: `TXN-00${transactions.length + 1}`,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      sellerId: sellerId.toUpperCase(),
-      buyerId: buyerId.toUpperCase(),
-      energyKwh: qty,
-      pricePerKwh: unitPrice,
-      totalValue: totalAmount,
+      sellerId: activePurchase.sellOrder.household_id.toUpperCase(),
+      buyerId: activePurchase.buyerId.toUpperCase(),
+      energyKwh: activePurchase.quantityKwh,
+      pricePerKwh: activePurchase.sellOrder.min_price_per_kwh,
+      totalValue: activePurchase.quantityKwh * activePurchase.sellOrder.min_price_per_kwh,
       paymentStatus: 'SETTLED',
       energyFlowStatus: 'TRANSFERRED',
       status: 'COMPLETED',
     };
-    setTransactions((prev) => [newTx, ...prev]);
 
-    // Animate 3D Energy & Money Particles
-    const sellerPos = MARKET_3D_POSITIONS[sellerId] || [-4.2, 0, 1.2];
-    const buyerPos = MARKET_3D_POSITIONS[buyerId] || [0.2, 0, 2.2];
-
-    const energyFlow = {
-      id: `flow-p2p-${Date.now()}`,
-      start: sellerPos,
-      end: buyerPos,
-      kw: qty,
-      type: 'ENERGY',
-      color: '#059669',
-      label: `P2P Transfer: ${qty.toFixed(1)} kWh`,
-      isActive: true,
-    };
-
-    const moneyFlow = {
-      id: `flow-money-${Date.now()}`,
-      start: buyerPos,
-      end: sellerPos,
-      amountInr: totalAmount,
-      type: 'MONEY',
-      color: '#d97706',
-      label: `Payment: ₹${totalAmount.toFixed(2)}`,
-      isActive: true,
-    };
-
-    setActiveFlows([energyFlow, moneyFlow]);
-    setTradeStep(3); // 3. Payment Settled
-
-    setTimeout(() => {
-      setTradeStep(4); // 4. Energy Transferred
-      setTimeout(() => {
-        setTradeStep(5); // 5. Trade Completed
-        setStatusMessage(`🎉 Trade ${newTxId} Completed! ${buyerId.toUpperCase()} bought ${qty} kWh from ${sellerId.toUpperCase()} for ₹${totalAmount.toFixed(2)}.`);
-      }, 700);
-    }, 700);
-
-    setIsSettling(false);
+    setTransactions((prev) => [newTxn, ...prev]);
+    setAiMatches((prev) => prev.filter((m) => m.id !== activePurchase.sellOrder.id));
     setIsConfirmModalOpen(false);
-    setActivePurchase(null);
+    setStatusMessage(`AI Match settled: ${newTxn.energyKwh} kWh transferred from ${newTxn.sellerId} to ${newTxn.buyerId} @ ₹${newTxn.pricePerKwh}/kWh.`);
+    setTimeout(() => setStatusMessage(''), 5000);
   };
-
-  // 5. Load Demo Market State
-  const handleLoadDemoMarket = () => {
-    setHouseholds([
-      { id: 'house_a', name: 'House A', type: 'Solar Prosumer', generation: 6.8, consumption: 2.1, wallet: 64, soldKwh: 2.0, boughtKwh: 0, moneyEarned: 14, moneySpent: 0, hasSolar: true },
-      { id: 'house_b', name: 'House B', type: 'EV Consumer', generation: 1.2, consumption: 4.0, wallet: 50, soldKwh: 0, boughtKwh: 0, moneyEarned: 0, moneySpent: 0, hasSolar: false },
-      { id: 'house_c', name: 'House C', type: 'Prosumer Villa', generation: 3.5, consumption: 2.2, wallet: 75, soldKwh: 1.0, boughtKwh: 0, moneyEarned: 6.5, moneySpent: 0, hasSolar: true },
-    ]);
-    setOrders({
-      sellOrders: [
-        { id: 'GS-SELL-001', household_id: 'house_a', energy_kwh: 2.0, min_price_per_kwh: 7.0, remaining_kwh: 2.0, status: 'OPEN', created_at: '10:15' },
-        { id: 'GS-SELL-002', household_id: 'house_c', energy_kwh: 1.0, min_price_per_kwh: 6.5, remaining_kwh: 1.0, status: 'OPEN', created_at: '10:20' },
-      ],
-      buyOrders: [],
-    });
-    setActiveBuyerId('house_b');
-    setSelectedNode('house_a');
-    setTradeStep(0);
-    setActiveFlows([]);
-    setStatusMessage('Demo Market Loaded: House A listed 2.0 kWh @ ₹7.0, House C listed 1.0 kWh @ ₹6.5. Select House B to purchase.');
-  };
-
-  // 6. Reset Market
-  const handleResetMarket = () => {
-    setHouseholds(INITIAL_DEMO_STATE.households);
-    setBattery(INITIAL_DEMO_STATE.battery);
-    setGrid(INITIAL_DEMO_STATE.grid);
-    setOrders({ sellOrders: [], buyOrders: [] });
-    setTransactions([]);
-    setActiveFlows([]);
-    setTradeStep(0);
-    setStatusMessage('Marketplace state reset to initial zero baseline.');
-    if (sceneRef.current) sceneRef.current.resetCamera();
-  };
-
-  const selectedHousehold = computedHouseholds.find((h) => h.id === selectedNode) || computedHouseholds[0];
-  const activeBuyer = computedHouseholds.find((h) => h.id === activePurchase?.buyerId) || computedHouseholds[1];
-  const activeSeller = computedHouseholds.find((h) => h.id === activePurchase?.sellOrder?.household_id) || computedHouseholds[0];
 
   return (
-    <div className="space-y-4 max-w-[1680px] mx-auto pb-6 select-none">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
-        <div className="flex items-center space-x-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-blue-400 shadow-md">
-            <FaIcon name="marketplace" className="text-lg" />
+    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <div>
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102019] tracking-tight">
+              AI-Matched P2P Energy Exchange
+            </h1>
+            <Badge variant="ai" size="sm">
+              Autonomous Clearing
+            </Badge>
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900">Peer-to-Peer Energy Marketplace</h2>
-              <Badge variant="surplus" size="xs">
-                {openSellOrders.length} Listings Active
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-500 font-normal">
-              Continuous double-auction exchange allowing prosumers to sell excess clean solar to neighbors.
-            </p>
-          </div>
+          <p className="text-sm text-[#5D6B64] font-medium mt-1">
+            Proximity-weighted bilateral peer matching with transparent midpoint pricing and settlement.
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
           <Button
             variant="primary"
             size="sm"
-            onClick={handleLoadDemoMarket}
+            onClick={() => {
+              if (aiMatches.length > 0) handleSettleAiMatch(aiMatches[0]);
+            }}
             icon={<FaIcon name="sparkles" />}
           >
-            Load Market Demo
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleResetMarket}
-            icon={<FaIcon name="refresh" />}
-          >
-            Reset
+            Clear Top AI Match
           </Button>
         </div>
       </div>
 
-      {/* 🌟 1. SECOND ROW: MARKETPLACE KPI CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <MetricCard
-          title="Active Listings"
-          value={openSellOrders.length}
-          subtitle="Orders in Book"
-          iconName="marketplace"
-          variant="ai"
-        />
-
-        <MetricCard
-          title="Available Energy"
-          value={totalAvailableEnergy.toFixed(1)}
-          unit="kWh"
-          subtitle="Ready to Route"
-          iconName="solar"
-          variant="surplus"
-        />
-
-        <MetricCard
-          title="Trades Executed"
-          value={transactions.length}
-          subtitle="100% Cleared"
-          iconName="checkCircle"
-          variant="surplus"
-        />
-
-        <MetricCard
-          title="Energy Traded"
-          value={totalEnergyTraded.toFixed(1)}
-          unit="kWh"
-          subtitle="Cumulative P2P"
-          iconName="trendingUp"
-          variant="default"
-        />
-
-        <MetricCard
-          title="Trade Value"
-          value={`₹${totalTradeValue.toFixed(2)}`}
-          subtitle="Simulated INR"
-          iconName="rupee"
-          variant="ai"
-        />
-
-        <MetricCard
-          title="Price Spread"
-          value={`₹${lowestPrice.toFixed(1)} - ₹${highestPrice.toFixed(1)}`}
-          subtitle={`Avg: ₹${avgPrice.toFixed(1)}/kWh`}
-          iconName="tag"
-          variant="default"
-        />
-      </div>
-
-      {/* Dynamic Status / Narrative Banner */}
+      {/* Dynamic Status Notification */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs text-emerald-950 shadow-2xs">
-          <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-semibold">{statusMessage}</span>
-          </div>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-emerald-700 hover:text-emerald-950 font-bold text-xs p-0.5">
+        <div className="flex items-center justify-between rounded-xl border border-[#DDE5E0] bg-[#E7F5EE] px-4 py-3 text-sm text-[#163A2B] font-bold shadow-subtle animate-in fade-in">
+          <span>{statusMessage}</span>
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#168A5A] text-xs font-bold p-1">
             ✕
           </button>
         </div>
       )}
 
-      {/* 🌟 2. MAIN 3-COLUMN WORKSPACE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-        {/* LEFT COLUMN: Seller Panel & Wallet Summary (~22%) */}
-        <div className="lg:col-span-3 space-y-3">
-          {/* Sell Energy Form Card */}
-          <CompactSellCard
-            computedHouseholds={computedHouseholds}
-            onCreateSellListing={handleCreateSellListing}
-          />
+      {/* 🌟 1. PRIMARY MARKETPLACE METRIC CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <MetricCard
+          title="Traded Volume"
+          value={`${totalEnergyTraded.toFixed(1)} kWh`}
+          subtitle="Total peer energy settled"
+          iconName="energy"
+          variant="surplus"
+          delta="100% clean solar"
+          deltaType="positive"
+        />
 
-          {/* Selected Household Wallet & Trading Profile */}
-          <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-card space-y-2 text-xs">
-            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-              <span className="font-extrabold text-[11px] text-slate-900">
-                {selectedHousehold.name} Wallet Profile
-              </span>
-              <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9px] font-bold text-slate-700">
-                {selectedHousehold.type}
-              </span>
-            </div>
+        <MetricCard
+          title="Average P2P Tariff"
+          value="₹4.65"
+          unit="/ kWh"
+          subtitle="vs ₹6.10 grid peak import"
+          iconName="trade"
+          variant="ai"
+          delta="Save ₹1.45/kWh"
+          deltaType="positive"
+        />
 
-            <div className="grid grid-cols-2 gap-1.5 text-[10.5px] font-mono">
-              <div className="rounded bg-slate-50 p-1.5">
-                <span className="text-[9px] text-slate-500 uppercase block">Balance</span>
-                <span className="font-extrabold text-slate-900 text-sm">₹{selectedHousehold.wallet?.toFixed(0) || 0}</span>
-              </div>
-              <div className="rounded bg-emerald-50/50 p-1.5 border border-emerald-100">
-                <span className="text-[9px] text-emerald-800 uppercase block">Earned</span>
-                <span className="font-extrabold text-emerald-800 text-sm">+₹{selectedHousehold.moneyEarned?.toFixed(0) || 0}</span>
-              </div>
-              <div className="rounded bg-blue-50/50 p-1.5 border border-blue-100">
-                <span className="text-[9px] text-blue-800 uppercase block">Energy Sold</span>
-                <span className="font-extrabold text-blue-900">{selectedHousehold.soldKwh?.toFixed(1) || 0} kWh</span>
-              </div>
-              <div className="rounded bg-purple-50/50 p-1.5 border border-purple-100">
-                <span className="text-[9px] text-purple-800 uppercase block">Energy Bought</span>
-                <span className="font-extrabold text-purple-900">{selectedHousehold.boughtKwh?.toFixed(1) || 0} kWh</span>
-              </div>
-            </div>
+        <MetricCard
+          title="Total Community Value"
+          value={`₹${totalTradeValue.toFixed(2)}`}
+          subtitle="Bilateral settled earnings"
+          iconName="rupee"
+          variant="default"
+          delta="Instant clearing"
+          deltaType="positive"
+        />
+
+        <MetricCard
+          title="Available Headroom"
+          value={`${totalHeadroom.toFixed(1)} kWh`}
+          subtitle="Active prosumer listings"
+          iconName="solar"
+          variant="solar"
+          badge="READY"
+        />
+      </div>
+
+      {/* 🌟 2. PRIMARY CONCEPT: AI MATCH CARDS */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-[#102019]">
+              Algorithmic Proximity Matches
+            </h2>
+            <p className="text-xs sm:text-[13px] text-[#5D6B64]">
+              AI pairs local prosumer generation with neighboring demand on the same distribution feeder
+            </p>
           </div>
+          <Badge variant="ai" size="xs">
+            {aiMatches.length} Recommended Matches
+          </Badge>
         </div>
 
-        {/* CENTER COLUMN: 3D P2P Energy Marketplace (~58%) */}
-        <div className="lg:col-span-6 xl:col-span-6">
-          <div className="flex flex-col h-full rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-card space-y-2">
-            {/* 3D Header Bar & Camera Controls */}
-            <div className="flex items-center justify-between px-1 text-xs">
-              <div className="flex items-center space-x-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-extrabold text-[11px] uppercase tracking-wide text-slate-900">
-                  3D Virtual P2P Marketplace Twin
-                </span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {aiMatches.map((match) => (
+            <div
+              key={match.id}
+              className="rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card hover:shadow-elevated transition duration-200 space-y-4"
+            >
+              {/* Header Match Quality */}
+              <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-xl bg-[#F0EBFF] text-[#7657D8] flex items-center justify-center text-sm font-bold">
+                    <FaIcon name="sparkles" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-bold text-[#102019]">
+                      {match.matchQuality}% Proximity AI Match
+                    </span>
+                    <div className="text-[11px] text-[#83908A]">{match.circuit} • {match.distanceMeters}m distance</div>
+                  </div>
+                </div>
+                <Badge variant="surplus" size="xs">
+                  Save ₹{match.expectedSaving.toFixed(2)}
+                </Badge>
               </div>
 
-              <div className="flex items-center space-x-1 text-[10px] font-semibold">
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.resetCamera()}
-                  className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition"
-                  title="Default Perspective"
-                >
-                  <FaIcon name="camera" className="mr-1 text-slate-500 text-xs" />
-                  Reset View
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.topView()}
-                  className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
-                  title="Top-Down Overhead Angle"
-                >
-                  Top View
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.marketView()}
-                  className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
-                  title="Market Arena Angle"
-                >
-                  Market View
-                </button>
-              </div>
-            </div>
+              {/* Bilateral Peer Transfer Diagram */}
+              <div className="grid grid-cols-3 items-center gap-2 text-center p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+                {/* Seller Node */}
+                <div className="space-y-1">
+                  <div className="w-8 h-8 mx-auto rounded-xl bg-[#FFF4D8] text-[#E8A72B] flex items-center justify-center text-sm">
+                    <FaIcon name="solar" />
+                  </div>
+                  <div className="text-xs font-bold text-[#102019] truncate">{match.sellerName.split(' ')[0]}</div>
+                  <div className="text-[11px] font-mono font-bold text-[#168A5A]">+{match.surplusKwh} kWh</div>
+                </div>
 
-            {/* Live 3D Trade Execution Status Bar */}
-            {tradeStep > 0 && (
-              <div className="flex items-center justify-between rounded-lg bg-purple-50/90 border border-purple-200 px-2.5 py-1 text-[10px] font-bold text-purple-950 animate-in fade-in duration-150">
-                <span className="flex items-center space-x-1">
-                  <FaIcon name="sparkles" className="text-purple-600 text-xs" />
-                  <span>Trade Lifecycle:</span>
-                </span>
-                <div className="flex items-center space-x-2 text-[9.5px]">
-                  <span className={tradeStep >= 1 ? 'text-emerald-700 font-extrabold' : 'text-slate-400'}>1. Selected ✓</span>
-                  <span className={tradeStep >= 2 ? 'text-emerald-700 font-extrabold' : 'text-slate-400'}>2. Confirmed ✓</span>
-                  <span className={tradeStep >= 3 ? 'text-emerald-700 font-extrabold' : 'text-slate-400'}>3. Settled ✓</span>
-                  <span className={tradeStep >= 4 ? 'text-emerald-700 font-extrabold' : 'text-slate-400'}>4. Transfer ⚡</span>
-                  <span className={tradeStep >= 5 ? 'text-emerald-700 font-extrabold' : 'text-slate-400'}>5. Completed 🎉</span>
+                {/* Flow Arrow & Tariff */}
+                <div className="space-y-1">
+                  <div className="text-xs font-extrabold text-[#7657D8]">₹{match.pricePerKwh.toFixed(2)}</div>
+                  <div className="flex items-center justify-center space-x-1 text-[#168A5A]">
+                    <div className="h-0.5 w-6 bg-[#168A5A]" />
+                    <FaIcon name="arrowRight" className="text-xs" />
+                  </div>
+                  <div className="text-[10px] text-[#83908A]">vs ₹{match.gridPrice} Grid</div>
+                </div>
+
+                {/* Buyer Node */}
+                <div className="space-y-1">
+                  <div className="w-8 h-8 mx-auto rounded-xl bg-[#EAF2FF] text-[#3678D4] flex items-center justify-center text-sm">
+                    <FaIcon name="home" />
+                  </div>
+                  <div className="text-xs font-bold text-[#102019] truncate">{match.buyerName.split(' ')[0]}</div>
+                  <div className="text-[11px] font-mono font-bold text-[#D95C5C]">-{match.demandKwh} kWh</div>
                 </div>
               </div>
-            )}
 
-            {/* 3D Canvas */}
-            <div className="h-[460px] xl:h-[490px] w-full relative rounded-xl overflow-hidden">
-              <MarketplaceScene3D
-                ref={sceneRef}
-                households={computedHouseholds}
-                battery={battery}
-                grid={grid}
-                orders={orders}
-                activeFlows={activeFlows}
-                isMatching={false}
-                selectedNode={selectedNode}
-                onSelectNode={(nodeId) => {
-                  setSelectedNode(nodeId);
-                  if (nodeId === 'house_b') setActiveBuyerId('house_b');
-                }}
-                isModalOpen={isConfirmModalOpen}
-              />
-
-              {/* Floating micro status badge */}
-              <div className="absolute top-2.5 left-2.5 pointer-events-none">
-                <div className="flex items-center space-x-1.5 rounded-full border border-slate-200 bg-white/95 px-2.5 py-0.5 shadow-2xs backdrop-blur-md">
-                  <span className={`h-1.5 w-1.5 rounded-full ${activeFlows.length > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-purple-500'}`} />
-                  <span className="text-[10px] font-bold text-slate-800">
-                    {activeFlows.length > 0 ? 'P2P Transfer Active • 3D Spline Flow' : 'Interactive Market Arena • Click Node'}
-                  </span>
-                </div>
+              {/* Action Button */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs text-[#5D6B64]">
+                  Total Value: <strong className="text-[#102019] font-mono">₹{(match.surplusKwh * match.pricePerKwh).toFixed(2)}</strong>
+                </span>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => handleSettleAiMatch(match)}
+                  icon={<FaIcon name="trade" />}
+                >
+                  Settle Match
+                </Button>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Available Orders & Buyer Panel (~20%) */}
-        <div className="lg:col-span-3 xl:col-span-3">
-          <MarketplaceOrdersPanel
-            computedHouseholds={computedHouseholds}
-            sellOrders={orders.sellOrders}
-            onInitiatePurchase={handleInitiatePurchase}
-            onCancelListing={handleCancelListing}
-            activeBuyerId={activeBuyerId}
-            onChangeActiveBuyer={setActiveBuyerId}
-          />
+          ))}
         </div>
       </div>
 
-      {/* 🌟 3. BOTTOM ROW: TRADE CHARTS & LIVE LEDGER */}
-      <MarketplaceTradeChart transactions={transactions} />
+      {/* 🌟 3. RECENT SETTLED P2P TRANSACTIONS LEDGER */}
+      <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 sm:p-6 shadow-card space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+          <div>
+            <h3 className="text-base sm:text-lg font-bold text-[#102019]">
+              Settlement Ledger & Transaction Audit
+            </h3>
+            <p className="text-xs text-[#5D6B64]">
+              Immutable bilateral trade confirmations verified on the community microgrid bus
+            </p>
+          </div>
+          <Badge variant="surplus" size="xs">
+            {transactions.length} Transactions Settled
+          </Badge>
+        </div>
 
-      <TransactionLedger
-        transactions={transactions}
-        computedHouseholds={computedHouseholds}
-        battery={battery}
-      />
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-[#DDE5E0] bg-[#F5F7F6] text-[11px] font-bold uppercase tracking-wider text-[#5D6B64]">
+                <th className="px-3.5 py-2.5">TX ID</th>
+                <th className="px-3.5 py-2.5">Time</th>
+                <th className="px-3.5 py-2.5">Seller (Prosumer)</th>
+                <th className="px-3.5 py-2.5">Buyer (Consumer)</th>
+                <th className="px-3.5 py-2.5 text-right">Energy (kWh)</th>
+                <th className="px-3.5 py-2.5 text-right">Tariff (₹/kWh)</th>
+                <th className="px-3.5 py-2.5 text-right">Total Settlement</th>
+                <th className="px-3.5 py-2.5 text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#F5F7F6] font-mono text-[12px]">
+              {transactions.map((tx) => (
+                <tr key={tx.id} className="hover:bg-[#FBFCFB] transition">
+                  <td className="px-3.5 py-3 font-bold text-[#102019]">{tx.id}</td>
+                  <td className="px-3.5 py-3 text-[#5D6B64] font-sans">{tx.time}</td>
+                  <td className="px-3.5 py-3 font-sans font-semibold text-[#168A5A]">{tx.sellerId}</td>
+                  <td className="px-3.5 py-3 font-sans font-semibold text-[#3678D4]">{tx.buyerId}</td>
+                  <td className="px-3.5 py-3 text-right font-bold text-[#102019]">{tx.energyKwh.toFixed(1)}</td>
+                  <td className="px-3.5 py-3 text-right font-bold text-[#7657D8]">₹{tx.pricePerKwh.toFixed(2)}</td>
+                  <td className="px-3.5 py-3 text-right font-extrabold text-[#168A5A]">₹{tx.totalValue.toFixed(2)}</td>
+                  <td className="px-3.5 py-3 text-right font-sans">
+                    <Badge variant="surplus" size="xs">
+                      SETTLED ✓
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      {/* Purchase Confirmation Modal */}
-      <TradeConfirmationModal
-        purchase={activePurchase}
-        isOpen={isConfirmModalOpen}
-        onConfirm={handleConfirmPurchase}
-        onCancel={() => {
-          setIsConfirmModalOpen(false);
-          setActivePurchase(null);
-          setTradeStep(0);
-        }}
-        isSettling={isSettling}
-        buyerHousehold={activeBuyer}
-        sellerHousehold={activeSeller}
-      />
+      {/* Confirmation Modal */}
+      {isConfirmModalOpen && (
+        <TradeConfirmationModal
+          isOpen={isConfirmModalOpen}
+          onClose={() => setIsConfirmModalOpen(false)}
+          purchaseDetails={activePurchase}
+          onConfirmTrade={handleConfirmTrade}
+        />
+      )}
     </div>
   );
 }

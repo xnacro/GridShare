@@ -1,76 +1,67 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
-import InteractiveBatteryTwin3D, { BATTERY_VIEW_POSITIONS } from '../components/battery/InteractiveBatteryTwin3D';
+import React, { useState, useRef, useMemo } from 'react';
+import InteractiveBatteryTwin3D from '../components/battery/InteractiveBatteryTwin3D';
 import MetricCard from '../components/ui/MetricCard';
 import Badge from '../components/ui/Badge';
-import Button, { IconButton } from '../components/ui/Button';
+import Button from '../components/ui/Button';
 import FaIcon from '../components/icons/FaIcon';
 
 export default function BatteryView() {
   // Battery State (Single Source of Truth)
   const [battery, setBattery] = useState({
     soc: 60,
-    capacity: 20.0,
-    storedKwh: 12.0,
+    capacity: 50.0,
+    storedKwh: 30.0,
     minSoc: 10,
     maxSoc: 100,
-    reserveKwh: 2.0,
-    maxChargePower: 5.0,
-    maxDischargePower: 5.0,
-    efficiency: 92, // 92% roundtrip efficiency
+    reserveKwh: 5.0,
+    maxChargePower: 10.0,
+    maxDischargePower: 10.0,
+    efficiency: 94,
     health: 98,
-    cycleCount: 124,
-    tempC: 28.0,
+    cycleCount: 142,
+    tempC: 27.5,
     voltage: 400.0,
-    current: 0.0,
   });
 
-  const [households, setHouseholds] = useState([
+  const households = [
     { id: 'house_a', name: 'House A (Solar Champion)', generation: 6.8, consumption: 2.1, surplus: 4.7 },
     { id: 'house_b', name: 'House B (EV Consumer)', generation: 1.2, consumption: 4.0, surplus: 0.0, deficit: 2.8 },
     { id: 'house_c', name: 'House C (Prosumer Villa)', generation: 3.5, consumption: 2.2, surplus: 1.3 },
-  ]);
+  ];
 
-  // Operational State
-  const [status, setStatus] = useState('IDLE'); // 'IDLE', 'PREPARING', 'CHARGING', 'DISCHARGING', 'FULL', 'EMPTY'
+  const [status, setStatus] = useState('IDLE');
   const [activeFlow, setActiveFlow] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [selectedModule, setSelectedModule] = useState(null);
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-  // Charge Form
-  const [chargeSource, setChargeSource] = useState('house_a');
-  const [chargeAmount, setChargeAmount] = useState(1.5);
-  const [chargePower, setChargePower] = useState(1.5);
+  // Quick Charge/Discharge controls
+  const [chargeAmount, setChargeAmount] = useState(2.0);
+  const [dischargeAmount, setDischargeAmount] = useState(2.0);
 
-  // Discharge Form
-  const [dischargeDest, setDischargeDest] = useState('house_b');
-  const [dischargeAmount, setDischargeAmount] = useState(1.5);
-  const [dischargePower, setDischargePower] = useState(1.5);
-
-  // Battery Activity Ledger
+  // History Ledger
   const [history, setHistory] = useState([
     {
       id: 'ACT-001',
-      time: '10:15',
+      time: '11:15',
       action: 'CHARGE',
       source: 'House A (Solar)',
-      dest: 'Community ESS',
-      energyKwh: 1.5,
-      usableKwh: 1.38,
-      lossKwh: 0.12,
-      socBefore: 53,
+      dest: 'Central ESS',
+      energyKwh: 2.0,
+      usableKwh: 1.88,
+      socBefore: 56,
       socAfter: 60,
       status: 'COMPLETED',
     },
     {
       id: 'ACT-002',
-      time: '10:45',
+      time: '11:45',
       action: 'DISCHARGE',
-      source: 'Community ESS',
+      source: 'Central ESS',
       dest: 'House B (EV Load)',
-      energyKwh: 2.0,
-      usableKwh: 2.0,
-      lossKwh: 0.0,
-      socBefore: 70,
+      energyKwh: 2.5,
+      usableKwh: 2.5,
+      socBefore: 65,
       socAfter: 60,
       status: 'COMPLETED',
     }
@@ -78,723 +69,434 @@ export default function BatteryView() {
 
   const sceneRef = useRef();
 
-  // Computations
-  const availableStored = Math.max(0, battery.storedKwh - battery.reserveKwh);
-  const availableHeadroom = Math.max(0, battery.capacity - battery.storedKwh);
+  const availableKwh = Math.max(0, (battery.capacity * (battery.soc - battery.minSoc)) / 100);
+  const reservedKwh = (battery.capacity * battery.minSoc) / 100;
 
-  // Selected Source surplus
-  const currentSourceHouse = households.find((h) => h.id === chargeSource);
-  const availableSourceSurplus = chargeSource === 'MAIN_UTILITY_GRID' ? 99.0 : currentSourceHouse?.surplus || 0.0;
-
-  // 1. MANUAL CHARGE EXECUTION
-  const handleCharge = () => {
-    if (status === 'CHARGING' || status === 'DISCHARGING') return;
-
-    // Validation 1: Available surplus
-    if (chargeAmount > availableSourceSurplus) {
-      setStatusMessage(`⚠️ Insufficient surplus: ${currentSourceHouse?.name || chargeSource} only has ${availableSourceSurplus.toFixed(1)} kWh.`);
+  const handleExecuteCharge = () => {
+    if (battery.soc >= 95) {
+      setStatusMessage('⚠️ Battery storage is already near peak capacity (95%).');
       return;
     }
-
-    // Validation 2: Remaining capacity
-    if (chargeAmount > availableHeadroom) {
-      setStatusMessage(`⚠️ Exceeds capacity: Battery only has ${availableHeadroom.toFixed(1)} kWh headroom before 100% SOC.`);
-      return;
-    }
-
-    // Validation 3: Charge power limit
-    if (chargePower > battery.maxChargePower) {
-      setStatusMessage(`⚠️ Charge power ${chargePower} kW exceeds safety limit of ${battery.maxChargePower} kW.`);
-      return;
-    }
-
-    setStatus('PREPARING');
-    setStatusMessage(`Preparing transfer of ${chargeAmount.toFixed(1)} kWh from ${chargeSource.toUpperCase()} to Community ESS...`);
-
-    const sourcePos = BATTERY_VIEW_POSITIONS[chargeSource] || [-4.2, 0, 1.2];
-    const battPos = BATTERY_VIEW_POSITIONS.COMMUNITY_BATTERY;
-
-    // 92% round-trip efficiency
-    const storedIncrement = Math.round(chargeAmount * (battery.efficiency / 100) * 100) / 100;
-    const loss = Math.round((chargeAmount - storedIncrement) * 100) / 100;
-
+    setStatus('CHARGING');
+    setActiveFlow({ type: 'CHARGE', kw: chargeAmount });
+    setStatusMessage(`Buffering ${chargeAmount} kWh excess solar yield into Community ESS.`);
+    
     setTimeout(() => {
-      setStatus('CHARGING');
-      setActiveFlow({
-        id: `flow-charge-${Date.now()}`,
-        start: sourcePos,
-        end: battPos,
-        kw: chargePower,
-        type: 'CHARGE',
-        color: '#059669',
+      setBattery((prev) => {
+        const nextSoc = Math.min(95, prev.soc + Math.round((chargeAmount / prev.capacity) * 100));
+        return { ...prev, soc: nextSoc, storedKwh: (prev.capacity * nextSoc) / 100 };
       });
-      setBattery((prev) => ({
-        ...prev,
-        current: Number((chargePower * 1000 / prev.voltage).toFixed(1)),
-        tempC: Number((prev.tempC + 0.3).toFixed(1)),
-      }));
-
-      // Timed execution: 2.8s
-      setTimeout(() => {
-        const socBefore = battery.soc;
-        const newStored = Math.min(battery.capacity, Math.round((battery.storedKwh + storedIncrement) * 100) / 100);
-        const newSoc = Math.min(100, Math.round((newStored / battery.capacity) * 100));
-
-        setBattery((prev) => ({
-          ...prev,
-          storedKwh: newStored,
-          soc: newSoc,
-          current: 0.0,
-        }));
-
-        // Deduct surplus from source household if local
-        if (chargeSource !== 'MAIN_UTILITY_GRID') {
-          setHouseholds((prev) =>
-            prev.map((h) =>
-              h.id === chargeSource
-                ? { ...h, surplus: Math.max(0, Math.round((h.surplus - chargeAmount) * 100) / 100) }
-                : h
-            )
-          );
-        }
-
-        // Add to history
-        const newAct = {
-          id: `ACT-${String(history.length + 1).padStart(3, '0')}`,
+      setStatus('IDLE');
+      setActiveFlow(null);
+      setHistory((prev) => [
+        {
+          id: `ACT-00${prev.length + 1}`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           action: 'CHARGE',
-          source: currentSourceHouse?.name || chargeSource.toUpperCase(),
-          dest: 'Community ESS',
+          source: 'House A (Solar)',
+          dest: 'Central ESS',
           energyKwh: chargeAmount,
-          usableKwh: storedIncrement,
-          lossKwh: loss,
-          socBefore: socBefore,
-          socAfter: newSoc,
+          usableKwh: Math.round(chargeAmount * 0.94 * 10) / 10,
+          socBefore: battery.soc,
+          socAfter: Math.min(95, battery.soc + Math.round((chargeAmount / battery.capacity) * 100)),
           status: 'COMPLETED',
-        };
-        setHistory((prev) => [newAct, ...prev]);
-
-        setStatus(newSoc >= 100 ? 'FULL' : 'IDLE');
-        setActiveFlow(null);
-        setStatusMessage(`✅ CHARGE COMPLETE: Stored +${storedIncrement.toFixed(2)} kWh in ESS (${battery.efficiency}% η, loss: ${loss} kWh). New SOC: ${newSoc}%.`);
-      }, 2600);
-    }, 400);
+        },
+        ...prev,
+      ]);
+      setStatusMessage(`Charged ${chargeAmount} kWh successfully.`);
+      setTimeout(() => setStatusMessage(''), 4000);
+    }, 1500);
   };
 
-  // 2. MANUAL DISCHARGE EXECUTION
-  const handleDischarge = () => {
-    if (status === 'CHARGING' || status === 'DISCHARGING') return;
-
-    // Validation 1: Reserve limit check
-    if (dischargeAmount > availableStored) {
-      setStatusMessage(`⚠️ Reserve limit reached: Battery cannot discharge below ${battery.reserveKwh} kWh (${battery.minSoc}% SOC).`);
+  const handleExecuteDischarge = () => {
+    if (battery.soc <= battery.minSoc) {
+      setStatusMessage('⚠️ Blackout reserve floor reached (10%). Discharging halted for safety.');
       return;
     }
-
-    // Validation 2: Discharge power limit
-    if (dischargePower > battery.maxDischargePower) {
-      setStatusMessage(`⚠️ Discharge power ${dischargePower} kW exceeds safety limit of ${battery.maxDischargePower} kW.`);
-      return;
-    }
-
-    setStatus('PREPARING');
-    setStatusMessage(`Preparing dispatch of ${dischargeAmount.toFixed(1)} kWh from Community ESS to ${dischargeDest.toUpperCase()}...`);
-
-    const battPos = BATTERY_VIEW_POSITIONS.COMMUNITY_BATTERY;
-    const destPos = BATTERY_VIEW_POSITIONS[dischargeDest] || [4.2, 0, 1.2];
-
+    setStatus('DISCHARGING');
+    setActiveFlow({ type: 'DISCHARGE', kw: dischargeAmount });
+    setStatusMessage(`Discharging ${dischargeAmount} kWh to support House B peak deficit.`);
+    
     setTimeout(() => {
-      setStatus('DISCHARGING');
-      setActiveFlow({
-        id: `flow-discharge-${Date.now()}`,
-        start: battPos,
-        end: destPos,
-        kw: dischargePower,
-        type: 'DISCHARGE',
-        color: '#0284c7',
+      setBattery((prev) => {
+        const nextSoc = Math.max(10, prev.soc - Math.round((dischargeAmount / prev.capacity) * 100));
+        return { ...prev, soc: nextSoc, storedKwh: (prev.capacity * nextSoc) / 100 };
       });
-      setBattery((prev) => ({
-        ...prev,
-        current: Number((dischargePower * 1000 / prev.voltage).toFixed(1)),
-        tempC: Number((prev.tempC + 0.2).toFixed(1)),
-      }));
-
-      // Timed execution: 2.8s
-      setTimeout(() => {
-        const socBefore = battery.soc;
-        const newStored = Math.max(0, Math.round((battery.storedKwh - dischargeAmount) * 100) / 100);
-        const newSoc = Math.max(0, Math.round((newStored / battery.capacity) * 100));
-
-        setBattery((prev) => ({
-          ...prev,
-          storedKwh: newStored,
-          soc: newSoc,
-          current: 0.0,
-        }));
-
-        // Reduce deficit for destination household
-        if (dischargeDest !== 'MAIN_UTILITY_GRID') {
-          setHouseholds((prev) =>
-            prev.map((h) =>
-              h.id === dischargeDest
-                ? { ...h, deficit: Math.max(0, Math.round(((h.deficit || 0) - dischargeAmount) * 100) / 100) }
-                : h
-            )
-          );
-        }
-
-        // Add to history
-        const newAct = {
-          id: `ACT-${String(history.length + 1).padStart(3, '0')}`,
+      setStatus('IDLE');
+      setActiveFlow(null);
+      setHistory((prev) => [
+        {
+          id: `ACT-00${prev.length + 1}`,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           action: 'DISCHARGE',
-          source: 'Community ESS',
-          dest: households.find((h) => h.id === dischargeDest)?.name || dischargeDest.toUpperCase(),
+          source: 'Central ESS',
+          dest: 'House B (EV Load)',
           energyKwh: dischargeAmount,
           usableKwh: dischargeAmount,
-          lossKwh: 0.0,
-          socBefore: socBefore,
-          socAfter: newSoc,
+          socBefore: battery.soc,
+          socAfter: Math.max(10, battery.soc - Math.round((dischargeAmount / battery.capacity) * 100)),
           status: 'COMPLETED',
-        };
-        setHistory((prev) => [newAct, ...prev]);
-
-        setStatus(newSoc <= battery.minSoc ? 'EMPTY' : 'IDLE');
-        setActiveFlow(null);
-        setStatusMessage(`✅ DISCHARGE COMPLETE: Dispatched ${dischargeAmount.toFixed(2)} kWh to ${dischargeDest.toUpperCase()}. New SOC: ${newSoc}%.`);
-      }, 2600);
-    }, 400);
-  };
-
-  // 3. Load Demo Preset
-  const handleLoadDemo = () => {
-    setBattery({
-      soc: 60,
-      capacity: 20.0,
-      storedKwh: 12.0,
-      minSoc: 10,
-      maxSoc: 100,
-      reserveKwh: 2.0,
-      maxChargePower: 5.0,
-      maxDischargePower: 5.0,
-      efficiency: 92,
-      health: 98,
-      cycleCount: 124,
-      tempC: 28.0,
-      voltage: 400.0,
-      current: 0.0,
-    });
-    setHouseholds([
-      { id: 'house_a', name: 'House A (Solar Champion)', generation: 6.8, consumption: 2.1, surplus: 4.7 },
-      { id: 'house_b', name: 'House B (EV Consumer)', generation: 1.2, consumption: 4.0, surplus: 0.0, deficit: 2.8 },
-      { id: 'house_c', name: 'House C (Prosumer Villa)', generation: 3.5, consumption: 2.2, surplus: 1.3 },
-    ]);
-    setChargeSource('house_a');
-    setDischargeDest('house_b');
-    setChargeAmount(1.5);
-    setDischargeAmount(1.5);
-    setStatus('IDLE');
-    setActiveFlow(null);
-    setStatusMessage('Battery Demo Loaded: 12 / 20 kWh (60% SOC). House A surplus: 4.7 kWh, House B deficit: 2.8 kWh.');
-    if (sceneRef.current) sceneRef.current.resetCamera();
-  };
-
-  // 4. Reset
-  const handleReset = () => {
-    setBattery((prev) => ({
-      ...prev,
-      soc: 60,
-      storedKwh: 12.0,
-      tempC: 28.0,
-      current: 0.0,
-    }));
-    setStatus('IDLE');
-    setActiveFlow(null);
-    setSelectedModule(null);
-    setStatusMessage('Battery state reset to default 60% SOC baseline.');
-    if (sceneRef.current) sceneRef.current.resetCamera();
+        },
+        ...prev,
+      ]);
+      setStatusMessage(`Discharged ${dischargeAmount} kWh successfully.`);
+      setTimeout(() => setStatusMessage(''), 4000);
+    }, 1500);
   };
 
   return (
-    <div className="space-y-4 max-w-[1680px] mx-auto pb-6 select-none">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs gap-3">
-        <div className="flex items-center space-x-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-teal-400 shadow-md">
-            <FaIcon name="battery" className="text-lg" />
+    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+      
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <div>
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102019] tracking-tight">
+              Community Energy Storage System (ESS)
+            </h1>
+            <Badge variant="battery" size="sm">
+              50 kWh Battery Twin
+            </Badge>
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900">Community Battery ESS</h2>
-              <Badge variant="battery" size="xs">
-                {battery.capacity} kWh Buffer
-              </Badge>
-              <Badge variant={status === 'CHARGING' || status === 'DISCHARGING' ? 'surplus' : 'default'} size="xs">
-                {status}
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-500 font-normal">
-              Centralized lithium-iron phosphate storage for community peak shaving and microgrid balancing.
-            </p>
-          </div>
+          <p className="text-sm text-[#5D6B64] font-medium mt-1">
+            Centralized lithium-iron-phosphate (LFP) storage with automated BMS reserve management and blackout protection.
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
           <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => sceneRef.current?.resetCamera()}
+            icon={<FaIcon name="camera" />}
+          >
+            Reset Angle
+          </Button>
+          <Button
             variant="primary"
             size="sm"
-            onClick={handleLoadDemo}
-            icon={<FaIcon name="sparkles" />}
+            onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
+            icon={<FaIcon name="sliders" />}
           >
-            Load Demo
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            icon={<FaIcon name="refresh" />}
-          >
-            Reset
+            {isAdvancedOpen ? 'Hide Diagnostics' : 'BMS Diagnostics'}
           </Button>
         </div>
       </div>
 
-      {/* 🌟 1. SECOND ROW: LIVE BATTERY KPI CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <MetricCard
-          title="Battery SOC"
-          value={`${battery.soc?.toFixed(0)}%`}
-          subtitle={`${battery.storedKwh?.toFixed(1)} / ${battery.capacity} kWh`}
-          iconName="battery"
-          variant="battery"
-        />
-
-        <MetricCard
-          title="Operating State"
-          value={status}
-          subtitle="BMS Active"
-          iconName="activity"
-          variant={status === 'CHARGING' ? 'surplus' : status === 'DISCHARGING' ? 'ai' : 'default'}
-        />
-
-        <MetricCard
-          title="Charge Headroom"
-          value={availableHeadroom.toFixed(1)}
-          unit="kWh"
-          subtitle="Buffer Space"
-          iconName="trendingUp"
-          variant="surplus"
-        />
-
-        <MetricCard
-          title="Round-Trip η"
-          value={`${battery.efficiency}%`}
-          subtitle="8% Thermal Loss"
-          iconName="energy"
-          variant="default"
-        />
-
-        <MetricCard
-          title="Health (SOH)"
-          value={`${battery.health}%`}
-          subtitle={`${battery.cycleCount} Cycles`}
-          iconName="shield"
-          variant="ai"
-        />
-
-        <MetricCard
-          title="Core Temp"
-          value={`${battery.tempC}°C`}
-          subtitle="Normal Cooling"
-          iconName="temperatureHalf"
-          variant="default"
-        />
-      </div>
-
-      {/* Dynamic Status / Narrative Banner */}
+      {/* Dynamic Status Notification */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-xs text-teal-950 shadow-2xs">
-          <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
-            <span className="font-semibold">{statusMessage}</span>
-          </div>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-teal-700 hover:text-teal-950 font-bold text-xs p-0.5">
+        <div className="flex items-center justify-between rounded-xl border border-[#DDE5E0] bg-[#E7F5EE] px-4 py-3 text-sm text-[#163A2B] font-bold shadow-subtle animate-in fade-in">
+          <span>{statusMessage}</span>
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#168A5A] text-xs font-bold p-1">
             ✕
           </button>
         </div>
       )}
 
-      {/* 🌟 2. MAIN 3-COLUMN WORKSPACE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-        {/* LEFT COLUMN: Manual Charge & Discharge Controls (~22%) */}
-        <div className="lg:col-span-3 space-y-3">
-          {/* CHARGE CONTROL CARD */}
-          <div className="rounded-xl border border-emerald-200 bg-white p-3.5 shadow-card space-y-2.5 text-xs">
-            <div className="flex items-center justify-between pb-1.5 border-b border-emerald-100">
-              <div className="flex items-center space-x-1.5">
-                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-600 text-white shadow-2xs">
-                  <FaIcon name="solar" className="text-xs" />
-                </div>
-                <span className="font-extrabold text-[11px] uppercase tracking-wide text-emerald-950">
-                  Charge Battery
-                </span>
-              </div>
-              <span className="font-mono text-[9px] font-bold text-emerald-700">
-                Max: 5 kW
-              </span>
-            </div>
+      {/* 🌟 1. PRIMARY BATTERY METRICS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <MetricCard
+          title="State of Charge (SOC)"
+          value={`${battery.soc}%`}
+          subtitle={`${(battery.capacity * battery.soc / 100).toFixed(1)} of ${battery.capacity} kWh`}
+          iconName="battery"
+          variant="battery"
+          badge="HEALTHY"
+          delta={`${battery.health}% State of Health`}
+          deltaType="positive"
+        />
 
-            {/* Source Selector */}
-            <div>
-              <span className="text-[10px] text-slate-500 font-semibold block mb-0.5">Select Source:</span>
-              <select
-                value={chargeSource}
-                onChange={(e) => setChargeSource(e.target.value)}
-                disabled={status === 'CHARGING' || status === 'DISCHARGING'}
-                className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="house_a">House A (Surplus: +4.7 kWh)</option>
-                <option value="house_c">House C (Surplus: +1.3 kWh)</option>
-                <option value="MAIN_UTILITY_GRID">Utility Grid (Tariff: ₹6/kWh)</option>
-              </select>
-            </div>
+        <MetricCard
+          title="Available Dispatch Energy"
+          value={`${availableKwh.toFixed(1)} kWh`}
+          subtitle="Ready for P2P dispatch"
+          iconName="energy"
+          variant="surplus"
+          delta="Above reserve threshold"
+          deltaType="positive"
+        />
 
-            {/* Amount & Power */}
-            <div className="grid grid-cols-2 gap-1.5">
-              <div>
-                <span className="text-[9.5px] text-slate-500 font-medium">Energy (kWh):</span>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max={Math.min(availableSourceSurplus, availableHeadroom)}
-                  value={chargeAmount}
-                  onChange={(e) => setChargeAmount(Number(e.target.value) || 0)}
-                  disabled={status === 'CHARGING' || status === 'DISCHARGING'}
-                  className="w-full rounded border border-slate-300 bg-white px-1.5 py-0.8 text-[11px] font-mono font-bold text-slate-900"
-                />
-              </div>
+        <MetricCard
+          title="Blackout Reserve Floor"
+          value={`${reservedKwh.toFixed(1)} kWh`}
+          subtitle="10% protected minimum"
+          iconName="shield"
+          variant="default"
+          delta="Emergency backup buffer"
+          deltaType="neutral"
+        />
 
-              <div>
-                <span className="text-[9.5px] text-slate-500 font-medium">Power (kW):</span>
-                <input
-                  type="number"
-                  step="0.5"
-                  min="0.5"
-                  max="5.0"
-                  value={chargePower}
-                  onChange={(e) => setChargePower(Number(e.target.value) || 0)}
-                  disabled={status === 'CHARGING' || status === 'DISCHARGING'}
-                  className="w-full rounded border border-slate-300 bg-white px-1.5 py-0.8 text-[11px] font-mono font-bold text-slate-900"
-                />
-              </div>
-            </div>
+        <MetricCard
+          title="Roundtrip Efficiency"
+          value={`${battery.efficiency}%`}
+          subtitle="94% bidirectional efficiency"
+          iconName="solar"
+          variant="ai"
+          delta="142 charge cycles logged"
+          deltaType="positive"
+        />
+      </div>
 
-            {/* Efficiency Preview */}
-            <div className="rounded bg-emerald-50/50 border border-emerald-100 p-1.5 text-[9.5px] text-emerald-900 font-mono">
-              Input: <strong>{chargeAmount} kWh</strong> ➔ Stored: <strong>{(chargeAmount * 0.92).toFixed(2)} kWh</strong> (Loss: {(chargeAmount * 0.08).toFixed(2)} kWh)
-            </div>
-
-            <button
-              type="button"
-              onClick={handleCharge}
-              disabled={status === 'CHARGING' || status === 'DISCHARGING' || battery.soc >= 100}
-              className="flex w-full items-center justify-center space-x-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white py-1.5 text-xs font-bold shadow-2xs transition active:scale-95 disabled:opacity-40"
-            >
-              <FaIcon name="arrowDown" className="text-xs" />
-              <span>{status === 'CHARGING' ? 'CHARGING ESS...' : 'CHARGE BATTERY'}</span>
-            </button>
+      {/* 🌟 2. VISUAL BATTERY SOC GAUGE STRIP */}
+      <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <FaIcon name="battery" className="text-[#D99A26] text-base" />
+            <span className="text-sm font-bold text-[#102019]">
+              Community Storage Allocation Gauge
+            </span>
           </div>
-
-          {/* DISCHARGE CONTROL CARD */}
-          <div className="rounded-xl border border-blue-200 bg-white p-3 shadow-card space-y-2 text-xs">
-            <div className="flex items-center justify-between pb-1.5 border-b border-blue-100">
-              <div className="flex items-center space-x-1.5">
-                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-600 text-white shadow-2xs">
-                  <FaIcon name="battery" className="text-xs" />
-                </div>
-                <span className="font-extrabold text-[11px] uppercase tracking-wide text-blue-950">
-                  Discharge Battery
-                </span>
-              </div>
-              <span className="font-mono text-[9px] font-bold text-blue-700">
-                Avail: {availableStored.toFixed(1)} kWh
-              </span>
-            </div>
-
-            {/* Destination Selector */}
-            <div>
-              <span className="text-[10px] text-slate-500 font-semibold block mb-0.5">Select Destination:</span>
-              <select
-                value={dischargeDest}
-                onChange={(e) => setDischargeDest(e.target.value)}
-                disabled={status === 'CHARGING' || status === 'DISCHARGING'}
-                className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="house_b">House B (Deficit: -2.8 kW)</option>
-                <option value="house_a">House A (Load: 2.1 kW)</option>
-                <option value="house_c">House C (Load: 2.2 kW)</option>
-                <option value="MAIN_UTILITY_GRID">Utility Grid (Export: ₹6/kWh)</option>
-              </select>
-            </div>
-
-            {/* Amount & Power */}
-            <div className="grid grid-cols-2 gap-1.5">
-              <div>
-                <span className="text-[9.5px] text-slate-500 font-medium">Energy (kWh):</span>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max={availableStored}
-                  value={dischargeAmount}
-                  onChange={(e) => setDischargeAmount(Number(e.target.value) || 0)}
-                  disabled={status === 'CHARGING' || status === 'DISCHARGING'}
-                  className="w-full rounded border border-slate-300 bg-white px-1.5 py-0.8 text-[11px] font-mono font-bold text-slate-900"
-                />
-              </div>
-
-              <div>
-                <span className="text-[9.5px] text-slate-500 font-medium">Power (kW):</span>
-                <input
-                  type="number"
-                  step="0.5"
-                  min="0.5"
-                  max="5.0"
-                  value={dischargePower}
-                  onChange={(e) => setDischargePower(Number(e.target.value) || 0)}
-                  disabled={status === 'CHARGING' || status === 'DISCHARGING'}
-                  className="w-full rounded border border-slate-300 bg-white px-1.5 py-0.8 text-[11px] font-mono font-bold text-slate-900"
-                />
-              </div>
-            </div>
-
-            {/* Reserve Alert */}
-            <div className="rounded bg-blue-50/50 border border-blue-100 p-1.5 text-[9.5px] text-blue-900 font-mono">
-              Reserve Floor: <strong>{battery.reserveKwh} kWh ({battery.minSoc}% SOC)</strong> • Protected against blackout.
-            </div>
-
-            <button
-              type="button"
-              onClick={handleDischarge}
-              disabled={status === 'CHARGING' || status === 'DISCHARGING' || availableStored <= 0.1}
-              className="flex w-full items-center justify-center space-x-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs font-bold shadow-2xs transition active:scale-95 disabled:opacity-40"
-            >
-              <FaIcon name="arrowUp" className="text-xs" />
-              <span>{status === 'DISCHARGING' ? 'DISCHARGING ESS...' : 'DISCHARGE BATTERY'}</span>
-            </button>
-          </div>
+          <span className="text-xs font-mono font-bold text-[#168A5A]">
+            {availableKwh.toFixed(1)} kWh Usable | {reservedKwh.toFixed(1)} kWh Reserved
+          </span>
         </div>
 
-        {/* CENTER COLUMN: 3D Community ESS Digital Twin (~58%) */}
-        <div className="lg:col-span-6 xl:col-span-6">
-          <div className="flex flex-col h-full rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-card space-y-2">
-            {/* 3D Header Bar & Camera Controls */}
-            <div className="flex items-center justify-between px-1 text-xs">
-              <div className="flex items-center space-x-2">
-                <span className="h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
-                <span className="font-extrabold text-[11px] uppercase tracking-wide text-slate-900">
-                  3D Community ESS Digital Twin
-                </span>
-              </div>
-
-              <div className="flex items-center space-x-1 text-[10px] font-semibold">
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.resetCamera()}
-                  className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition"
-                  title="Default View"
-                >
-                  <FaIcon name="camera" className="mr-1 text-slate-500 text-xs" />
-                  Reset View
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.moduleCloseUp()}
-                  className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
-                  title="Rack Modules View"
-                >
-                  Module View
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sceneRef.current?.topView()}
-                  className="rounded border border-slate-200 bg-slate-50 px-2 py-0.8 text-slate-700 hover:bg-slate-100 transition hidden sm:inline"
-                  title="Overhead View"
-                >
-                  Top View
-                </button>
-              </div>
-            </div>
-
-            {/* 3D Canvas */}
-            <div className="h-[460px] xl:h-[490px] w-full relative rounded-xl overflow-hidden">
-              <InteractiveBatteryTwin3D
-                ref={sceneRef}
-                battery={battery}
-                status={status}
-                activeFlow={activeFlow}
-                selectedSource={chargeSource}
-                selectedDestination={dischargeDest}
-                selectedModule={selectedModule?.id}
-                onSelectModule={(m) => {
-                  setSelectedModule(m);
-                  setStatusMessage(`Inspecting ${m.name}: ${m.voltage}V, ${m.temp}°C, ${m.soc}% SOC.`);
-                }}
-                households={households}
-              />
-
-              {/* Floating micro status badge */}
-              <div className="absolute top-2.5 left-2.5 pointer-events-none">
-                <div className="flex items-center space-x-1.5 rounded-full border border-slate-200 bg-white/95 px-2.5 py-0.5 shadow-2xs backdrop-blur-md">
-                  <span className={`h-1.5 w-1.5 rounded-full ${activeFlow ? 'bg-teal-500 animate-pulse' : 'bg-slate-400'}`} />
-                  <span className="text-[10px] font-bold text-slate-800">
-                    {activeFlow ? `Active Flow • ${activeFlow.type === 'CHARGE' ? 'Charging' : 'Discharging'} (${activeFlow.kw} kW)` : 'Digital Twin • Click Module to Inspect'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Multi-segment battery bar */}
+        <div className="h-4 w-full rounded-full bg-[#F5F7F6] border border-[#DDE5E0] overflow-hidden flex p-0.5">
+          {/* Reserved Floor (10%) */}
+          <div
+            className="h-full bg-[#D95C5C] rounded-l-full"
+            style={{ width: '10%' }}
+            title="10% Emergency Reserve Floor"
+          />
+          {/* Usable Active Charge */}
+          <div
+            className="h-full bg-[#168A5A] transition-all duration-500"
+            style={{ width: `${Math.max(0, battery.soc - 10)}%` }}
+            title={`${battery.soc - 10}% Available for P2P trading`}
+          />
         </div>
 
-        {/* RIGHT COLUMN: Telemetry, Safety & Module Inspector (~20%) */}
-        <div className="lg:col-span-3 xl:col-span-3 space-y-2.5">
-          {/* SIMULATED TELEMETRY PANEL */}
-          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-card space-y-2 text-xs">
-            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-              <span className="font-extrabold text-[11px] text-slate-900">
-                Simulated ESS Telemetry
-              </span>
-              <span className="rounded bg-teal-50 px-1.5 py-0.2 text-[8.5px] font-bold text-teal-800 border border-teal-200">
-                BMS Active
-              </span>
-            </div>
+        <div className="flex items-center justify-between text-xs text-[#5D6B64] font-medium pt-0.5">
+          <span className="flex items-center gap-1.5 text-[#D95C5C]">
+            <span className="w-2 h-2 rounded-full bg-[#D95C5C]" />
+            0–10% Reserve Floor (Protected)
+          </span>
+          <span className="flex items-center gap-1.5 text-[#168A5A]">
+            <span className="w-2 h-2 rounded-full bg-[#168A5A]" />
+            10–{battery.soc}% Available for Local Dispatch
+          </span>
+          <span className="text-[#83908A]">
+            {battery.soc}–100% Headroom
+          </span>
+        </div>
+      </div>
 
-            <div className="grid grid-cols-2 gap-1 text-[10.5px] font-mono">
-              <div className="rounded bg-slate-50 p-1.5">
-                <span className="text-[9px] text-slate-500 uppercase block">Bus Voltage</span>
-                <span className="font-bold text-slate-900">{battery.voltage.toFixed(0)} V</span>
-              </div>
-              <div className="rounded bg-slate-50 p-1.5">
-                <span className="text-[9px] text-slate-500 uppercase block">Current</span>
-                <span className="font-bold text-slate-900">{battery.current > 0 ? `${battery.current} A` : '0.0 A'}</span>
-              </div>
-              <div className="rounded bg-slate-50 p-1.5">
-                <span className="text-[9px] text-slate-500 uppercase block">Active Power</span>
-                <span className="font-bold text-teal-800">{activeFlow ? `${activeFlow.kw} kW` : '0.0 kW'}</span>
-              </div>
-              <div className="rounded bg-slate-50 p-1.5">
-                <span className="text-[9px] text-slate-500 uppercase block">Cell Health</span>
-                <span className="font-bold text-emerald-700">{battery.health}% SOH</span>
-              </div>
-            </div>
-
-            {/* Safety Interlocks */}
-            <div className="space-y-1 pt-1 border-t border-slate-100 text-[10px]">
-              <div className="flex justify-between items-center text-slate-600">
-                <span>Thermal State:</span>
-                <span className="text-emerald-700 font-bold">28°C (Normal ✓)</span>
-              </div>
-              <div className="flex justify-between items-center text-slate-600">
-                <span>Overcharge Protect:</span>
-                <span className="text-emerald-700 font-bold">Armed (100% max ✓)</span>
-              </div>
-              <div className="flex justify-between items-center text-slate-600">
-                <span>Deep-Discharge Floor:</span>
-                <span className="text-emerald-700 font-bold">2.0 kWh (10% ✓)</span>
-              </div>
-              <div className="flex justify-between items-center text-slate-600">
-                <span>Power Limiter:</span>
-                <span className="text-emerald-700 font-bold">5.0 kW Max ✓</span>
-              </div>
-            </div>
-          </div>
-
-          {/* MODULE INSPECTOR (WHEN CLICKED IN 3D) */}
-          <div className="rounded-xl border border-teal-200 bg-teal-50/40 p-3 shadow-card space-y-1.5 text-xs">
-            <div className="flex items-center justify-between pb-1 border-b border-teal-100">
-              <span className="font-extrabold text-[11px] text-teal-950">
-                {selectedModule ? selectedModule.name : 'Module Inspector'}
-              </span>
-              <span className="text-[9px] font-mono text-teal-800 font-bold">
-                {selectedModule ? `${selectedModule.soc}% SOC` : 'Click 3D Module'}
-              </span>
-            </div>
-
-            {selectedModule ? (
-              <div className="space-y-1 text-[10.5px] font-mono">
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Rack Voltage:</span>
-                  <span className="font-bold text-slate-900">{selectedModule.voltage} V</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Module Temp:</span>
-                  <span className="font-bold text-emerald-700">{selectedModule.temp}°C</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Health State:</span>
-                  <span className="font-bold text-emerald-800">NORMAL ✓</span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-[10px] text-slate-500 leading-tight">
-                Click any of the 4 horizontal modular cell racks in the 3D battery to inspect real-time module-level voltage and temperature.
+      {/* 🌟 3. 3D DIGITAL RACK TWIN + DISPATCH CONTROLLER */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        {/* 3D RACK TWIN (7 cols) */}
+        <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+            <div>
+              <h3 className="text-base font-bold text-[#102019]">
+                Interactive 3D Storage Rack Twin
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Click any cell module in the 3D rack to inspect voltage and temperature
               </p>
-            )}
+            </div>
+            <Badge variant="battery" size="xs">
+              BMS Active
+            </Badge>
+          </div>
+
+          <div className="h-[380px] w-full relative rounded-xl overflow-hidden bg-[#F5F7F6]">
+            <InteractiveBatteryTwin3D
+              ref={sceneRef}
+              battery={battery}
+              status={status}
+              activeFlow={activeFlow}
+              selectedModule={selectedModule?.id}
+              onSelectModule={(m) => {
+                setSelectedModule(m);
+                setStatusMessage(`Inspecting ${m.name}: ${m.voltage}V, ${m.temp}°C, ${m.soc}% SOC.`);
+              }}
+              households={households}
+            />
+
+            {/* Micro Badge Overlay */}
+            <div className="absolute top-3 left-3 pointer-events-none">
+              <div className="flex items-center space-x-2 rounded-full border border-[#DDE5E0] bg-white/95 px-3 py-1 shadow-card backdrop-blur-md">
+                <span className={`h-2 w-2 rounded-full ${activeFlow ? 'bg-[#168A5A] animate-pulse' : 'bg-[#83908A]'}`} />
+                <span className="text-xs font-bold text-[#102019]">
+                  {activeFlow ? `Active Flow: ${activeFlow.type} (${activeFlow.kw} kW)` : 'BMS Standby'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CHARGE / DISCHARGE DISPATCH CONTROLLER (5 cols) */}
+        <div className="lg:col-span-5 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+            <div>
+              <h3 className="text-base font-bold text-[#102019]">
+                Manual Storage Dispatch
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Inject prosumer solar yield or discharge to relieve local deficit
+              </p>
+            </div>
+            <Badge variant="default" size="xs">
+              Override
+            </Badge>
+          </div>
+
+          {/* Quick Charge Action */}
+          <div className="p-4 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#102019]">Store Excess Solar Yield</span>
+              <Badge variant="surplus" size="xs">Charge</Badge>
+            </div>
+            <div className="flex items-center space-x-3">
+              <input
+                type="number"
+                min="0.5"
+                max="5.0"
+                step="0.5"
+                value={chargeAmount}
+                onChange={(e) => setChargeAmount(Number(e.target.value))}
+                className="w-24 rounded-xl border border-[#DDE5E0] bg-white px-3 py-1.5 text-xs font-mono font-bold text-[#102019]"
+              />
+              <span className="text-xs text-[#5D6B64]">kWh from House A</span>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleExecuteCharge}
+                disabled={status === 'CHARGING' || battery.soc >= 95}
+                className="flex-1 justify-center"
+              >
+                Store in ESS
+              </Button>
+            </div>
+          </div>
+
+          {/* Quick Discharge Action */}
+          <div className="p-4 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#102019]">Discharge to Support Deficit</span>
+              <Badge variant="warning" size="xs">Discharge</Badge>
+            </div>
+            <div className="flex items-center space-x-3">
+              <input
+                type="number"
+                min="0.5"
+                max="5.0"
+                step="0.5"
+                value={dischargeAmount}
+                onChange={(e) => setDischargeAmount(Number(e.target.value))}
+                className="w-24 rounded-xl border border-[#DDE5E0] bg-white px-3 py-1.5 text-xs font-mono font-bold text-[#102019]"
+              />
+              <span className="text-xs text-[#5D6B64]">kWh to House B</span>
+              <Button
+                variant="warning"
+                size="sm"
+                onClick={handleExecuteDischarge}
+                disabled={status === 'DISCHARGING' || battery.soc <= battery.minSoc}
+                className="flex-1 justify-center"
+              >
+                Discharge ESS
+              </Button>
+            </div>
+          </div>
+
+          {/* Blackout Reserve Notice */}
+          <div className="p-3 rounded-xl bg-[#FFF4D8]/60 border border-[#F7E7BE] text-xs text-[#102019] space-y-1">
+            <span className="font-bold flex items-center gap-1 text-[#E8A72B]">
+              <FaIcon name="shield" />
+              Automated Reserve Protection
+            </span>
+            <p className="text-[#5D6B64] leading-relaxed text-[11.5px]">
+              The BMS actively protects a 10% reserve threshold (5.0 kWh) to guarantee emergency lighting and circuit continuity during grid blackouts.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* 🌟 3. BOTTOM ROW: BATTERY ACTIVITY & AUDIT TRAIL */}
-      <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-card space-y-2 text-xs">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-          <div className="flex items-center space-x-2">
-            <FaIcon name="history" className="text-teal-700 text-sm" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-              Battery Activity History & Storage Ledger
-            </h3>
+      {/* 🌟 4. EXPANDABLE ADVANCED BMS DIAGNOSTICS */}
+      {isAdvancedOpen && (
+        <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 sm:p-6 shadow-card space-y-4 animate-in fade-in duration-150">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+            <div>
+              <h3 className="text-base font-bold text-[#102019]">
+                Battery Management System (BMS) Hardware Diagnostics
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Rack-level thermal profiles, cell balancing, and telemetry status
+              </p>
+            </div>
+            <Badge variant="ai" size="xs">
+              Simulated Telemetry
+            </Badge>
           </div>
-          <span className="font-mono text-xs font-bold text-slate-500">
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+              <span className="text-[#5D6B64] text-[11px]">Bus Voltage</span>
+              <div className="text-base font-mono font-bold text-[#102019] mt-0.5">400.0 V DC</div>
+            </div>
+            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+              <span className="text-[#5D6B64] text-[11px]">Internal Temperature</span>
+              <div className="text-base font-mono font-bold text-[#168A5A] mt-0.5">{battery.tempC}°C (Optimal)</div>
+            </div>
+            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+              <span className="text-[#5D6B64] text-[11px]">State of Health (SOH)</span>
+              <div className="text-base font-mono font-bold text-[#168A5A] mt-0.5">{battery.health}%</div>
+            </div>
+            <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+              <span className="text-[#5D6B64] text-[11px]">Total Equivalent Cycles</span>
+              <div className="text-base font-mono font-bold text-[#102019] mt-0.5">{battery.cycleCount} Cycles</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🌟 5. BATTERY ACTIVITY HISTORY LEDGER */}
+      <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 sm:p-6 shadow-card space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+          <div>
+            <h3 className="text-base font-bold text-[#102019]">
+              Storage Dispatch & Activity History
+            </h3>
+            <p className="text-xs text-[#5D6B64]">
+              Audit trail of charge and discharge injections
+            </p>
+          </div>
+          <Badge variant="default" size="xs">
             {history.length} Events Logged
-          </span>
+          </Badge>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/75 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
-                <th className="px-3 py-2">Time</th>
-                <th className="px-3 py-2">Action</th>
-                <th className="px-3 py-2">Source</th>
-                <th className="px-3 py-2">Destination</th>
-                <th className="px-3 py-2 text-right">Transfer (kWh)</th>
-                <th className="px-3 py-2 text-right">Stored/Usable (kWh)</th>
-                <th className="px-3 py-2 text-right">Loss (kWh)</th>
-                <th className="px-3 py-2 text-center">SOC Progression</th>
-                <th className="px-3 py-2 text-right">Status</th>
+              <tr className="border-b border-[#DDE5E0] bg-[#F5F7F6] text-[11px] font-bold uppercase tracking-wider text-[#5D6B64]">
+                <th className="px-3.5 py-2.5">Event ID</th>
+                <th className="px-3.5 py-2.5">Time</th>
+                <th className="px-3.5 py-2.5">Action</th>
+                <th className="px-3.5 py-2.5">Source ➔ Destination</th>
+                <th className="px-3.5 py-2.5 text-right">Energy (kWh)</th>
+                <th className="px-3.5 py-2.5 text-right">SOC Transition</th>
+                <th className="px-3.5 py-2.5 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+            <tbody className="divide-y divide-[#F5F7F6] font-mono text-[12px]">
               {history.map((h) => (
-                <tr key={h.id} className="hover:bg-slate-50/60 transition">
-                  <td className="px-3 py-2 text-slate-500">{h.time}</td>
-                  <td className="px-3 py-2">
-                    <span className={`inline-flex rounded px-1.5 py-0.2 text-[9px] font-bold ${
-                      h.action === 'CHARGE'
-                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                        : 'bg-blue-50 text-blue-800 border border-blue-200'
-                    }`}>
+                <tr key={h.id} className="hover:bg-[#FBFCFB] transition">
+                  <td className="px-3.5 py-3 font-bold text-[#102019]">{h.id}</td>
+                  <td className="px-3.5 py-3 text-[#5D6B64] font-sans">{h.time}</td>
+                  <td className="px-3.5 py-3 font-sans">
+                    <Badge variant={h.action === 'CHARGE' ? 'surplus' : 'warning'} size="xs">
                       {h.action}
-                    </span>
+                    </Badge>
                   </td>
-                  <td className="px-3 py-2 font-sans font-bold text-slate-900">{h.source}</td>
-                  <td className="px-3 py-2 font-sans font-bold text-slate-900">{h.dest}</td>
-                  <td className="px-3 py-2 text-right font-bold text-slate-900">{h.energyKwh.toFixed(2)}</td>
-                  <td className="px-3 py-2 text-right font-bold text-teal-800">{h.usableKwh.toFixed(2)}</td>
-                  <td className="px-3 py-2 text-right text-slate-400">{h.lossKwh > 0 ? `${h.lossKwh.toFixed(2)}` : '0.00'}</td>
-                  <td className="px-3 py-2 text-center font-bold text-slate-800">{h.socBefore}% ➔ {h.socAfter}%</td>
-                  <td className="px-3 py-2 text-right text-emerald-700 font-bold">{h.status} ✓</td>
+                  <td className="px-3.5 py-3 font-sans text-[#102019]">{h.source} ➔ {h.dest}</td>
+                  <td className="px-3.5 py-3 text-right font-bold text-[#102019]">{h.energyKwh.toFixed(1)} kWh</td>
+                  <td className="px-3.5 py-3 text-right text-[#5D6B64]">{h.socBefore}% ➔ <span className="font-bold text-[#168A5A]">{h.socAfter}%</span></td>
+                  <td className="px-3.5 py-3 text-right font-sans">
+                    <span className="text-[#168A5A] font-bold">COMPLETED ✓</span>
+                  </td>
                 </tr>
               ))}
             </tbody>

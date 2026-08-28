@@ -75,6 +75,8 @@ import {
   faChevronUp,
   faEllipsis,
   faLayerGroup,
+  faUser,
+  faHeartPulse,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const ICONS = {
@@ -130,6 +132,11 @@ export const ICONS = {
   sliders: faSliders,
   settings: faGear,
   users: faUsers,
+  user: faUser,
+  profile: faUser,
+  health: faHeartPulse,
+  pulse: faHeartPulse,
+  scenarios: faWandMagicSparkles,
   filter: faFilter,
   search: faMagnifyingGlass,
   view: faEye,

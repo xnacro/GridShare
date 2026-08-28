@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   INITIAL_DEMO_STATE,
   computeHouseholdStates,
@@ -12,47 +13,43 @@ import {
   DIURNAL_PROFILES,
 } from '../services/dashboardSimulationEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
-import DashboardControlPanel from '../components/dashboard/DashboardControlPanel';
-import DashboardLiveStatus from '../components/dashboard/DashboardLiveStatus';
-import DashboardAnalyticsSection from '../components/dashboard/DashboardAnalyticsSection';
+import LiveEnergyChart from '../components/LiveEnergyChart';
 import TransactionLedger from '../components/marketplace/TransactionLedger';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
-import { api } from '../services/api';
+import DecisionTimeline from '../components/ui/DecisionTimeline';
 import FaIcon from '../components/icons/FaIcon';
 import MetricCard from '../components/ui/MetricCard';
-import Badge, { StatusIndicator } from '../components/ui/Badge';
-import Button, { IconButton } from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 
 export default function DashboardView() {
-  // Master Microgrid Control State
+  const navigate = useNavigate();
+
+  // Master Microgrid State
   const [households, setHouseholds] = useState(INITIAL_DEMO_STATE.households);
   const [battery, setBattery] = useState(INITIAL_DEMO_STATE.battery);
   const [grid, setGrid] = useState(INITIAL_DEMO_STATE.grid);
   const [orders, setOrders] = useState({
     sellOrders: [
-      { id: 'GS-SELL-001', household_id: 'house_a', energy_kwh: 2.0, min_price_per_kwh: 7.0, remaining_kwh: 2.0, status: 'OPEN' }
+      { id: 'GS-SELL-001', household_id: 'house_a', energy_kwh: 2.0, min_price_per_kwh: 4.5, remaining_kwh: 2.0, status: 'OPEN' }
     ],
     buyOrders: [],
   });
   const [transactions, setTransactions] = useState([
-    { id: 'TX-GS-001', time: '10:42', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.0, pricePerKwh: 7.0, totalValue: 14.0, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' }
+    { id: 'TX-GS-001', time: '12:30', sellerId: 'HOUSE_A', buyerId: 'HOUSE_B', energyKwh: 2.0, pricePerKwh: 4.5, totalValue: 9.0, paymentStatus: 'SETTLED', energyFlowStatus: 'TRANSFERRED', status: 'COMPLETED' }
   ]);
 
-  // Simulation Clock & Playback
+  // Simulation Clock & Node Selection
   const [currentHour, setCurrentHour] = useState(12);
-  const [activeScenario, setActiveScenario] = useState('NORMAL_DAY');
-  const [isLiveSimulating, setIsLiveSimulating] = useState(false);
-  const [simSpeed, setSimSpeed] = useState(1); // 1x, 2x, 4x
   const [selectedNode, setSelectedNode] = useState('house_a');
-  const [statusMessage, setStatusMessage] = useState('');
+  const [isAiExecuting, setIsAiExecuting] = useState(false);
+  const [aiExecutionMessage, setAiExecutionMessage] = useState('');
 
   // Confirmation Modal
   const [activePurchase, setActivePurchase] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isSettling, setIsSettling] = useState(false);
 
   const sceneRef = useRef();
-  const simTimerRef = useRef(null);
 
   // Compute live household accounting
   const computedHouseholds = useMemo(() => {
@@ -61,517 +58,420 @@ export default function DashboardView() {
 
   // Dynamic 3D Flows
   const activeFlows = useMemo(() => {
-    if (!isLiveSimulating && simSpeed === 0) return [];
     return calculateMicrogridFlows(households, battery, grid, MARKET_3D_POSITIONS);
-  }, [households, battery, grid, isLiveSimulating, simSpeed]);
+  }, [households, battery, grid]);
 
   // Dynamic 24h Time-Series Profile
   const chartHistory = useMemo(() => {
     return generate24HourProfile(households, currentHour, battery.soc);
   }, [households, currentHour, battery.soc]);
 
-  // Total Community KPIs
+  // Total Community Primary Metrics
   const totalGen = computedHouseholds.reduce((sum, h) => sum + h.generation, 0);
   const totalCon = computedHouseholds.reduce((sum, h) => sum + h.consumption, 0);
   const netCommunity = Math.round((totalGen - totalCon) * 100) / 100;
   const isSurplus = netCommunity >= 0;
 
-  // Live simulation tick interval
-  useEffect(() => {
-    if (isLiveSimulating) {
-      const intervalMs = Math.max(800, 3000 / simSpeed);
-      simTimerRef.current = setInterval(() => {
-        setCurrentHour((prev) => {
-          const nextHour = prev >= 22 ? 6 : prev + 1;
-          applyHourSolarLoad(nextHour);
-          return nextHour;
-        });
-      }, intervalMs);
-    } else {
-      if (simTimerRef.current) clearInterval(simTimerRef.current);
-    }
-    return () => {
-      if (simTimerRef.current) clearInterval(simTimerRef.current);
-    };
-  }, [isLiveSimulating, simSpeed]);
-
-  // Adjust solar and load for a specific hour
-  const applyHourSolarLoad = (hour) => {
-    const sMult = DIURNAL_PROFILES.solarMultiplier[hour] || 0;
-    const lMult = DIURNAL_PROFILES.loadMultiplier[hour] || 1;
-
-    setHouseholds((prev) =>
-      prev.map((h) => {
-        let baseGen = h.hasSolar ? (h.id === 'house_a' ? 6.8 : 3.5) : 0;
-        let baseCon = h.id === 'house_a' ? 2.1 : h.id === 'house_b' ? 4.0 : 2.5;
-
-        const newGen = Math.round(baseGen * sMult * 10) / 10;
-        const newCon = Math.round(baseCon * (lMult / 1.1) * 10) / 10;
-
-        return {
-          ...h,
-          generation: newGen,
-          consumption: newCon,
-        };
-      })
-    );
+  // Execute AI Recommendation trigger
+  const handleExecuteRecommendation = () => {
+    setIsAiExecuting(true);
+    setAiExecutionMessage('Executing automated P2P bilateral match between House A and House B...');
+    setTimeout(() => {
+      setTransactions((prev) => [
+        {
+          id: `TX-GS-00${prev.length + 1}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          sellerId: 'HOUSE_A',
+          buyerId: 'HOUSE_B',
+          energyKwh: 2.0,
+          pricePerKwh: 4.5,
+          totalValue: 9.0,
+          paymentStatus: 'SETTLED',
+          energyFlowStatus: 'TRANSFERRED',
+          status: 'COMPLETED',
+        },
+        ...prev,
+      ]);
+      setIsAiExecuting(false);
+      setAiExecutionMessage('Optimal trade executed: 2.0 kWh settled @ ₹4.50/kWh.');
+      setTimeout(() => setAiExecutionMessage(''), 4000);
+    }, 1200);
   };
-
-  // 1. Change Simulated Time
-  const handleChangeHour = (hour) => {
-    setCurrentHour(hour);
-    applyHourSolarLoad(hour);
-    setStatusMessage(`Simulated time set to ${String(hour).padStart(2, '0')}:00.`);
-  };
-
-  // 2. Apply Scenario Preset
-  const handleApplyScenario = (scenarioKey) => {
-    const sc = PRESET_SCENARIOS[scenarioKey];
-    if (!sc) return;
-    setActiveScenario(scenarioKey);
-    setCurrentHour(sc.hour || 12);
-    setHouseholds((prev) =>
-      prev.map((h) => {
-        const scHouse = sc.households.find((sh) => sh.id === h.id);
-        return scHouse
-          ? { ...h, generation: scHouse.generation, consumption: scHouse.consumption }
-          : h;
-      })
-    );
-    setBattery((prev) => ({
-      ...prev,
-      soc: sc.battery?.soc || 40,
-      storedKwh: sc.battery?.storedKwh || 8.0,
-    }));
-    setStatusMessage(`Scenario active: ${sc.name} (${sc.description}).`);
-  };
-
-  // 3. Update Household Telemetry
-  const handleUpdateHousehold = (id, field, value) => {
-    const num = Math.max(0, Number(value) || 0);
-    setHouseholds((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, [field]: num } : h))
-    );
-    setStatusMessage(`Updated ${id.toUpperCase()} ${field} to ${num} kW.`);
-  };
-
-  // 4. Update Battery
-  const handleUpdateBattery = (field, value) => {
-    const num = Math.max(1, Number(value) || 0);
-    setBattery((prev) => ({ ...prev, [field]: num }));
-  };
-
-  // 5. Update Grid Price
-  const handleUpdateGrid = (field, value) => {
-    const num = Math.max(0.1, Number(value) || 0);
-    setGrid((prev) => ({ ...prev, [field]: num }));
-  };
-
-  // 6. Manual Battery Charge
-  const handleChargeBattery = (amountKwh = 1.5) => {
-    if (battery.soc >= 100) return;
-    const newStored = Math.min(battery.capacity, Math.round((battery.storedKwh + amountKwh) * 10) / 10);
-    const newSoc = Math.min(100, Math.round((newStored / battery.capacity) * 100));
-
-    setBattery((prev) => ({ ...prev, storedKwh: newStored, soc: newSoc }));
-    setStatusMessage(`Manual Charge: Stored +${amountKwh} kWh in Central Battery (SOC: ${newSoc}%).`);
-  };
-
-  // 7. Manual Battery Discharge
-  const handleDischargeBattery = (amountKwh = 1.5) => {
-    if (battery.soc <= 20) return;
-    const newStored = Math.max(0, Math.round((battery.storedKwh - amountKwh) * 10) / 10);
-    const newSoc = Math.max(0, Math.round((newStored / battery.capacity) * 100));
-
-    setBattery((prev) => ({ ...prev, storedKwh: newStored, soc: newSoc }));
-    setStatusMessage(`Manual Discharge: Dispatched ${amountKwh} kWh to community (SOC: ${newSoc}%).`);
-  };
-
-  // 8. Grid Export Surplus
-  const handleExportSurplus = (householdId) => {
-    const house = computedHouseholds.find((h) => h.id === householdId);
-    if (!house || house.availableSurplus <= 0.05) return;
-
-    const exportKwh = Math.round(house.availableSurplus * 10) / 10;
-    const revenue = Math.round(exportKwh * grid.exportPrice * 100) / 100;
-
-    setHouseholds((prev) =>
-      prev.map((h) =>
-        h.id === householdId
-          ? {
-              ...h,
-              exportedKwh: Math.round((h.exportedKwh + exportKwh) * 10) / 10,
-              wallet: Math.round((h.wallet + revenue) * 100) / 100,
-              moneyEarned: Math.round((h.moneyEarned + revenue) * 100) / 100,
-            }
-          : h
-      )
-    );
-    setStatusMessage(`${house.name} exported ${exportKwh} kWh to Grid (Revenue: +₹${revenue.toFixed(2)}).`);
-  };
-
-  // 9. Grid Import Power
-  const handleGridImport = () => {
-    setStatusMessage(`Grid Interconnect: Community imported standby reserve power from Utility Substation.`);
-  };
-
-  // 10. Store Surplus in Battery
-  const handleStoreSurplus = (householdId) => {
-    const house = computedHouseholds.find((h) => h.id === householdId);
-    if (!house || house.availableSurplus <= 0.05) return;
-
-    const storeKwh = Math.min(house.availableSurplus, 1.5);
-    handleChargeBattery(storeKwh);
-
-    setHouseholds((prev) =>
-      prev.map((h) =>
-        h.id === householdId
-          ? { ...h, storedKwh: Math.round((h.storedKwh + storeKwh) * 10) / 10 }
-          : h
-      )
-    );
-  };
-
-  // 11. Quick Sell Order Listing
-  const handleOpenSellModal = (householdId) => {
-    const house = computedHouseholds.find((h) => h.id === householdId);
-    if (!house || house.availableSurplus <= 0.05) return;
-
-    const listKwh = Math.min(2.0, house.availableSurplus);
-    const newOrder = {
-      id: `GS-SELL-${String(orders.sellOrders.length + 1).padStart(3, '0')}`,
-      household_id: householdId,
-      energy_kwh: listKwh,
-      min_price_per_kwh: 7.0,
-      remaining_kwh: listKwh,
-      status: 'OPEN',
-      created_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setOrders((prev) => ({ ...prev, sellOrders: [newOrder, ...prev.sellOrders] }));
-    setStatusMessage(`Listed Order ${newOrder.id}: ${house.name} listed ${listKwh} kWh @ ₹7.00/kWh in Marketplace.`);
-  };
-
-  // 12. Quick Initiate Purchase
-  const handleInitiatePurchase = ({ buyerId, sellOrder, quantityKwh }) => {
-    const errors = validatePurchaseOrder({ buyerId, sellOrder, quantityKwh }, computedHouseholds);
-    if (errors) {
-      setStatusMessage(`⚠️ Cannot purchase: ${Object.values(errors).join(', ')}`);
-      return;
-    }
-
-    setActivePurchase({
-      buyerId,
-      sellOrder,
-      quantityKwh: Number(quantityKwh) || sellOrder.remaining_kwh,
-    });
-    setIsConfirmModalOpen(true);
-  };
-
-  // 13. Confirm Purchase Execution
-  const handleConfirmPurchase = async () => {
-    if (!activePurchase) return;
-    setIsSettling(true);
-
-    const { buyerId, sellOrder, quantityKwh } = activePurchase;
-    const sellerId = sellOrder.household_id;
-    const unitPrice = sellOrder.min_price_per_kwh;
-    const qty = Number(quantityKwh) || sellOrder.remaining_kwh;
-    const totalAmount = Math.round(qty * unitPrice * 100) / 100;
-
-    // Update wallets
-    setHouseholds((prev) =>
-      prev.map((h) => {
-        if (h.id === sellerId) {
-          return {
-            ...h,
-            wallet: Math.round((h.wallet + totalAmount) * 100) / 100,
-            moneyEarned: Math.round((h.moneyEarned + totalAmount) * 100) / 100,
-            soldKwh: Math.round((h.soldKwh + qty) * 100) / 100,
-          };
-        }
-        if (h.id === buyerId) {
-          return {
-            ...h,
-            wallet: Math.round((h.wallet - totalAmount) * 100) / 100,
-            moneySpent: Math.round((h.moneySpent + totalAmount) * 100) / 100,
-            boughtKwh: Math.round((h.boughtKwh + qty) * 100) / 100,
-          };
-        }
-        return h;
-      })
-    );
-
-    // Update orders
-    setOrders((prev) => {
-      const updatedSells = prev.sellOrders.map((o) => {
-        if (o.id === sellOrder.id) {
-          const rem = Math.max(0, Math.round((o.remaining_kwh - qty) * 100) / 100);
-          return { ...o, remaining_kwh: rem, status: rem <= 0.001 ? 'FILLED' : 'PARTIALLY_FILLED' };
-        }
-        return o;
-      });
-      return { ...prev, sellOrders: updatedSells };
-    });
-
-    // Record Transaction
-    const newTx = {
-      id: `TX-GS-${String(transactions.length + 1).padStart(3, '0')}`,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      sellerId: sellerId.toUpperCase(),
-      buyerId: buyerId.toUpperCase(),
-      energyKwh: qty,
-      pricePerKwh: unitPrice,
-      totalValue: totalAmount,
-      paymentStatus: 'SETTLED',
-      energyFlowStatus: 'TRANSFERRED',
-      status: 'COMPLETED',
-    };
-    setTransactions((prev) => [newTx, ...prev]);
-    setStatusMessage(`🎉 Trade ${newTx.id} SETTLED! ${buyerId.toUpperCase()} bought ${qty} kWh from ${sellerId.toUpperCase()} for ₹${totalAmount.toFixed(2)}.`);
-
-    setIsSettling(false);
-    setIsConfirmModalOpen(false);
-    setActivePurchase(null);
-  };
-
-  // 14. Reset Demo Baseline
-  const handleReset = () => {
-    setIsLiveSimulating(false);
-    setCurrentHour(12);
-    setActiveScenario('NORMAL_DAY');
-    setHouseholds(INITIAL_DEMO_STATE.households);
-    setBattery(INITIAL_DEMO_STATE.battery);
-    setGrid(INITIAL_DEMO_STATE.grid);
-    setStatusMessage('Microgrid Dashboard reset to clean demo baseline.');
-    if (sceneRef.current) sceneRef.current.resetCamera();
-  };
-
-  const selectedHousehold = computedHouseholds.find((h) => h.id === selectedNode) || computedHouseholds[0];
-  const activeBuyer = computedHouseholds.find((h) => h.id === activePurchase?.buyerId) || computedHouseholds[1];
-  const activeSeller = computedHouseholds.find((h) => h.id === activePurchase?.sellOrder?.household_id) || computedHouseholds[0];
 
   return (
-    <div className="space-y-2.5 max-w-[1680px] mx-auto pb-6">
-      {/* 🌟 1. EXECUTIVE KPI SUMMARY METRICS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-        <MetricCard
-          title="Generation"
-          value={totalGen.toFixed(1)}
-          unit="kW"
-          iconName="solar"
-          variant="surplus"
-          subtitle="Solar PV"
-        />
-        <MetricCard
-          title="Total Load"
-          value={totalCon.toFixed(1)}
-          unit="kW"
-          iconName="powerOff"
-          variant="default"
-          subtitle="Community"
-        />
-        <MetricCard
-          title="Net Balance"
-          value={(isSurplus ? '+' : '') + netCommunity.toFixed(1)}
-          unit="kW"
-          iconName="energy"
-          variant={isSurplus ? 'surplus' : 'deficit'}
-          subtitle={isSurplus ? 'Surplus' : 'Deficit'}
-        />
-        <MetricCard
-          title="Battery SOC"
-          value={battery.soc?.toFixed(0)}
-          unit="%"
-          iconName="battery"
-          variant="battery"
-          subtitle={`${((battery.soc / 100) * (battery.capacity || 50)).toFixed(1)} kWh`}
-        />
-        <MetricCard
-          title="P2P Trades"
-          value={transactions.length}
-          unit="Orders"
-          iconName="trade"
-          variant="ai"
-          subtitle="Cleared"
-        />
-        <MetricCard
-          title="Grid Export"
-          value={isSurplus && netCommunity > 1.5 ? (netCommunity - 1.5).toFixed(1) : '0.0'}
-          unit="kW"
-          iconName="grid"
-          variant="grid"
-          subtitle={isSurplus ? 'Active' : 'Standby'}
-        />
+    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+      
+      {/* Page Title & Status Subheading */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <div>
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102019] tracking-tight">
+              Community Energy Command Center
+            </h1>
+            <Badge variant="surplus" size="sm">
+              Live Operating Layer
+            </Badge>
+          </div>
+          <p className="text-sm text-[#5D6B64] font-medium mt-1">
+            Real-time physical telemetry, short-term forecasting, and deterministic peer dispatch.
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ai"
+            size="sm"
+            onClick={() => navigate('/ai')}
+            icon={<FaIcon name="ai" />}
+          >
+            Open AI Copilot
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate('/network')}
+            icon={<FaIcon name="network" />}
+          >
+            View 3D Network
+          </Button>
+        </div>
       </div>
 
-      {/* Dynamic Status / Narrative Banner */}
-      {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/95 px-3.5 py-2 text-xs text-emerald-950 shadow-xs">
-          <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-            <span className="font-semibold">{statusMessage}</span>
+      {/* Dynamic Action Notification */}
+      {aiExecutionMessage && (
+        <div className="flex items-center justify-between rounded-xl border border-[#DDE5E0] bg-[#E7F5EE] px-4 py-3 text-sm text-[#163A2B] font-bold shadow-subtle animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center space-x-2.5">
+            <span className="h-2 w-2 rounded-full bg-[#168A5A] animate-pulse" />
+            <span>{aiExecutionMessage}</span>
           </div>
           <button
             type="button"
-            onClick={() => setStatusMessage('')}
-            className="text-emerald-700 hover:text-emerald-950 font-bold text-xs p-1"
-            aria-label="Dismiss status message"
+            onClick={() => setAiExecutionMessage('')}
+            className="text-[#168A5A] hover:text-[#102019] text-xs font-bold p-1"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* 🌟 2. MAIN AREA (3 COLUMNS: LEFT CONTROLS, CENTER 3D MAP, RIGHT ACTIONS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-        {/* LEFT COLUMN: Simulation & Community Controls */}
-        <div className="lg:col-span-3">
-          <DashboardControlPanel
-            households={computedHouseholds}
-            battery={battery}
-            grid={grid}
-            currentHour={currentHour}
-            activeScenario={activeScenario}
-            onUpdateHousehold={handleUpdateHousehold}
-            onUpdateBattery={handleUpdateBattery}
-            onUpdateGrid={handleUpdateGrid}
-            onApplyScenario={handleApplyScenario}
-            onChangeHour={handleChangeHour}
-            onRunSimulation={() => {
-              setIsLiveSimulating(true);
-              setStatusMessage('Live Microgrid Simulation Started.');
-            }}
-            onReset={handleReset}
-            onLoadDemo={handleReset}
-          />
-        </div>
+      {/* 🌟 ROW 1: PRIMARY METRICS HIERARCHY */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <MetricCard
+          title="Generation"
+          value={`${totalGen.toFixed(1)} kW`}
+          subtitle="Solar generation active"
+          iconName="solar"
+          variant="solar"
+          delta="+1.2 kW vs baseline"
+          deltaType="positive"
+        />
 
-        {/* CENTER COLUMN: Large 3D Virtual Microgrid Digital Twin */}
-        <div className="lg:col-span-6 xl:col-span-6">
-          <div className="flex flex-col h-full rounded-2xl border border-slate-200 bg-white p-3 shadow-card space-y-2.5">
-            {/* 3D Scene Controls Bar */}
-            <div className="flex items-center justify-between px-1 text-xs">
-              <div className="flex items-center space-x-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLiveSimulating(!isLiveSimulating);
-                    setStatusMessage(isLiveSimulating ? 'Simulation Paused.' : 'Simulation Active.');
-                  }}
-                  className={`flex items-center space-x-1.5 rounded-lg px-3 py-1 text-xs font-bold shadow-xs transition active:scale-95 ${
-                    isLiveSimulating
-                      ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  }`}
-                >
-                  <FaIcon name={isLiveSimulating ? 'pause' : 'play'} className="text-xs" />
-                  <span>{isLiveSimulating ? 'PAUSE' : 'START LIVE'}</span>
-                </button>
+        <MetricCard
+          title="Community Load"
+          value={`${totalCon.toFixed(1)} kW`}
+          subtitle="Active community demand"
+          iconName="home"
+          variant="default"
+          delta="Normal residential draw"
+          deltaType="neutral"
+        />
 
-                {/* Speed selector */}
-                <div className="flex items-center space-x-0.5 rounded-lg bg-slate-100 p-0.5 text-[10px] font-bold">
-                  {[1, 2, 4].map((spd) => (
-                    <button
-                      key={spd}
-                      type="button"
-                      onClick={() => setSimSpeed(spd)}
-                      className={`px-2 py-0.5 rounded-md transition ${
-                        simSpeed === spd ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
-                      }`}
-                    >
-                      {spd}x
-                    </button>
-                  ))}
+        <MetricCard
+          title="Net Balance"
+          value={`${isSurplus ? '+' : ''}${netCommunity.toFixed(1)} kW`}
+          subtitle={isSurplus ? "Community energy surplus" : "Community energy deficit"}
+          iconName="energy"
+          variant={isSurplus ? "surplus" : "deficit"}
+          badge={isSurplus ? "SURPLUS" : "DEFICIT"}
+          delta={isSurplus ? "Local self-sufficiency active" : "Grid import supplemental"}
+          deltaType={isSurplus ? "positive" : "negative"}
+        />
+
+        <MetricCard
+          title="Battery SOC"
+          value={`${battery.soc.toFixed(0)}%`}
+          subtitle="Available ESS storage reserve"
+          iconName="battery"
+          variant="battery"
+          badge="SAFE BUFFER"
+          delta="10% reserve floor preserved"
+          deltaType="positive"
+        />
+      </div>
+
+      {/* 🌟 ROW 2: 3D DIGITAL TWIN + EMBEDDED AI COPILOT PANEL */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        {/* CENTERPIECE 3D SPATIAL DIGITAL TWIN (65% width) */}
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
+          <div className="flex flex-col h-full rounded-2xl border border-[#DDE5E0] bg-white p-4 sm:p-5 shadow-card">
+            
+            {/* 3D Viewport Header Bar */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+              <div className="flex items-center space-x-2.5">
+                <span className="flex h-2.5 w-2.5 rounded-full bg-[#168A5A] ring-4 ring-[#E7F5EE]" />
+                <div>
+                  <h3 className="text-base font-bold text-[#102019] tracking-tight">
+                    Spatial Microgrid Digital Twin
+                  </h3>
+                  <p className="text-xs text-[#5D6B64]">
+                    Real-time multi-household power vectors & bilateral transfers
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-1.5">
                 <button
                   type="button"
                   onClick={() => sceneRef.current?.resetCamera()}
-                  className="flex items-center space-x-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
-                  title="Reset 3D Camera View"
+                  className="px-2.5 py-1 rounded-lg border border-[#DDE5E0] bg-[#F5F7F6] text-xs font-semibold text-[#102019] hover:bg-white transition"
+                  title="Reset Camera Angle"
                 >
-                  <FaIcon name="rotate" className="text-slate-500 text-xs" />
-                  <span className="hidden sm:inline">Reset View</span>
+                  <FaIcon name="camera" className="mr-1 text-[11px] text-[#5D6B64]" />
+                  Reset View
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sceneRef.current?.topView()}
+                  className="hidden sm:inline-flex px-2.5 py-1 rounded-lg border border-[#DDE5E0] bg-[#F5F7F6] text-xs font-semibold text-[#102019] hover:bg-white transition"
+                  title="Overhead View"
+                >
+                  Top-Down
                 </button>
               </div>
             </div>
 
-            {/* 3D Canvas */}
-            <div className="h-[460px] xl:h-[500px] w-full relative rounded-xl overflow-hidden">
+            {/* 3D Scene Viewport */}
+            <div className="mt-4 h-[380px] sm:h-[420px] w-full relative rounded-xl overflow-hidden bg-[#F5F7F6]">
               <MarketplaceScene3D
                 ref={sceneRef}
                 households={computedHouseholds}
                 battery={battery}
                 grid={grid}
-                orders={orders}
                 activeFlows={activeFlows}
-                isMatching={false}
                 selectedNode={selectedNode}
-                onSelectNode={setSelectedNode}
-                isModalOpen={isConfirmModalOpen}
+                onSelectNode={(nodeId) => setSelectedNode(nodeId)}
               />
 
-              {/* Floating micro status badge */}
-              <div className="absolute top-2.5 left-2.5 pointer-events-none">
-                <div className="flex items-center space-x-1.5 rounded-full border border-slate-200 bg-white/95 px-2.5 py-0.5 shadow-2xs backdrop-blur-md">
-                  <span className={`h-1.5 w-1.5 rounded-full ${isLiveSimulating ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'}`} />
-                  <span className="text-[10px] font-bold text-slate-800">
-                    {isLiveSimulating ? `Live Microgrid • ${String(currentHour).padStart(2, '0')}:00` : '3D Digital Twin • Interactive'}
+              {/* Floating Active Conduits Pill */}
+              <div className="absolute top-3 left-3 pointer-events-none">
+                <div className="flex items-center space-x-2 rounded-full border border-[#DDE5E0] bg-white/95 px-3 py-1 shadow-card backdrop-blur-md">
+                  <span className="h-2 w-2 rounded-full bg-[#168A5A] animate-pulse" />
+                  <span className="text-xs font-bold text-[#102019]">
+                    {activeFlows.length > 0 ? `${activeFlows.length} Active Flow Conduits` : 'Baseline Ready'}
                   </span>
                 </div>
+              </div>
+            </div>
+
+            {/* Node Quick Selector Footer */}
+            <div className="mt-3.5 pt-3 border-t border-[#DDE5E0] flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="text-[#5D6B64] font-medium">Select Household Node:</span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {computedHouseholds.map((h) => (
+                  <button
+                    key={h.id}
+                    type="button"
+                    onClick={() => setSelectedNode(h.id)}
+                    className={`px-2.5 py-1 rounded-lg font-bold transition text-xs ${
+                      selectedNode === h.id
+                        ? 'bg-[#163A2B] text-white shadow-xs'
+                        : 'bg-[#F5F7F6] text-[#5D6B64] hover:text-[#102019] border border-[#DDE5E0]'
+                    }`}
+                  >
+                    {h.name.split(' ')[0]} {h.name.split(' ')[1]}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Live Energy Status & Manual Actions (~20%) */}
-        <div className="lg:col-span-3 xl:col-span-3">
-          <DashboardLiveStatus
-            selectedHousehold={selectedHousehold}
-            battery={battery}
-            grid={grid}
-            orders={orders}
-            transactions={transactions}
-            onOpenSellModal={handleOpenSellModal}
-            onStoreSurplus={handleStoreSurplus}
-            onExportSurplus={handleExportSurplus}
-            onChargeBattery={handleChargeBattery}
-            onDischargeBattery={handleDischargeBattery}
-            onGridImport={handleGridImport}
-            onInitiatePurchase={handleInitiatePurchase}
-          />
+        {/* PREMIUM AI COPILOT OVERVIEW PANEL (35% width) */}
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
+          <div className="flex flex-col h-full rounded-2xl border border-[#E2D9F8] bg-[#FBFCFB] p-5 sm:p-6 shadow-card space-y-4">
+            
+            {/* AI Copilot Header */}
+            <div className="flex items-start justify-between pb-3 border-b border-[#E2D9F8]">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-10 h-10 rounded-xl bg-[#F0EBFF] text-[#7657D8] flex items-center justify-center text-lg flex-shrink-0">
+                  <FaIcon name="brain" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#102019]">
+                    GridShare AI Copilot
+                  </h3>
+                  <div className="text-xs text-[#7657D8] font-semibold">
+                    Forecast Horizon: 60 Minutes
+                  </div>
+                </div>
+              </div>
+              <Badge variant="ai" size="xs">
+                RULE-BASED
+              </Badge>
+            </div>
+
+            {/* Predicted Balance & Confidence */}
+            <div className="grid grid-cols-2 gap-3 p-3 rounded-xl border border-[#DDE5E0] bg-white">
+              <div>
+                <span className="text-xs text-[#5D6B64] font-medium block">Predicted Balance</span>
+                <span className="text-xl sm:text-2xl font-extrabold text-[#168A5A]">
+                  +1.7 kW
+                </span>
+              </div>
+              <div>
+                <span className="text-xs text-[#5D6B64] font-medium block">Confidence</span>
+                <div className="flex items-center space-x-1 mt-0.5">
+                  <span className="text-xl sm:text-2xl font-extrabold text-[#7657D8]">91%</span>
+                  <span className="text-[11px] text-[#5D6B64] font-normal">High</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Recommended Action Card */}
+            <div className="rounded-xl border border-[#DDE5E0] bg-white p-4 space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#7657D8]">
+                Recommended Action
+              </span>
+              <div className="text-sm font-bold text-[#102019]">
+                Trade 2.0 kWh locally (House A ➔ House B)
+              </div>
+              <p className="text-xs text-[#5D6B64] leading-relaxed">
+                Solar surplus is expected to persist for the next hour. Peer exchange clears at ₹4.50/kWh, yielding ₹9.00 community earnings and saving House B ₹3.20 vs grid tariff.
+              </p>
+            </div>
+
+            {/* Why This Action? Reasoning Box */}
+            <div className="rounded-xl bg-[#F0EBFF]/50 border border-[#E2D9F8] p-4 space-y-2 text-xs">
+              <span className="font-bold text-[#7657D8] uppercase tracking-wide text-[11px] block">
+                Why This Action?
+              </span>
+              <ul className="space-y-1.5 text-[#102019] text-[12.5px]">
+                <li className="flex items-start gap-2">
+                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
+                  <span>Local deficit detected at House B (4.0 kW active load)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
+                  <span>Surplus expected to continue through afternoon peak</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
+                  <span>Battery storage (40% SOC) safely exceeds 10% reserve floor</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <FaIcon name="check" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
+                  <span>P2P trade (₹4.50) strongly preferable to utility export (₹3.20)</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleExecuteRecommendation}
+                isLoading={isAiExecuting}
+                className="w-full justify-center"
+                icon={<FaIcon name="sparkles" />}
+              >
+                Execute Trade Action
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/ai')}
+                className="w-full sm:w-auto justify-center"
+              >
+                Review Details
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 🌟 3. BOTTOM ROW: INTERACTIVE ANALYTICS & SETTLEMENT LEDGER */}
-      <DashboardAnalyticsSection
-        chartHistory={chartHistory}
-        currentFlows={activeFlows}
-        battery={battery}
+      {/* 🌟 ROW 3: AI DECISION TIMELINE & DISPATCH LOGIC */}
+      <DecisionTimeline
+        title="AI Decision Sequence & Dispatch Logic"
+        subtitle="End-to-end trace of how GridShare observes surplus, predicts horizon load, and settles bilateral trades"
       />
 
-      <TransactionLedger
-        transactions={transactions}
-        computedHouseholds={computedHouseholds}
-        battery={battery}
-      />
+      {/* 🌟 ROW 4: COMMUNITY PERFORMANCE + RECENT ACTIVITY */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        {/* 24-HOUR ENERGY PROFILE (7 cols) */}
+        <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0] mb-3">
+            <div>
+              <h3 className="text-base font-bold text-[#102019]">
+                24-Hour Diurnal Energy Profile
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Solar generation curve vs community demand load
+              </p>
+            </div>
+            <Badge variant="solar" size="xs">
+              Diurnal Model
+            </Badge>
+          </div>
 
-      {/* Purchase Confirmation Modal */}
-      <TradeConfirmationModal
-        purchase={activePurchase}
-        isOpen={isConfirmModalOpen}
-        onConfirm={handleConfirmPurchase}
-        onCancel={() => {
-          setIsConfirmModalOpen(false);
-          setActivePurchase(null);
-        }}
-        isSettling={isSettling}
-        buyerHousehold={activeBuyer}
-        sellerHousehold={activeSeller}
-      />
+          <LiveEnergyChart data={chartHistory} height={260} />
+        </div>
+
+        {/* RECENT SETTLED TRADES & ACTIVITY (5 cols) */}
+        <div className="lg:col-span-5 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0] mb-3">
+            <div>
+              <h3 className="text-base font-bold text-[#102019]">
+                Settled P2P Transactions
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Bilateral microgrid ledger transactions
+              </p>
+            </div>
+            <Badge variant="surplus" size="xs">
+              {transactions.length} Settled
+            </Badge>
+          </div>
+
+          <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+            {transactions.map((tx) => (
+              <div
+                key={tx.id}
+                className="flex items-center justify-between p-3 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] hover:bg-white text-xs transition"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#E7F5EE] text-[#168A5A] flex items-center justify-center">
+                    <FaIcon name="trade" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-[#102019]">{tx.sellerId} ➔ {tx.buyerId}</div>
+                    <div className="text-[11px] text-[#83908A]">{tx.time} • {tx.energyKwh} kWh @ ₹{tx.pricePerKwh}/kWh</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-[#168A5A]">₹{tx.totalValue.toFixed(2)}</div>
+                  <span className="text-[10px] text-[#83908A] font-semibold">SETTLED</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Confirmation Modal */}
+      {isConfirmModalOpen && (
+        <TradeConfirmationModal
+          isOpen={isConfirmModalOpen}
+          onClose={() => setIsConfirmModalOpen(false)}
+          purchaseDetails={activePurchase}
+          onConfirmTrade={() => {
+            setIsConfirmModalOpen(false);
+            setAiExecutionMessage('Trade confirmed and settled successfully.');
+          }}
+        />
+      )}
     </div>
   );
 }

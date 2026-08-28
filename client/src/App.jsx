@@ -73,21 +73,14 @@ function MainLayout() {
   };
 
   return (
-    <div className="flex min-h-screen w-screen flex-col bg-slate-100/70 text-slate-900 overflow-x-hidden antialiased font-sans">
+    <div className="flex min-h-screen w-screen flex-col bg-[#F5F7F6] text-[#102019] overflow-x-hidden antialiased font-sans">
       {/* ⚡ Top Navigation Bar */}
       <TopNavbar
-        isOnline={isOnline}
-        batterySoc={batterySoc}
-        gridPrice={gridPrice}
-        onRefresh={handleManualRefresh}
-        isRefreshing={isRefreshing}
         onOpenDemoModal={() => setIsDemoModalOpen(true)}
-        onTriggerOptimization={handleTriggerOptimization}
-        isOptimizing={isOptimizing}
       />
 
       {/* Main Content Viewport */}
-      <main className="flex-1 w-full px-3 py-3 sm:px-5 sm:py-4 max-w-[1680px] mx-auto" key={refreshKey}>
+      <main className="flex-1 w-full px-4 py-4 sm:px-6 sm:py-6 max-w-[1680px] mx-auto" key={refreshKey}>
         <Routes>
           <Route path="/" element={<DashboardView />} />
           <Route path="/dashboard" element={<DashboardView />} />

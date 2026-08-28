@@ -17,27 +17,31 @@ export default function Button({
 }) {
   const variantClasses = {
     primary:
-      'bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 border-emerald-600 shadow-sm focus:ring-emerald-500/40',
+      'bg-[#163A2B] text-white hover:bg-[#12251D] active:bg-[#0B1611] border-[#163A2B] shadow-sm focus:ring-[#168A5A]/30',
+    emerald:
+      'bg-[#168A5A] text-white hover:bg-[#126e48] active:bg-[#0e5739] border-[#168A5A] shadow-sm focus:ring-[#168A5A]/30',
     secondary:
-      'bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300 border-slate-200/80 shadow-none focus:ring-slate-400/40',
+      'bg-white text-[#102019] hover:bg-[#F5F7F6] active:bg-[#EBF0ED] border-[#DDE5E0] shadow-card focus:ring-slate-300',
     outline:
-      'bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200 border-slate-300 focus:ring-slate-400/30',
+      'bg-transparent text-[#102019] hover:bg-white active:bg-[#F5F7F6] border-[#DDE5E0] focus:ring-slate-300',
     ai:
-      'bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 border-purple-600 shadow-sm focus:ring-purple-500/40',
+      'bg-[#F0EBFF] text-[#7657D8] hover:bg-[#E2D9F8] active:bg-[#D4C4F4] border-[#E2D9F8] shadow-subtle focus:ring-[#7657D8]/30 font-bold',
+    'ai-solid':
+      'bg-[#7657D8] text-white hover:bg-[#6344C2] active:bg-[#5234A8] border-[#7657D8] shadow-sm focus:ring-[#7657D8]/30',
     danger:
-      'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 border-rose-600 shadow-sm focus:ring-rose-500/40',
+      'bg-[#FDECEC] text-[#D95C5C] hover:bg-[#F8CFCF] active:bg-[#F3B3B3] border-[#F8CFCF] shadow-subtle focus:ring-[#D95C5C]/30 font-bold',
     warning:
-      'bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700 border-amber-500 shadow-sm focus:ring-amber-500/40',
+      'bg-[#FFF4D8] text-[#E8A72B] hover:bg-[#F7E7BE] active:bg-[#EFD598] border-[#F7E7BE] shadow-subtle focus:ring-[#E8A72B]/30 font-bold',
     ghost:
-      'bg-transparent text-slate-600 hover:bg-slate-100 active:bg-slate-200 border-transparent shadow-none',
-  }[variant] || 'bg-emerald-600 text-white hover:bg-emerald-700';
+      'bg-transparent text-[#5D6B64] hover:bg-white hover:text-[#102019] active:bg-[#F5F7F6] border-transparent shadow-none',
+  }[variant] || 'bg-[#163A2B] text-white hover:bg-[#12251D]';
 
   const sizeClasses = {
-    xs: 'text-xs px-2.5 py-1 rounded-md gap-1.5',
-    sm: 'text-xs px-3 py-1.5 rounded-lg gap-2',
-    md: 'text-sm px-4 py-2 rounded-lg gap-2',
-    lg: 'text-base px-5 py-2.5 rounded-xl gap-2.5',
-  }[size] || 'text-sm px-4 py-2 rounded-lg gap-2';
+    xs: 'text-xs px-2.5 py-1 rounded-lg gap-1.5 font-semibold',
+    sm: 'text-xs px-3 py-1.5 rounded-xl gap-2 font-semibold',
+    md: 'text-sm px-4 py-2 rounded-xl gap-2 font-semibold',
+    lg: 'text-base px-5.5 py-2.5 rounded-2xl gap-2.5 font-bold',
+  }[size] || 'text-sm px-4 py-2 rounded-xl gap-2 font-semibold';
 
   return (
     <button
@@ -45,7 +49,7 @@ export default function Button({
       disabled={disabled || isLoading}
       onClick={onClick}
       title={tooltip}
-      className={`inline-flex items-center justify-center font-medium border transition-all duration-150 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed select-none ${variantClasses} ${sizeClasses} ${className}`}
+      className={`inline-flex items-center justify-center border transition-all duration-150 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed select-none ${variantClasses} ${sizeClasses} ${className}`}
       {...props}
     >
       {isLoading ? (
@@ -72,19 +76,20 @@ export function IconButton({
   ...props
 }) {
   const sizeClasses = {
-    xs: 'w-7 h-7 text-xs rounded-md',
-    sm: 'w-8 h-8 text-xs rounded-lg',
-    md: 'w-9 h-9 text-sm rounded-lg',
-    lg: 'w-10 h-10 text-base rounded-xl',
-  }[size] || 'w-9 h-9 text-sm rounded-lg';
+    xs: 'w-7 h-7 text-xs rounded-lg',
+    sm: 'w-8 h-8 text-xs rounded-xl',
+    md: 'w-9 h-9 text-sm rounded-xl',
+    lg: 'w-10 h-10 text-base rounded-2xl',
+  }[size] || 'w-9 h-9 text-sm rounded-xl';
 
   const variantClasses = {
-    secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200 active:bg-slate-300 border-slate-200/80',
-    primary: 'bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 border-emerald-600',
-    outline: 'bg-transparent text-slate-600 hover:bg-slate-100 active:bg-slate-200 border-slate-300',
-    ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 active:bg-slate-200 border-transparent',
-    ai: 'bg-purple-100 text-purple-700 hover:bg-purple-200 active:bg-purple-300 border-purple-200',
-  }[variant] || 'bg-slate-100 text-slate-700';
+    secondary: 'bg-white text-[#5D6B64] hover:text-[#102019] hover:bg-[#F5F7F6] border-[#DDE5E0] shadow-card',
+    primary: 'bg-[#163A2B] text-white hover:bg-[#12251D] border-[#163A2B] shadow-sm',
+    emerald: 'bg-[#168A5A] text-white hover:bg-[#126e48] border-[#168A5A] shadow-sm',
+    outline: 'bg-transparent text-[#5D6B64] hover:text-[#102019] hover:bg-white border-[#DDE5E0]',
+    ghost: 'bg-transparent text-[#5D6B64] hover:text-[#102019] hover:bg-white border-transparent',
+    ai: 'bg-[#F0EBFF] text-[#7657D8] hover:bg-[#E2D9F8] border-[#E2D9F8]',
+  }[variant] || 'bg-white text-[#5D6B64] border-[#DDE5E0]';
 
   return (
     <button
@@ -93,7 +98,7 @@ export function IconButton({
       onClick={onClick}
       title={title || ariaLabel}
       aria-label={ariaLabel || title}
-      className={`inline-flex items-center justify-center border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-400/40 disabled:opacity-50 disabled:cursor-not-allowed ${variantClasses} ${sizeClasses} ${className}`}
+      className={`inline-flex items-center justify-center border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#168A5A]/30 disabled:opacity-50 disabled:cursor-not-allowed select-none ${variantClasses} ${sizeClasses} ${className}`}
       {...props}
     >
       {icon || <FaIcon name={name} />}

@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
-import AiForecastScene3D, { FORECAST_3D_POSITIONS } from '../components/energy-map-3d/AiForecastScene3D';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -15,50 +13,42 @@ import {
   Legend,
 } from 'recharts';
 import FaIcon from '../components/icons/FaIcon';
-import Card from '../components/ui/Card';
-import Badge, { StatusIndicator } from '../components/ui/Badge';
-import Button, { IconButton } from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 import MetricCard from '../components/ui/MetricCard';
 import DecisionTimeline from '../components/ui/DecisionTimeline';
 
 export default function AiForecastView() {
   const navigate = useNavigate();
 
-  // Forecast state
-  const [solarKw, setSolarKw] = useState(6.5);
-  const [loadKw, setLoadKw] = useState(7.2);
+  // Forecast simulation parameters
+  const [solarKw, setSolarKw] = useState(6.8);
+  const [loadKw, setLoadKw] = useState(7.5);
   const [batterySoc, setBatterySoc] = useState(40);
   const [gridTariff, setGridTariff] = useState(6.10);
   const [p2pPrice, setP2pPrice] = useState(4.50);
-  const [weatherFactor, setWeatherFactor] = useState(100);
   const [horizon, setHorizon] = useState('24H');
-  const [scenario, setScenario] = useState('NORMAL');
   const [selectedHour, setSelectedHour] = useState(12);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [appliedNotice, setAppliedNotice] = useState(null);
 
-  const sceneRef = useRef();
-
-  // Forecast time-series profile
+  // 24-hour Diurnal Profile calculation
   const forecastSeries = useMemo(() => {
     const hours = Array.from({ length: 24 }, (_, i) => i);
     const solarCurve = [0, 0, 0, 0, 0, 0.1, 0.8, 2.2, 4.5, 6.2, 7.8, 8.4, 8.1, 7.2, 5.8, 3.9, 1.8, 0.4, 0, 0, 0, 0, 0, 0];
     const loadCurve = [2.8, 2.4, 2.2, 2.1, 2.3, 3.1, 4.8, 5.5, 5.1, 4.9, 5.2, 5.8, 5.4, 5.0, 5.3, 6.2, 7.8, 8.9, 8.4, 7.2, 5.8, 4.5, 3.6, 3.0];
 
-    const weatherMult = weatherFactor / 100;
     let runningSoc = batterySoc;
 
     return hours.map((hr) => {
-      const gen = Math.round(solarCurve[hr] * weatherMult * (solarKw / 8.0) * 10) / 10;
+      const gen = Math.round(solarCurve[hr] * (solarKw / 8.0) * 10) / 10;
       const con = Math.round(loadCurve[hr] * (loadKw / 6.0) * 10) / 10;
       const net = Math.round((gen - con) * 10) / 10;
 
-      // Update battery SOC estimate
       if (net > 0 && runningSoc < 95) {
         runningSoc = Math.min(95, runningSoc + net * 2.5);
-      } else if (net < 0 && runningSoc > 20) {
-        runningSoc = Math.max(20, runningSoc + net * 2.0);
+      } else if (net < 0 && runningSoc > 10) {
+        runningSoc = Math.max(10, runningSoc + net * 2.0);
       }
 
       return {
@@ -69,385 +59,372 @@ export default function AiForecastView() {
         net: net,
         batterySoc: Math.round(runningSoc),
         p2pPotential: Math.max(0, net),
-        gridImport: net < 0 && runningSoc <= 20 ? Math.abs(net) : 0,
       };
     });
-  }, [solarKw, loadKw, batterySoc, weatherFactor]);
+  }, [solarKw, loadKw, batterySoc]);
 
-  // Current selected hour state
   const currentSlot = forecastSeries[selectedHour] || forecastSeries[12];
   const isSurplus = currentSlot.net > 0;
 
-  // ML Recommendation & Reasoning Engine
+  // ML Recommendation & Reasoning
   const recommendation = useMemo(() => {
     if (isSurplus) {
-      const tradeAmt = Math.min(currentSlot.net, 2.5);
+      const tradeAmt = Math.min(currentSlot.net, 2.8);
       const estSavings = Math.round(tradeAmt * (gridTariff - p2pPrice) * 100) / 100;
-      const co2Kg = Math.round(tradeAmt * 0.82 * 100) / 100;
 
       return {
         action: 'TRADE',
         actionLabel: 'Execute P2P Local Trade',
         energyAmount: tradeAmt,
-        targetNode: 'House B (Consumer / EV)',
+        targetNode: 'House B (Consumer / Heavy EV)',
         confidence: 94.2,
         reasoning: [
           `Local surplus of +${currentSlot.net.toFixed(1)} kW projected for next ${horizon}.`,
-          `Nearby peer demand available at House B (EV Charger active).`,
-          `Battery reserve healthy at ${currentSlot.batterySoc}% (above 20% floor).`,
-          `P2P tariff (₹${p2pPrice}/kWh) provides +28% seller margin vs grid feed-in.`,
+          `Nearby peer demand active at House B (EV Charger active on Feeder A).`,
+          `Battery reserve healthy at ${currentSlot.batterySoc}% (exceeds 10% reserve floor).`,
+          `P2P tariff (₹${p2pPrice}/kWh) yields ₹${(tradeAmt * p2pPrice).toFixed(2)} and saves peer ₹${estSavings}.`,
         ],
         impact: {
-          savingsInr: estSavings,
-          co2AvoidedKg: co2Kg,
+          costSavings: estSavings,
           gridAvoidedKw: tradeAmt,
+          selfConsumptionPercent: 88,
         },
       };
     } else {
-      const deficit = Math.abs(currentSlot.net);
-      if (currentSlot.batterySoc > 20) {
-        return {
-          action: 'STORE',
-          actionLabel: 'Dispatch Community Battery ESS',
-          energyAmount: Math.min(deficit, 2.0),
-          targetNode: 'Central Community Battery (50 kWh)',
-          confidence: 91.5,
-          reasoning: [
-            `Community deficit of ${deficit.toFixed(1)} kW projected.`,
-            `Battery ESS has sufficient headroom (${currentSlot.batterySoc}% SOC > 20% floor).`,
-            `Avoids utility peak tariff surcharge (₹${gridTariff}/kWh).`,
-          ],
-          impact: {
-            savingsInr: Math.round(Math.min(deficit, 2.0) * gridTariff * 0.3 * 100) / 100,
-            co2AvoidedKg: Math.round(Math.min(deficit, 2.0) * 0.75 * 100) / 100,
-            gridAvoidedKw: Math.min(deficit, 2.0),
-          },
-        };
-      } else {
-        return {
-          action: 'IMPORT',
-          actionLabel: 'Import Utility Reserve Power',
-          energyAmount: deficit,
-          targetNode: 'Main Grid Substation',
-          confidence: 96.0,
-          reasoning: [
-            `Deficit of ${deficit.toFixed(1)} kW with battery at 20% emergency reserve floor.`,
-            `Discharge blocked to maintain critical resilience reserve.`,
-            `Importing required base load from central utility.`,
-          ],
-          impact: {
-            savingsInr: 0,
-            co2AvoidedKg: 0,
-            gridAvoidedKw: 0,
-          },
-        };
-      }
+      return {
+        action: 'BATTERY_DISCHARGE',
+        actionLabel: 'Discharge Central Battery Reserve',
+        energyAmount: Math.abs(currentSlot.net),
+        targetNode: 'Community Microgrid Bus',
+        confidence: 91.0,
+        reasoning: [
+          `Local net deficit of ${Math.abs(currentSlot.net).toFixed(1)} kW active during low solar interval.`,
+          `Central battery available at ${currentSlot.batterySoc}% SOC.`,
+          `Discharging ESS avoids high utility peak import rates (₹${gridTariff}/kWh).`,
+          `Blackout protection reserve preserved above 10% floor.`,
+        ],
+        impact: {
+          costSavings: Math.round(Math.abs(currentSlot.net) * 1.80 * 100) / 100,
+          gridAvoidedKw: Math.abs(currentSlot.net),
+          selfConsumptionPercent: 75,
+        },
+      };
     }
-  }, [currentSlot, isSurplus, horizon, gridTariff, p2pPrice]);
+  }, [currentSlot, isSurplus, gridTariff, p2pPrice, horizon]);
 
-  // Execute recommendation
-  const handleApplyRecommendation = async () => {
-    try {
-      setIsApplying(true);
-      await api.runOptimization({
-        action: recommendation.action,
-        amount_kwh: recommendation.energyAmount,
-        target_node: recommendation.targetNode,
-      });
-      setAppliedNotice(`Applied ${recommendation.actionLabel} (${recommendation.energyAmount} kWh).`);
-      setTimeout(() => setAppliedNotice(null), 4000);
-    } catch (err) {
-      console.error('Failed to apply recommendation:', err);
-    } finally {
+  const handleApplyDispatch = () => {
+    setIsApplying(true);
+    setTimeout(() => {
       setIsApplying(false);
-    }
+      setAppliedNotice(`Optimal dispatch applied: ${recommendation.actionLabel} for ${recommendation.energyAmount} kWh.`);
+      setTimeout(() => setAppliedNotice(null), 5000);
+    }, 800);
   };
 
   return (
-    <div className="space-y-4 max-w-[1680px] mx-auto pb-6">
-      {/* Top Banner & AI Model Specification */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-purple-900 text-purple-300 flex items-center justify-center text-xl shadow-md flex-shrink-0">
-            <FaIcon name="copilot" />
+    <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
+      
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <div>
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102019] tracking-tight">
+              AI Energy Copilot & Predictive Dispatch
+            </h1>
+            <Badge variant="ai" size="sm">
+              RULE-BASED SIMULATOR
+            </Badge>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-                AI Copilot & Predictive Energy Optimization
-              </h1>
-              <Badge variant="ai" size="xs">
-                <StatusIndicator status="ai" pulse label="Random Forest RF-100" />
-              </Badge>
+          <p className="text-sm text-[#5D6B64] font-medium mt-1">
+            Deterministic multi-horizon forecasting, explainable dispatch reasoning, and autonomous peer matching.
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleApplyDispatch}
+            isLoading={isApplying}
+            icon={<FaIcon name="sparkles" />}
+          >
+            Apply Optimal Dispatch
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate('/network')}
+            icon={<FaIcon name="network" />}
+          >
+            View Live Network
+          </Button>
+        </div>
+      </div>
+
+      {/* Applied Notice Banner */}
+      {appliedNotice && (
+        <div className="flex items-center justify-between rounded-xl border border-[#E2D9F8] bg-[#F0EBFF] px-4 py-3 text-sm text-[#7657D8] font-bold shadow-subtle animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center space-x-2.5">
+            <FaIcon name="checkCircle" className="text-base" />
+            <span>{appliedNotice}</span>
+          </div>
+          <button type="button" onClick={() => setAppliedNotice(null)} className="text-[#7657D8] text-xs font-bold p-1">
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* 🌟 1. PRIMARY AI KPI METRIC CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <MetricCard
+          title="Predicted Community Balance"
+          value={`${isSurplus ? '+' : ''}${currentSlot.net.toFixed(1)} kW`}
+          subtitle={`Forecast at ${currentSlot.time}`}
+          iconName="energy"
+          variant={isSurplus ? 'surplus' : 'deficit'}
+          badge={isSurplus ? 'SURPLUS' : 'DEFICIT'}
+        />
+
+        <MetricCard
+          title="Forecast Confidence"
+          value={`${recommendation.confidence}%`}
+          subtitle="Multi-horizon deterministic model"
+          iconName="ai"
+          variant="ai"
+          delta="High Model Fidelity"
+          deltaType="positive"
+        />
+
+        <MetricCard
+          title="Renewable Self-Consumption"
+          value={`${recommendation.impact.selfConsumptionPercent}%`}
+          subtitle="Clean energy retained locally"
+          iconName="solar"
+          variant="solar"
+          delta="+14% vs uncoordinated grid"
+          deltaType="positive"
+        />
+
+        <MetricCard
+          title="Hourly Economic Benefit"
+          value={`+₹${recommendation.impact.costSavings.toFixed(2)}`}
+          subtitle="Estimated community savings"
+          iconName="rupee"
+          variant="surplus"
+          delta="vs standard peak tariff"
+          deltaType="positive"
+        />
+      </div>
+
+      {/* 🌟 2. SIGNATURE 5-STAGE AI OPERATING PIPELINE */}
+      <div className="rounded-2xl border border-[#DDE5E0] bg-white p-5 sm:p-6 shadow-card">
+        <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0] mb-5">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#F0EBFF] text-[#7657D8] flex items-center justify-center text-sm">
+              <FaIcon name="brain" />
             </div>
-            <p className="text-xs text-slate-500 mt-0.5 font-normal">
-              Autonomous decision layer: Observe ➔ Predict ➔ Optimize ➔ Trade.
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-[#102019]">
+                Structured Intelligence Trace: State ➔ Action ➔ Impact
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Transparent explanation of how GridShare evaluates real-time telemetry and triggers optimal dispatch
+              </p>
+            </div>
+          </div>
+          <Badge variant="ai" size="xs">
+            ML-Ready Schema
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
+          
+          {/* 1. CURRENT STATE */}
+          <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[#83908A]">1. Current State</span>
+              <FaIcon name="solar" className="text-[#E8A72B] text-xs" />
+            </div>
+            <div className="text-sm font-bold text-[#102019]">{solarKw} kW Solar Gen</div>
+            <p className="text-xs text-[#5D6B64]">
+              House A prosumer generation with {batterySoc}% battery reserve.
+            </p>
+          </div>
+
+          {/* 2. FORECAST */}
+          <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[#83908A]">2. ML Forecast</span>
+              <FaIcon name="ai" className="text-[#7657D8] text-xs" />
+            </div>
+            <div className="text-sm font-bold text-[#102019]">{currentSlot.net > 0 ? `+${currentSlot.net} kW Surplus` : `${currentSlot.net} kW Deficit`}</div>
+            <p className="text-xs text-[#5D6B64]">
+              Projected 60-min balance across 5 community nodes.
+            </p>
+          </div>
+
+          {/* 3. OPTIMAL ACTION */}
+          <div className="p-3.5 rounded-xl border border-[#E2D9F8] bg-[#F0EBFF]/50 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[#7657D8]">3. Optimal Action</span>
+              <FaIcon name="sparkles" className="text-[#7657D8] text-xs" />
+            </div>
+            <div className="text-sm font-bold text-[#102019]">{recommendation.actionLabel}</div>
+            <p className="text-xs text-[#5D6B64]">
+              Allocate {recommendation.energyAmount} kWh to {recommendation.targetNode}.
+            </p>
+          </div>
+
+          {/* 4. REASONING */}
+          <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[#83908A]">4. Why This Action?</span>
+              <FaIcon name="checkCircle" className="text-[#168A5A] text-xs" />
+            </div>
+            <div className="text-sm font-bold text-[#102019]">Cost & Buffer Safety</div>
+            <p className="text-xs text-[#5D6B64]">
+              P2P trade (₹4.50/kWh) saves ₹1.60/kWh vs peak grid import.
+            </p>
+          </div>
+
+          {/* 5. EXPECTED IMPACT */}
+          <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#E7F5EE] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[#168A5A]">5. Expected Impact</span>
+              <FaIcon name="energy" className="text-[#168A5A] text-xs" />
+            </div>
+            <div className="text-sm font-bold text-[#163A2B]">+₹{recommendation.impact.costSavings.toFixed(2)} Savings</div>
+            <p className="text-xs text-[#5D6B64]">
+              Zero grid congestion; 10% blackout reserve preserved.
             </p>
           </div>
         </div>
-
-        {/* Model Performance Pill */}
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs">
-          <span className="font-mono text-purple-900 font-bold">R² = 0.9787</span>
-          <span className="text-slate-300">•</span>
-          <span className="text-slate-600">MAE: 0.11 kW</span>
-          <span className="text-slate-300">•</span>
-          <span className="text-emerald-700 font-semibold">MAPE: 4.55%</span>
-        </div>
       </div>
 
-      {/* KPI Cards Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-        <MetricCard
-          title="Observed Solar"
-          value={currentSlot.solar.toFixed(1)}
-          unit="kW"
-          iconName="solar"
-          variant="surplus"
-          subtitle="Real-time PV"
-        />
-        <MetricCard
-          title="Community Load"
-          value={currentSlot.load.toFixed(1)}
-          unit="kW"
-          iconName="powerOff"
-          variant="default"
-          subtitle="Household demand"
-        />
-        <MetricCard
-          title="Forecasted Net"
-          value={(isSurplus ? '+' : '') + currentSlot.net.toFixed(1)}
-          unit="kW"
-          iconName="energy"
-          variant={isSurplus ? 'surplus' : 'deficit'}
-          subtitle={isSurplus ? 'Surplus' : 'Deficit'}
-        />
-        <MetricCard
-          title="Battery Reserve"
-          value={currentSlot.batterySoc}
-          unit="%"
-          iconName="battery"
-          variant="battery"
-          subtitle="Floor: 20%"
-        />
-        <MetricCard
-          title="Model Confidence"
-          value={`${recommendation.confidence}%`}
-          iconName="sparkles"
-          variant="ai"
-          subtitle="Ensemble StdDev"
-        />
-        <MetricCard
-          title="Projected Savings"
-          value={`₹${recommendation.impact.savingsInr.toFixed(2)}`}
-          iconName="rupee"
-          variant="surplus"
-          subtitle="Per hour"
-        />
-      </div>
-
-      {/* Main Grid: Left Explainable Copilot Card, Right Interactive Graph & 3D */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* LEFT COLUMN: Explainable Recommendation & Decision Engine (5 cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          {/* Executive AI Recommendation Card */}
-          <Card
-            title="GridShare AI Autonomous Decision"
-            subtitle={`Calculated for simulated time ${currentSlot.time}`}
-            icon={<FaIcon name="sparkles" className="text-purple-600" />}
-            variant="ai"
-            className="border-purple-200"
-          >
-            <div className="space-y-4">
-              {/* Primary Action Header */}
-              <div className="p-3.5 bg-white rounded-xl border border-purple-200 shadow-sm space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700">
-                    Recommended Action
-                  </span>
-                  <Badge variant={isSurplus ? 'surplus' : 'battery'} size="sm">
-                    {recommendation.action}
-                  </Badge>
-                </div>
-                <div className="text-base font-bold text-slate-900">
-                  {recommendation.actionLabel}
-                </div>
-                <div className="text-xs text-slate-600 font-medium">
-                  Volume: <strong className="text-slate-900">{recommendation.energyAmount} kWh</strong> ➔ Target: <strong className="text-slate-900">{recommendation.targetNode}</strong>
-                </div>
-              </div>
-
-              {/* Explainable Reasoning Bullet Points */}
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-2">
-                  Explainable Decision Reasoning
-                </span>
-                <ul className="space-y-1.5 text-xs text-slate-700">
-                  {recommendation.reasoning.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <FaIcon name="check" className="text-emerald-600 text-xs mt-0.5 flex-shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Expected Impact Grid */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-purple-100">
-                <div className="p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-200 text-xs">
-                  <span className="text-emerald-700 font-semibold block text-[11px]">Community Savings</span>
-                  <span className="text-base font-bold text-emerald-900">₹{recommendation.impact.savingsInr.toFixed(2)}</span>
-                </div>
-                <div className="p-2.5 rounded-lg bg-blue-50/70 border border-blue-200 text-xs">
-                  <span className="text-blue-700 font-semibold block text-[11px]">CO₂ Avoided</span>
-                  <span className="text-base font-bold text-blue-900">{recommendation.impact.co2AvoidedKg} kg</span>
-                </div>
-              </div>
-
-              {/* Apply Action Button */}
-              <div className="pt-2">
-                <Button
-                  variant="ai"
-                  size="md"
-                  onClick={handleApplyRecommendation}
-                  isLoading={isApplying}
-                  icon={<FaIcon name="sparkles" />}
-                  className="w-full font-bold"
+      {/* 🌟 3. INTERACTIVE 24-HOUR FORECAST CHART & REASONING PANEL */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        {/* TIME-SERIES VISUALIZER (7 cols) */}
+        <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+            <div>
+              <h3 className="text-base font-bold text-[#102019]">
+                24-Hour Multi-Horizon Forecast Curves
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Diurnal solar curve (Amber), household load (Blue), and ESS SOC (Green)
+              </p>
+            </div>
+            <div className="flex items-center space-x-1.5">
+              {['6H', '12H', '24H'].map((h) => (
+                <button
+                  key={h}
+                  type="button"
+                  onClick={() => setHorizon(h)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                    horizon === h
+                      ? 'bg-[#163A2B] text-white shadow-xs'
+                      : 'bg-[#F5F7F6] text-[#5D6B64] hover:bg-[#EBF0ED]'
+                  }`}
                 >
-                  Apply Recommendation ({recommendation.action})
-                </Button>
-                {appliedNotice && (
-                  <p className="text-xs text-emerald-700 font-semibold text-center mt-2 animate-in fade-in">
-                    {appliedNotice}
-                  </p>
-                )}
-              </div>
+                  {h}
+                </button>
+              ))}
             </div>
-          </Card>
+          </div>
 
-          {/* AI Decision Timeline Component */}
-          <Card title="Live Coordination Sequence" icon={<FaIcon name="clock" className="text-slate-600" />}>
-            <DecisionTimeline currentStepIndex={isSurplus ? 3 : 2} />
-          </Card>
-        </div>
-
-        {/* RIGHT COLUMN: 24H Forecast Chart & Interactive Time Stepper (7 cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          {/* Time Stepper Slider */}
-          <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                <FaIcon name="clock" className="text-slate-500" />
-                <span>Simulated Timeline Hour:</span>
-              </span>
-              <span className="font-mono text-purple-900 font-bold text-sm">
-                {currentSlot.time}
-              </span>
-            </div>
+          {/* Time Slider */}
+          <div className="flex items-center space-x-3 text-xs pt-1">
+            <span className="font-semibold text-[#5D6B64] whitespace-nowrap">Scrub Hour:</span>
             <input
               type="range"
               min="0"
               max="23"
               value={selectedHour}
               onChange={(e) => setSelectedHour(Number(e.target.value))}
-              className="w-full accent-purple-600 h-2 bg-slate-200 rounded-lg cursor-pointer"
+              className="w-full accent-[#168A5A] cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-              <span>00:00 Night</span>
-              <span>06:00 Sunrise</span>
-              <span>12:00 Solar Peak</span>
-              <span>18:00 Sunset</span>
-              <span>23:00 Night</span>
-            </div>
+            <span className="font-mono font-bold text-[#102019] w-14 text-right">
+              {String(selectedHour).padStart(2, '0')}:00
+            </span>
           </div>
 
-          {/* 24-Hour Forecast Curve Graph */}
-          <Card
-            title="24-Hour Predictive Generation vs Community Load"
-            subtitle="Diurnal solar photovoltaic generation and neighborhood aggregate load profile."
-            icon={<FaIcon name="analytics" className="text-slate-700" />}
-          >
-            <div className="h-64 w-full pt-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={forecastSeries} margin={{ top: 10, right: 15, left: -15, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="solarGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.0} />
-                    </linearGradient>
-                    <linearGradient id="loadGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                  <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} unit=" kW" />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.5rem', fontSize: '11px' }}
-                    formatter={(val) => [`${val} kW`]}
-                  />
-                  <Legend verticalAlign="top" height={24} iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
-                  <Area
-                    type="monotone"
-                    dataKey="solar"
-                    name="Solar Generation"
-                    stroke="#f59e0b"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#solarGrad)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="load"
-                    name="Community Load"
-                    stroke="#3b82f6"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#loadGrad)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
+          <div className="h-[280px] w-full pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={forecastSeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="solarGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#E8A72B" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#E8A72B" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="loadGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3678D4" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#3678D4" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#DDE5E0" vertical={false} />
+                <XAxis dataKey="time" stroke="#83908A" fontSize={11} tickLine={false} />
+                <YAxis stroke="#83908A" fontSize={11} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #DDE5E0', boxShadow: '0 4px 6px -1px rgba(16,32,25,0.05)' }}
+                  formatter={(val, name) => [`${val} kW`, name === 'solar' ? 'Solar Gen' : name === 'load' ? 'Community Load' : 'Net Balance']}
+                />
+                <Area type="monotone" dataKey="solar" stroke="#E8A72B" strokeWidth={2} fillOpacity={1} fill="url(#solarGrad)" name="solar" />
+                <Area type="monotone" dataKey="load" stroke="#3678D4" strokeWidth={2} fillOpacity={1} fill="url(#loadGrad)" name="load" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-          {/* Battery SOC Prediction Curve */}
-          <Card
-            title="Projected Community Battery State of Charge (SOC %)"
-            subtitle="Virtual battery reserve tracking with emergency 20% floor guard."
-            icon={<FaIcon name="battery" className="text-amber-600" />}
-          >
-            <div className="h-44 w-full pt-1">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={forecastSeries} margin={{ top: 10, right: 15, left: -15, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="socGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0d9488" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#0d9488" stopOpacity={0.0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                  <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} />
-                  <YAxis domain={[0, 100]} stroke="#94a3b8" fontSize={10} tickLine={false} unit="%" />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.5rem', fontSize: '11px' }}
-                    formatter={(val) => [`${val}% SOC`]}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="batterySoc"
-                    name="Battery SOC"
-                    stroke="#0d9488"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#socGrad)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+        {/* EXPLAINABILITY & REASONING PANEL (5 cols) */}
+        <div className="lg:col-span-5 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
+            <div>
+              <h3 className="text-base font-bold text-[#102019]">
+                Explainable Decision Reasoning
+              </h3>
+              <p className="text-xs text-[#5D6B64]">
+                Auditable factors driving AI dispatch at {currentSlot.time}
+              </p>
             </div>
-          </Card>
+            <Badge variant="ai" size="xs">
+              Explainable AI
+            </Badge>
+          </div>
+
+          <div className="space-y-2.5 text-xs">
+            {recommendation.reasoning.map((reason, idx) => (
+              <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB]">
+                <FaIcon name="checkCircle" className="text-[#168A5A] text-xs mt-0.5 flex-shrink-0" />
+                <span className="text-[#102019] leading-relaxed font-medium">{reason}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Alternative Dispatch Options Evaluated */}
+          <div className="pt-2 border-t border-[#DDE5E0] space-y-2">
+            <span className="text-[11px] uppercase font-bold text-[#83908A] block">
+              Evaluated Alternatives
+            </span>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="p-2.5 rounded-xl border border-[#DDE5E0] bg-[#F5F7F6]">
+                <span className="font-bold text-[#102019] block">1. Utility Grid Feed</span>
+                <span className="text-[#83908A] text-[11px]">₹3.20/kWh (Suboptimal)</span>
+              </div>
+              <div className="p-2.5 rounded-xl border border-[#DDE5E0] bg-[#F5F7F6]">
+                <span className="font-bold text-[#102019] block">2. ESS Battery Store</span>
+                <span className="text-[#168A5A] text-[11px]">Buffer Safe @ 40%</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* 🌟 4. DECISION TIMELINE COMPONENT */}
+      <DecisionTimeline
+        title="Predictive AI Decision Sequence"
+        subtitle="Step-by-step chronological record of how the decision engine solved the multi-household dispatch"
+      />
     </div>
   );
 }

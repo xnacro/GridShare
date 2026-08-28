@@ -3,109 +3,118 @@ import FaIcon from '../icons/FaIcon';
 import Badge from './Badge';
 
 export default function DecisionTimeline({
-  steps = [],
-  currentStepIndex = 3,
+  events = [],
+  title = 'AI Decision Sequence & Dispatch Logic',
+  subtitle = 'Sequential explainable intelligence trace',
   className = '',
 }) {
-  const defaultSteps = [
+  const defaultEvents = [
     {
-      key: 'observe',
-      stage: 'OBSERVE',
       time: '12:30:01',
-      title: 'Telemetry Ingested',
-      description: 'Solar surplus (+4.70 kW) detected at House A. EV deficit (-2.80 kW) at House B.',
-      status: 'completed',
-      icon: 'eye',
-      color: 'emerald',
+      stage: 'Observe',
+      icon: 'solar',
+      title: 'Solar Surplus Detected',
+      desc: 'House A generated +4.7 kW in excess of local baseline consumption.',
+      variant: 'surplus',
     },
     {
-      key: 'predict',
-      stage: 'PREDICT',
       time: '12:30:02',
-      title: 'ML Forecast Generated',
-      description: 'Random Forest projects sustained midday generation (+4.5 kW) for next 2.5 hours.',
-      status: 'completed',
+      stage: 'Predict',
       icon: 'ai',
-      color: 'purple',
+      title: 'ML Horizon Forecast Generated',
+      desc: 'Predicted 60-min community deficit of 2.8 kW across neighboring nodes.',
+      variant: 'ai',
     },
     {
-      key: 'optimize',
-      stage: 'OPTIMIZE',
+      time: '12:30:03',
+      stage: 'Evaluate',
+      icon: 'battery',
+      title: 'ESS Battery Reserve Inspected',
+      desc: 'Community battery at 40% SOC with 10% reserve floor preserved for blackouts.',
+      variant: 'battery',
+    },
+    {
       time: '12:30:04',
-      title: 'Storage & Rule Solver',
-      description: 'Battery reserve floor checked (40% > 20%). Routing 2.8kW to P2P, 1.2kW to ESS, 0.7kW to Grid.',
-      status: 'completed',
-      icon: 'sliders',
-      color: 'amber',
+      stage: 'Match',
+      icon: 'users',
+      title: 'Nearby Household Demand Matched',
+      desc: 'House B actively drawing 4.0 kW on circuit branch A (98% proximity match).',
+      variant: 'grid',
     },
     {
-      key: 'trade',
-      stage: 'TRADE',
+      time: '12:30:05',
+      stage: 'Optimize',
+      icon: 'sliders',
+      title: 'Optimal Dispatch Calculated',
+      desc: 'Allocated 2.80 kW to P2P peer trade, 1.20 kW to storage, 0.70 kW to grid.',
+      variant: 'surplus',
+    },
+    {
       time: '12:30:06',
-      title: 'Double-Auction Execution',
-      description: 'P2P contract settled at ₹4.50/kWh. Consumer saves ₹4.48/hr; Prosumer earns +₹2.80/hr.',
-      status: 'active',
+      stage: 'Execute',
       icon: 'trade',
-      color: 'blue',
+      title: 'Trade Recommendation Created',
+      desc: 'Bilateral order cleared at fair midpoint ₹4.50/kWh (saving ₹1.60/kWh vs grid).',
+      variant: 'surplus',
     },
   ];
 
-  const displaySteps = steps.length > 0 ? steps : defaultSteps;
+  const items = events && events.length > 0 ? events : defaultEvents;
 
   return (
-    <div className={`space-y-3 ${className}`}>
-      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-          AI Decision Progression
-        </span>
-        <Badge variant="ai" size="xs" icon={<FaIcon name="sparkles" />}>
-          Autonomous Loop
+    <div className={`rounded-2xl border border-[#DDE5E0] bg-white p-5 sm:p-6 shadow-card ${className}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#DDE5E0] gap-2">
+        <div className="flex items-center space-x-3">
+          <div className="w-9 h-9 rounded-xl bg-[#F0EBFF] text-[#7657D8] flex items-center justify-center text-base flex-shrink-0">
+            <FaIcon name="sparkles" />
+          </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-bold text-[#102019] tracking-tight">
+              {title}
+            </h3>
+            <p className="text-xs sm:text-[13px] text-[#5D6B64] font-medium">
+              {subtitle}
+            </p>
+          </div>
+        </div>
+        <Badge variant="ai" size="sm">
+          Simulated Trace
         </Badge>
       </div>
 
-      <div className="relative pl-5 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-        {displaySteps.map((step, idx) => {
-          const isDone = idx <= currentStepIndex;
-          const isCurrent = idx === currentStepIndex;
+      <div className="mt-5 relative">
+        {/* Continuous vertical connector line */}
+        <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-[#DDE5E0] hidden sm:block" />
 
-          const dotColor = {
-            emerald: 'bg-emerald-500 ring-emerald-100',
-            purple: 'bg-purple-500 ring-purple-100',
-            amber: 'bg-amber-500 ring-amber-100',
-            blue: 'bg-blue-500 ring-blue-100',
-          }[step.color || 'emerald'] || 'bg-slate-400 ring-slate-100';
+        <div className="space-y-4 sm:space-y-5">
+          {items.map((evt, idx) => (
+            <div key={idx} className="relative flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 pl-0 sm:pl-10">
+              {/* Circle Icon Badge on the line */}
+              <div className="hidden sm:flex absolute left-1.5 top-0.5 w-6 h-6 rounded-full bg-white border-2 border-[#168A5A] items-center justify-center text-[10px] text-[#168A5A] shadow-xs">
+                <FaIcon name={evt.icon || 'check'} />
+              </div>
 
-          return (
-            <div key={step.key || idx} className="relative group">
-              {/* Dot */}
-              <div
-                className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white ring-4 transition-all duration-200 ${dotColor} ${
-                  isCurrent ? 'scale-125' : ''
-                }`}
-              />
-
-              {/* Step Content */}
-              <div className="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/60 rounded-xl p-2.5 transition-colors">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-white text-slate-700 border border-slate-200">
-                      {step.stage}
+              <div className="flex-1 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] p-3.5 hover:bg-white hover:border-[#CBD5CF] transition duration-150">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-mono font-bold text-[#168A5A]">
+                      {evt.time}
                     </span>
-                    <span className="text-xs font-semibold text-slate-900">
-                      {step.title}
-                    </span>
+                    <Badge variant={evt.variant || 'default'} size="xs">
+                      {evt.stage || 'Step'}
+                    </Badge>
                   </div>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    {step.time}
+                  <span className="text-xs font-bold text-[#102019]">
+                    {evt.title}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                  {step.description}
+                <p className="text-xs sm:text-[13px] text-[#5D6B64] leading-relaxed">
+                  {evt.desc}
                 </p>
               </div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );
