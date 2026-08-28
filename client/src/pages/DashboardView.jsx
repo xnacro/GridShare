@@ -147,34 +147,24 @@ export default function DashboardView({ onOpenDemoModal }) {
           {/* Left Column: Headline, Greeting & Primary Actions (6 cols) */}
           <div className="lg:col-span-6 space-y-4">
 
-            {/* Category Tag */}
-            <div className="text-xs font-bold uppercase tracking-widest text-[#5E6963]">
-              COMMUNITY OVERVIEW
+            {/* Greeting */}
+            <div className="font-oswald text-xl sm:text-2xl font-normal text-[#5E6963] tracking-wide">
+              {greeting}, {userName} <span className="inline-block">👋</span>
             </div>
 
-            {/* Greeting */}
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#17221D]">
-              Good afternoon, {userName} <span className="inline-block">👋</span>
-            </h2>
-
-            {/* Main Headline */}
-            <div className="space-y-1">
-              <div className="text-2xl sm:text-3xl font-extrabold text-[#17221D]">
+            {/* Main Headline in Crisp Oswald Typography */}
+            <div className="space-y-1.5 pt-0.5">
+              <div className="font-oswald text-2xl sm:text-3xl lg:text-[34px] font-normal text-[#17221D] tracking-wide leading-tight">
                 Your community has
               </div>
-              <div className="text-4xl sm:text-5xl font-black text-[#1E9B68] flex items-center gap-2">
+              <div className="font-oswald text-4xl sm:text-5xl lg:text-[54px] font-semibold text-[#1E9B68] tracking-wide flex items-center gap-2.5 leading-none">
                 <span>+{netCommunity.toFixed(1)} kW</span>
-                <span className="text-2xl sm:text-3xl text-[#1E9B68]">🍃</span>
+                <span className="text-3xl sm:text-4xl text-[#1E9B68]">🍃</span>
               </div>
-              <div className="text-base sm:text-lg font-bold text-[#17221D]">
+              <div className="font-oswald text-lg sm:text-xl lg:text-[22px] font-normal text-[#17221D] tracking-wide leading-tight">
                 of clean energy available to share.
               </div>
             </div>
-
-            {/* Description Subtitle */}
-            <p className="text-xs sm:text-sm text-[#5E6963] leading-relaxed max-w-lg">
-              GridShare intelligently balances generation, storage and peer-to-peer trading to build a more resilient and sustainable community.
-            </p>
 
             {/* Action Row */}
             <div className="flex items-center space-x-3 pt-3 flex-wrap gap-y-2">
