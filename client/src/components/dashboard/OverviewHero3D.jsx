@@ -27,8 +27,8 @@ export default function OverviewHero3D({
       </div>
 
       {/* 🌟 1. Top-Left Floating Badge: Generation */}
-      <div className="absolute top-5 left-8 sm:top-7 sm:left-12 flex items-center space-x-2.5 px-3 py-1.5 rounded-lg gs-glass-badge transition-transform hover:scale-105 z-10">
-        <div className="w-6 h-6 rounded-md bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs flex-shrink-0">
+      <div className="absolute top-5 left-8 sm:top-7 sm:left-12 flex items-center space-x-2.5 px-3.5 py-1.5 rounded-xl gs-glass-badge transition-transform hover:scale-105 z-10">
+        <div className="w-6 h-6 rounded-lg bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs flex-shrink-0">
           <FaIcon name="solar" />
         </div>
         <div>
@@ -42,8 +42,8 @@ export default function OverviewHero3D({
       </div>
 
       {/* 🌟 2. Top-Right Floating Badge: Grid Exchange */}
-      <div className="absolute top-5 right-5 sm:top-7 sm:right-8 flex items-center space-x-2.5 px-3 py-1.5 rounded-lg gs-glass-badge transition-transform hover:scale-105 z-10">
-        <div className="w-6 h-6 rounded-md bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs flex-shrink-0">
+      <div className="absolute top-5 right-5 sm:top-7 sm:right-8 flex items-center space-x-2.5 px-3.5 py-1.5 rounded-xl gs-glass-badge transition-transform hover:scale-105 z-10">
+        <div className="w-6 h-6 rounded-lg bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs flex-shrink-0">
           <FaIcon name="grid" />
         </div>
         <div>
@@ -56,9 +56,9 @@ export default function OverviewHero3D({
         </div>
       </div>
 
-      {/* 🌟 3. Bottom-Left Floating Badge: My Home (lifted above bottom edge) */}
-      <div className="absolute bottom-8 left-8 sm:bottom-10 sm:left-12 flex items-center space-x-2.5 px-3 py-1.5 rounded-lg gs-glass-badge transition-transform hover:scale-105 z-10">
-        <div className="w-6 h-6 rounded-md bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs flex-shrink-0">
+      {/* 🌟 3. Bottom-Left Floating Badge: My Home */}
+      <div className="absolute bottom-8 left-8 sm:bottom-10 sm:left-12 flex items-center space-x-2.5 px-3.5 py-1.5 rounded-xl gs-glass-badge transition-transform hover:scale-105 z-10">
+        <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs flex-shrink-0">
           <FaIcon name="home" />
         </div>
         <div>
@@ -71,9 +71,9 @@ export default function OverviewHero3D({
         </div>
       </div>
 
-      {/* 🌟 4. Center-Bottom Floating Badge: Battery Storage (lifted above bottom edge) */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 sm:bottom-10 flex items-center space-x-2.5 px-3.5 py-1.5 rounded-lg gs-glass-badge transition-transform hover:scale-105 z-20 whitespace-nowrap">
-        <div className="w-6 h-6 rounded-md bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs flex-shrink-0">
+      {/* 🌟 4. Center-Bottom Floating Badge: Battery Storage */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 sm:bottom-10 flex items-center space-x-2.5 px-3.5 py-1.5 rounded-xl gs-glass-badge transition-transform hover:scale-105 z-20 whitespace-nowrap">
+        <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs flex-shrink-0">
           <FaIcon name="battery" />
         </div>
         <div>
@@ -86,9 +86,9 @@ export default function OverviewHero3D({
         </div>
       </div>
 
-      {/* 🌟 5. Bottom-Right Floating Badge: Heavy Load Home (lifted above bottom edge) */}
-      <div className="absolute bottom-8 right-5 sm:bottom-10 sm:right-8 flex items-center space-x-2.5 px-3 py-1.5 rounded-lg gs-glass-badge transition-transform hover:scale-105 z-10">
-        <div className="w-6 h-6 rounded-md bg-[#FCECEC] text-[#D45C5C] flex items-center justify-center text-xs flex-shrink-0">
+      {/* 🌟 5. Bottom-Right Floating Badge: Heavy Load Home */}
+      <div className="absolute bottom-8 right-5 sm:bottom-10 sm:right-8 flex items-center space-x-2.5 px-3.5 py-1.5 rounded-xl gs-glass-badge transition-transform hover:scale-105 z-10">
+        <div className="w-6 h-6 rounded-lg bg-[#FCECEC] text-[#D45C5C] flex items-center justify-center text-xs flex-shrink-0">
           <span className="w-2 h-2 rounded-full bg-[#D45C5C] animate-pulse" />
         </div>
         <div>
