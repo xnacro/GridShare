@@ -11,6 +11,7 @@ import {
 } from '../services/dashboardSimulationEngine';
 import MarketplaceScene3D, { MARKET_3D_POSITIONS } from '../components/energy-map-3d/MarketplaceScene3D';
 import OverviewHero3D from '../components/dashboard/OverviewHero3D';
+import MicrogridSketchIllustration from '../components/dashboard/MicrogridSketchIllustration';
 import TradeConfirmationModal from '../components/marketplace/TradeConfirmationModal';
 import FaIcon from '../components/icons/FaIcon';
 
@@ -141,79 +142,110 @@ export default function DashboardView({ onOpenDemoModal }) {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. EXPANDED SEAMLESS HERO SECTION (Changa One Typography, 12px Radius & Glass Borders) */}
-      <div className="glass-card rounded-xl relative overflow-hidden min-h-[420px] lg:min-h-[460px]">
+      {/* 🌟 1. VELUNO-STYLE SPLIT HERO: Left Content | Right Hand-Drawn Illustration */}
+      <div className="glass-card rounded-xl relative overflow-hidden min-h-[420px] lg:min-h-[480px]">
         
-        {/* Background Expanded 3D Scene anchored to the right with smooth leftward fade */}
-        <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[65%] pointer-events-auto">
-          <OverviewHero3D
-            generation={totalGen}
-            myHomeNet={computedHouseholds.find(h => h.id === household?.id)?.netEnergy ?? (household?.household_type === 'CONSUMER' ? -4.0 : 4.2)}
-            batterySoc={battery.soc}
-            heavyLoadNet={-3.4}
-            gridExchange={netCommunity < 0 ? netCommunity : -0.8}
-          />
-        </div>
+        {/* Subtle background tint for the right illustration area */}
+        <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[55%] bg-gradient-to-bl from-[#EBF5E6]/60 via-[#F0F7EC]/40 to-transparent pointer-events-none" />
 
-        {/* Foreground Content: Changa One Headline, Greeting & Glass CTAs */}
-        <div className="relative z-10 p-6 sm:p-8 lg:p-10 max-w-xl pointer-events-auto flex flex-col justify-center min-h-[420px] lg:min-h-[460px] space-y-4">
+        <div className="relative z-10 flex flex-col lg:flex-row items-stretch min-h-[420px] lg:min-h-[480px]">
           
-          {/* Greeting Pill (12px radius) */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold w-fit shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
-            <span>{greeting}, {userName} 👋</span>
-          </div>
+          {/* ─── LEFT SIDE: Content & CTAs ─── */}
+          <div className="flex-1 lg:max-w-[50%] p-8 sm:p-10 lg:p-12 flex flex-col justify-center space-y-5">
+            
+            {/* Greeting Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold w-fit shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
+              <span>{greeting}, {userName}</span>
+            </div>
 
-          {/* Main Headline in Crisp Changa One Typography */}
-          <div className="space-y-1">
-            <h1 className="font-changa text-3xl sm:text-4xl lg:text-[42px] font-normal text-[#17221D] leading-[1.18] tracking-wide">
+            {/* Dynamic Headline — Changa One Typography */}
+            <h1 className="font-changa text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-[1.15] tracking-wide">
               {netCommunity >= 0 ? (
                 <>
                   Your community has{' '}
                   <span className="text-[#1E9B68] whitespace-nowrap">
                     +{netCommunity.toFixed(1)} kW
                   </span>{' '}
-                  of clean energy available to share.
+                  right now.
                 </>
               ) : (
                 <>
-                  Your community has{' '}
+                  Your community needs{' '}
                   <span className="text-[#3C78CC] whitespace-nowrap">
                     {Math.abs(netCommunity).toFixed(1)} kW
                   </span>{' '}
-                  of active load drawing from microgrid & storage.
+                  right now.
                 </>
               )}
             </h1>
+
+            {/* Supporting Description */}
+            <p className="text-sm sm:text-base text-[#5E6963] leading-relaxed max-w-md">
+              GridShare tracks generation and demand across {computedHouseholds.length} households, then decides in real time whether to store the surplus, trade it locally, or export it to the grid.
+            </p>
+
+            {/* CTA Row — Veluno Style */}
+            <div className="flex items-center gap-3 pt-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => navigate('/network')}
+                className="px-6 py-2.5 rounded-full bg-[#12392B] hover:bg-[#174A37] text-white text-sm font-bold shadow-xs transition flex items-center space-x-2 active:scale-[0.98]"
+              >
+                <span>View live map</span>
+                <span className="text-base leading-none">↗</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate('/ai')}
+                className="text-sm font-bold text-[#17221D] hover:text-[#1E9B68] transition px-2 py-2"
+              >
+                See recommendations
+              </button>
+            </div>
+
+            {/* Mini Feature Card (like Veluno's secondary product) */}
+            <div className="flex items-center space-x-3 pt-3 mt-auto">
+              <div className="w-16 h-12 rounded-lg bg-[#F4F6F4] border border-[rgba(23,34,29,0.08)] flex items-center justify-center">
+                <FaIcon name="brain" className="text-[#7358C7] text-sm" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#17221D]">Hornet AI Active</div>
+                <div className="text-[11px] text-[#5E6963]">Dual ML models predicting solar & demand</div>
+              </div>
+            </div>
           </div>
 
-          {/* Action Row (12px radius buttons) */}
-          <div className="flex items-center space-x-3 pt-3 flex-wrap gap-y-2">
-            <button
-              type="button"
-              onClick={() => navigate('/ai')}
-              className="px-5 py-2.5 rounded-xl bg-[#12392B] hover:bg-[#174A37] text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center space-x-2 active:scale-98"
-            >
-              <FaIcon name="sparkles" className="text-[#43CB8C]" />
-              <span>Ask Hornet AI</span>
-            </button>
+          {/* ─── RIGHT SIDE: Hand-Drawn Illustration ─── */}
+          <div className="flex-1 lg:max-w-[50%] relative flex items-center justify-center p-4 lg:p-0">
+            
+            {/* The SVG Illustration */}
+            <MicrogridSketchIllustration className="w-full h-auto max-h-[400px] lg:max-h-[440px] object-contain" />
 
-            <button
-              type="button"
-              onClick={() => navigate('/network')}
-              className="px-4 py-2.5 rounded-xl bg-white/90 hover:bg-white text-[#17221D] text-xs sm:text-sm font-bold border border-[rgba(23,34,29,0.12)] shadow-xs transition flex items-center space-x-1.5 active:scale-98"
-            >
-              <FaIcon name="network" className="text-xs text-[#5E6963]" />
-              <span>Explore Energy Network</span>
-            </button>
+            {/* Spinning Circular Badge (Veluno "Shop now" inspired) */}
+            <div className="absolute top-6 left-6 sm:top-10 sm:left-10 lg:top-12 lg:left-4 w-[90px] h-[90px] sm:w-[100px] sm:h-[100px]">
+              <svg viewBox="0 0 100 100" className="w-full h-full animate-[spin_12s_linear_infinite]">
+                <defs>
+                  <path id="circlePath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
+                </defs>
+                <text fontSize="8.5" fontWeight="700" fill="#17221D" letterSpacing="3">
+                  <textPath href="#circlePath">
+                    SIMULATED DEMO • LIVE BATTERY •
+                  </textPath>
+                </text>
+              </svg>
+              {/* Center Arrow Button */}
+              <button
+                type="button"
+                onClick={() => navigate('/marketplace')}
+                className="absolute inset-0 m-auto w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#12392B] hover:bg-[#174A37] text-white flex items-center justify-center shadow-md transition active:scale-95"
+                aria-label="Go to marketplace"
+              >
+                <span className="text-lg leading-none">↗</span>
+              </button>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => navigate('/marketplace')}
-              className="px-3 py-2.5 text-xs sm:text-sm font-bold text-[#1E9B68] hover:underline"
-            >
-              View Marketplace →
-            </button>
           </div>
 
         </div>
