@@ -29,9 +29,8 @@ export default function MetricCard({
   return (
     <div
       onClick={onClick}
-      className={`rounded-2xl border border-[#DDE5E0] bg-white p-4 sm:p-5 shadow-card transition-all duration-200 ${
-        onClick ? 'cursor-pointer hover:shadow-elevated hover:border-[#CBD5CF]' : ''
-      } ${className}`}
+      className={`rounded-2xl border border-[#DDE5E0] bg-white p-4 sm:p-5 shadow-card transition-all duration-200 ${onClick ? 'cursor-pointer hover:shadow-elevated hover:border-[#CBD5CF]' : ''
+        } ${className}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -64,13 +63,12 @@ export default function MetricCard({
         <div className="mt-2.5 flex items-center justify-between text-xs sm:text-[13px]">
           {delta !== undefined && (
             <span
-              className={`inline-flex items-center gap-1 font-semibold ${
-                deltaType === 'positive'
+              className={`inline-flex items-center gap-1 font-semibold ${deltaType === 'positive'
                   ? 'text-[#168A5A]'
                   : deltaType === 'negative'
-                  ? 'text-[#D95C5C]'
-                  : 'text-[#5D6B64]'
-              }`}
+                    ? 'text-[#D95C5C]'
+                    : 'text-[#5D6B64]'
+                }`}
             >
               <FaIcon
                 name={deltaType === 'positive' ? 'arrowUp' : deltaType === 'negative' ? 'arrowDown' : 'info'}

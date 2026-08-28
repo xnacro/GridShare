@@ -100,7 +100,7 @@ export default function DashboardView() {
 
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
-      
+
       {/* Page Title & Status Subheading */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         <div>
@@ -201,11 +201,11 @@ export default function DashboardView() {
 
       {/* 🌟 ROW 2: 3D DIGITAL TWIN + EMBEDDED AI COPILOT PANEL */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
+
         {/* CENTERPIECE 3D SPATIAL DIGITAL TWIN (65% width) */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
           <div className="flex flex-col h-full rounded-2xl border border-[#DDE5E0] bg-white p-4 sm:p-5 shadow-card">
-            
+
             {/* 3D Viewport Header Bar */}
             <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
               <div className="flex items-center space-x-2.5">
@@ -273,11 +273,10 @@ export default function DashboardView() {
                     key={h.id}
                     type="button"
                     onClick={() => setSelectedNode(h.id)}
-                    className={`px-2.5 py-1 rounded-lg font-bold transition text-xs ${
-                      selectedNode === h.id
+                    className={`px-2.5 py-1 rounded-lg font-bold transition text-xs ${selectedNode === h.id
                         ? 'bg-[#163A2B] text-white shadow-xs'
                         : 'bg-[#F5F7F6] text-[#5D6B64] hover:text-[#102019] border border-[#DDE5E0]'
-                    }`}
+                      }`}
                   >
                     {h.name.split(' ')[0]} {h.name.split(' ')[1]}
                   </button>
@@ -290,7 +289,7 @@ export default function DashboardView() {
         {/* PREMIUM AI COPILOT OVERVIEW PANEL (35% width) */}
         <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
           <div className="flex flex-col h-full rounded-2xl border border-[#E2D9F8] bg-[#FBFCFB] p-5 sm:p-6 shadow-card space-y-4">
-            
+
             {/* AI Copilot Header */}
             <div className="flex items-start justify-between pb-3 border-b border-[#E2D9F8]">
               <div className="flex items-center space-x-2.5">
@@ -399,7 +398,7 @@ export default function DashboardView() {
 
       {/* 🌟 ROW 4: COMMUNITY PERFORMANCE + RECENT ACTIVITY */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
+
         {/* 24-HOUR ENERGY PROFILE (7 cols) */}
         <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card">
           <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0] mb-3">

@@ -123,7 +123,7 @@ export default function AiForecastView() {
 
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
-      
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         <div>
@@ -238,7 +238,7 @@ export default function AiForecastView() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
-          
+
           {/* 1. CURRENT STATE */}
           <div className="p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] space-y-1.5">
             <div className="flex items-center justify-between">
@@ -303,7 +303,7 @@ export default function AiForecastView() {
 
       {/* 🌟 3. INTERACTIVE 24-HOUR FORECAST CHART & REASONING PANEL */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
+
         {/* TIME-SERIES VISUALIZER (7 cols) */}
         <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-3">
           <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
@@ -321,11 +321,10 @@ export default function AiForecastView() {
                   key={h}
                   type="button"
                   onClick={() => setHorizon(h)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
-                    horizon === h
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${horizon === h
                       ? 'bg-[#163A2B] text-white shadow-xs'
                       : 'bg-[#F5F7F6] text-[#5D6B64] hover:bg-[#EBF0ED]'
-                  }`}
+                    }`}
                 >
                   {h}
                 </button>

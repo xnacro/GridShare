@@ -85,7 +85,7 @@ export default function MyHomeView() {
 
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
-      
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         <div>
@@ -188,11 +188,10 @@ export default function MyHomeView() {
                   setStatusMessage(`Switched home operating profile to ${mode.name}.`);
                   setTimeout(() => setStatusMessage(''), 4000);
                 }}
-                className={`p-3.5 rounded-xl border text-left transition duration-150 flex flex-col justify-between space-y-2 ${
-                  isSelected
+                className={`p-3.5 rounded-xl border text-left transition duration-150 flex flex-col justify-between space-y-2 ${isSelected
                     ? 'bg-[#163A2B] text-white border-[#163A2B] shadow-sm'
                     : 'bg-[#FBFCFB] border-[#DDE5E0] text-[#102019] hover:bg-white hover:border-[#CBD5CF]'
-                }`}
+                  }`}
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -201,9 +200,8 @@ export default function MyHomeView() {
                       className={`text-sm ${isSelected ? 'text-[#34B978]' : 'text-[#5D6B64]'}`}
                     />
                     {mode.recommended && (
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase ${
-                        isSelected ? 'bg-[#34B978] text-[#163A2B]' : 'bg-[#E7F5EE] text-[#168A5A]'
-                      }`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase ${isSelected ? 'bg-[#34B978] text-[#163A2B]' : 'bg-[#E7F5EE] text-[#168A5A]'
+                        }`}>
                         Recommended
                       </span>
                     )}
@@ -223,7 +221,7 @@ export default function MyHomeView() {
 
       {/* 🌟 3. 3D RESIDENTIAL HOUSE TWIN + APPLIANCE MANAGER */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
+
         {/* 3D RESIDENTIAL HOUSE CANVAS (7 cols) */}
         <div className="lg:col-span-7 rounded-2xl border border-[#DDE5E0] bg-white p-5 shadow-card space-y-3">
           <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
@@ -284,9 +282,8 @@ export default function MyHomeView() {
                 className="flex items-center justify-between p-3.5 rounded-xl border border-[#DDE5E0] bg-[#FBFCFB] hover:bg-white transition"
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
-                    app.active ? 'bg-[#E7F5EE] text-[#168A5A]' : 'bg-[#F5F7F6] text-[#83908A]'
-                  }`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${app.active ? 'bg-[#E7F5EE] text-[#168A5A]' : 'bg-[#F5F7F6] text-[#83908A]'
+                    }`}>
                     <FaIcon name={app.icon || 'power'} />
                   </div>
                   <div>
@@ -298,14 +295,12 @@ export default function MyHomeView() {
                 <button
                   type="button"
                   onClick={() => toggleAppliance(key)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    app.active ? 'bg-[#168A5A]' : 'bg-[#DDE5E0]'
-                  }`}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${app.active ? 'bg-[#168A5A]' : 'bg-[#DDE5E0]'
+                    }`}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ease-in-out ${
-                      app.active ? 'translate-x-5' : 'translate-x-0'
-                    }`}
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ease-in-out ${app.active ? 'translate-x-5' : 'translate-x-0'
+                      }`}
                   />
                 </button>
               </div>

@@ -45,7 +45,7 @@ export default function InteractiveMicrogridView() {
   // Compute semantic 3D active conduits
   const activeFlows = useMemo(() => {
     const flows = [];
-    
+
     // P2P Local Trade Flow (Green)
     flows.push({
       id: 'flow-p2p-1',
@@ -91,7 +91,7 @@ export default function InteractiveMicrogridView() {
 
   return (
     <div className="space-y-6 max-w-[1680px] mx-auto pb-8 select-none">
-      
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         <div>
@@ -181,7 +181,7 @@ export default function InteractiveMicrogridView() {
 
       {/* 🌟 ROW 2: CENTERPIECE 3D SPATIAL DIGITAL TWIN + SLIDE-IN INSPECTOR */}
       <div className="relative rounded-2xl border border-[#DDE5E0] bg-white p-4 sm:p-5 shadow-card overflow-hidden">
-        
+
         {/* 3D Scene Header Bar */}
         <div className="flex items-center justify-between pb-3 border-b border-[#DDE5E0]">
           <div className="flex items-center space-x-2.5">
@@ -334,11 +334,10 @@ export default function InteractiveMicrogridView() {
                   setSelectedNode(h.id);
                   setIsDrawerOpen(true);
                 }}
-                className={`px-3 py-1.5 rounded-xl font-bold transition text-xs ${
-                  selectedNode === h.id
+                className={`px-3 py-1.5 rounded-xl font-bold transition text-xs ${selectedNode === h.id
                     ? 'bg-[#163A2B] text-white shadow-xs'
                     : 'bg-[#F5F7F6] text-[#5D6B64] hover:text-[#102019] border border-[#DDE5E0]'
-                }`}
+                  }`}
               >
                 {h.name}
               </button>

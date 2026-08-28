@@ -5,9 +5,18 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --nav-height: 48px;
+    --nav-radius: 9999px;
+    --nav-border: #DDE4DF;
+    --nav-active-bg: #E7F5EE;
+    --nav-active-text: #12372A;
+    --nav-active-icon: #1C9A67;
+  }
+
   body {
-    background-color: #F5F7F6;
-    color: #102019;
+    background-color: #F5F6F2;
+    color: #142019;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -19,13 +28,16 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #F5F7F6;
+  background: #F5F6F2;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #DDE5E0;
+  background: #DDE4DF;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #CBD5CF;
+  background: #C9D2CC;
 }
