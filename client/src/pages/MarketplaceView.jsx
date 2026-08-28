@@ -181,34 +181,34 @@ export default function MarketplaceView() {
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. CENTERED PRODUCT HERO (Minimal, Spacious, Communicates in 3 Seconds) */}
-      <div className="glass-card rounded-xl p-8 sm:p-10 lg:p-12 text-center max-w-4xl mx-auto space-y-5">
+      {/* 🌟 1. CENTERED HERO (Clean, Borderless, Compact Spacing) */}
+      <div className="text-center max-w-3xl mx-auto pt-2 pb-1 space-y-3.5 select-none">
         
         {/* Top Status Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold shadow-xs">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-[11px] font-bold shadow-xs">
           <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
           <span>COMMUNITY ENERGY MARKET • ACTIVE MARKET</span>
         </div>
 
-        {/* Centered Headline (2 lines max) */}
-        <h1 className="font-changa text-3xl sm:text-4xl lg:text-[46px] font-normal text-[#17221D] leading-[1.15] tracking-wide">
+        {/* Centered Headline */}
+        <h1 className="font-changa text-3xl sm:text-4xl lg:text-[42px] font-normal text-[#17221D] leading-[1.14] tracking-wide">
           Share clean energy with the{' '}
           <span className="text-[#1E9B68] whitespace-nowrap">neighbors who need it.</span>
         </h1>
 
         {/* Short Subtitle */}
-        <p className="text-xs sm:text-sm text-[#5E6963] max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#5E6963] max-w-lg mx-auto leading-relaxed">
           Trade surplus rooftop solar with nearby homes at fair tariffs instead of sending it back to the grid.
         </p>
 
         {/* Scope Switch: Community vs My Energy */}
-        <div className="inline-flex items-center p-1 rounded-xl bg-[#F8F9F6] border border-[rgba(23,34,29,0.08)] text-xs font-semibold">
+        <div className="inline-flex items-center p-1 rounded-xl bg-white/80 border border-[rgba(23,34,29,0.08)] shadow-xs text-xs font-semibold">
           <button
             type="button"
             onClick={() => setViewScope('COMMUNITY')}
-            className={`px-4 py-1.5 rounded-lg transition ${
+            className={`px-3.5 py-1 rounded-lg transition ${
               viewScope === 'COMMUNITY'
-                ? 'bg-white text-[#17221D] shadow-xs font-bold border border-[rgba(23,34,29,0.06)]'
+                ? 'bg-[#12392B] text-white shadow-xs font-bold'
                 : 'text-[#5E6963] hover:text-[#17221D]'
             }`}
           >
@@ -217,9 +217,9 @@ export default function MarketplaceView() {
           <button
             type="button"
             onClick={() => setViewScope('MY_ENERGY')}
-            className={`px-4 py-1.5 rounded-lg transition ${
+            className={`px-3.5 py-1 rounded-lg transition ${
               viewScope === 'MY_ENERGY'
-                ? 'bg-white text-[#17221D] shadow-xs font-bold border border-[rgba(23,34,29,0.06)]'
+                ? 'bg-[#12392B] text-white shadow-xs font-bold'
                 : 'text-[#5E6963] hover:text-[#17221D]'
             }`}
           >
@@ -227,38 +227,8 @@ export default function MarketplaceView() {
           </button>
         </div>
 
-        {/* 3 Centered Facts */}
-        <div className="grid grid-cols-3 gap-4 pt-2 max-w-lg mx-auto border-t border-[rgba(23,34,29,0.06)]">
-          <div className="space-y-0.5">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#5E6963]">
-              Available Locally
-            </div>
-            <div className="font-changa text-lg sm:text-xl font-normal text-[#1E9B68]">
-              {totalAvailableKwh.toFixed(1)} kWh
-            </div>
-          </div>
-
-          <div className="space-y-0.5 border-x border-[rgba(23,34,29,0.08)]">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#5E6963]">
-              Active Matches
-            </div>
-            <div className="font-changa text-lg sm:text-xl font-normal text-[#17221D]">
-              {aiMatches.length} Pairs
-            </div>
-          </div>
-
-          <div className="space-y-0.5">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#5E6963]">
-              P2P Price
-            </div>
-            <div className="font-changa text-lg sm:text-xl font-normal text-[#17221D]">
-              ₹{avgP2pPrice.toFixed(2)} / kWh
-            </div>
-          </div>
-        </div>
-
         {/* Primary & Secondary Action CTAs */}
-        <div className="flex items-center justify-center space-x-3 pt-2 flex-wrap gap-y-2">
+        <div className="flex items-center justify-center space-x-3 pt-1 flex-wrap gap-y-2">
           <button
             type="button"
             onClick={() => setIsCreateOfferOpen(true)}
@@ -283,17 +253,17 @@ export default function MarketplaceView() {
         </div>
 
         {/* Subtle Horizontal Energy Flow Line */}
-        <div className="pt-4 flex items-center justify-center space-x-2 text-xs text-[#5E6963]">
+        <div className="pt-2 flex items-center justify-center space-x-2 text-xs text-[#5E6963]">
           <div className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#FFF7E4]/80 text-[#E5A72D]">
             <FaIcon name="solar" />
             <span className="font-medium text-[11px]">Solar Surplus</span>
           </div>
-          <span className="text-[#1E9B68] font-bold">──( ₹4.50/kWh )──→</span>
+          <span className="text-[#1E9B68] font-bold text-xs">──( ₹4.50/kWh )──→</span>
           <div className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#E8F6EE] text-[#1E9B68]">
             <FaIcon name="network" />
             <span className="font-medium text-[11px]">Local P2P Match</span>
           </div>
-          <span className="text-[#1E9B68] font-bold">──( Clean Power )──→</span>
+          <span className="text-[#1E9B68] font-bold text-xs">──( Clean Power )──→</span>
           <div className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#EDF3FD] text-[#3C78CC]">
             <FaIcon name="home" />
             <span className="font-medium text-[11px]">Nearby Demand</span>
