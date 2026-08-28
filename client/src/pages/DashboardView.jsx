@@ -142,12 +142,11 @@ export default function DashboardView({ onOpenDemoModal }) {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
 
-      {/* 🌟 1. VELUNO-STYLE SPLIT HERO: Left Content | Right Hand-Drawn Illustration */}
-      <div className="glass-card rounded-xl relative overflow-hidden" style={{ minHeight: 'calc(100vh - 100px)' }}>
-
-        {/* Subtle background tint for the right illustration area */}
-        <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[55%] bg-gradient-to-bl from-[#EBF5E6]/60 via-[#F0F7EC]/40 to-transparent pointer-events-none" />
-
+      {/* 🌟 1. VELUNO-STYLE UNIFIED HERO (Seamless Soft Sage-Green Palette) */}
+      <div
+        className="rounded-2xl relative overflow-hidden border border-[#D5E8D3] shadow-sm bg-gradient-to-br from-[#EBF5E6] via-[#E8F4E5] to-[#E3EFE1]"
+        style={{ minHeight: 'calc(100vh - 100px)' }}
+      >
         <div className="relative z-10 flex flex-col lg:flex-row items-stretch" style={{ minHeight: 'calc(100vh - 100px)' }}>
 
           {/* ─── LEFT SIDE: Content & CTAs ─── */}
