@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    --canvas: #F6F7F4;
-    --canvas-subtle: #F1F3F0;
+    --canvas: #F4F6F2;
+    --canvas-subtle: #EDF1EC;
     --surface: #FFFFFF;
     --surface-elevated: #FBFCFA;
     
@@ -40,35 +40,50 @@
   body {
     background-color: var(--canvas);
     color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
-  /* Fjalla One Typography for bold, modern, non-cluttered display & headings */
-  h1, h2, h3, h4, .font-fjalla, .font-display, .font-oswald {
-    font-family: 'Fjalla One', 'Oswald', sans-serif;
+  .font-fjalla {
+    font-family: 'Fjalla One', sans-serif;
+    letter-spacing: 0.025em;
+  }
+
+  .font-display {
+    font-family: 'Fjalla One', 'Plus Jakarta Sans', sans-serif;
     letter-spacing: 0.02em;
   }
 }
 
 @layer utilities {
-  /* Selective, Airy Climate-Tech Glassmorphism */
-  .gs-glass {
-    background: rgba(255, 255, 255, 0.85);
+  /* Climate-Tech Glassmorphism with Luminous Glass Borders */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 32px 0 rgba(18, 57, 43, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+    outline: 1px solid rgba(23, 34, 29, 0.07);
+  }
+
+  .glass-card-subtle {
+    background: rgba(255, 255, 255, 0.78);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 20px -2px rgba(18, 57, 43, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 20px -2px rgba(18, 57, 43, 0.04), inset 0 1px 1px 0 rgba(255, 255, 255, 0.8);
+    outline: 1px solid rgba(23, 34, 29, 0.06);
   }
 
   .gs-glass-badge {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 16px -2px rgba(18, 57, 43, 0.08);
+    box-shadow: 0 4px 16px -2px rgba(18, 57, 43, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+    outline: 1px solid rgba(23, 34, 29, 0.06);
   }
 
   /* Micro-animation transitions */

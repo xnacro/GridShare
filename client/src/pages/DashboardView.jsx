@@ -142,8 +142,8 @@ export default function DashboardView({ onOpenDemoModal }) {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. EXPANDED SEAMLESS HERO SECTION (Fjalla One Typography & Leftward Fading 3D Microgrid) */}
-      <div className="relative overflow-hidden rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs min-h-[380px] lg:min-h-[420px]">
+      {/* 🌟 1. EXPANDED SEAMLESS HERO SECTION (Glassmorphism Borders with Fjalla One Typography) */}
+      <div className="glass-card rounded-3xl relative overflow-hidden min-h-[380px] lg:min-h-[420px]">
         
         {/* Background Expanded 3D Scene anchored to the right with smooth leftward fade */}
         <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[65%] pointer-events-auto">
@@ -156,26 +156,24 @@ export default function DashboardView({ onOpenDemoModal }) {
           />
         </div>
 
-        {/* Foreground Content: Fjalla One Headline, Friendly Greeting & Clean CTAs */}
+        {/* Foreground Content: Refined Hero Welcome, Fjalla One Headline & Glass CTAs */}
         <div className="relative z-10 p-6 sm:p-8 lg:p-10 max-w-xl pointer-events-auto flex flex-col justify-center min-h-[380px] lg:min-h-[420px] space-y-4">
           
-          {/* Greeting */}
-          <div className="font-fjalla text-xl sm:text-2xl font-normal text-[#5E6963] tracking-wide">
-            {greeting}, {userName} <span className="inline-block">👋</span>
+          {/* Greeting Pill */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E8F6EE] border border-[#1E9B68]/20 text-[#1E9B68] text-xs font-bold w-fit shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
+            <span>{greeting}, {userName} 👋</span>
           </div>
 
           {/* Main Headline in Crisp Fjalla One Typography */}
-          <div className="space-y-1 pt-0.5">
-            <div className="font-fjalla text-2xl sm:text-3xl lg:text-[34px] font-normal text-[#17221D] tracking-wide leading-tight">
-              Your community has
-            </div>
-            <div className="font-fjalla text-4xl sm:text-5xl lg:text-[54px] font-normal text-[#1E9B68] tracking-wide flex items-center gap-2.5 leading-none">
-              <span>+{netCommunity.toFixed(1)} kW</span>
-              <span className="text-3xl sm:text-4xl text-[#1E9B68]">🍃</span>
-            </div>
-            <div className="font-fjalla text-lg sm:text-xl lg:text-[22px] font-normal text-[#17221D] tracking-wide leading-tight">
+          <div className="space-y-1">
+            <h1 className="font-fjalla text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-[1.16] tracking-wide">
+              Your community has{' '}
+              <span className="text-[#1E9B68] whitespace-nowrap">
+                +{netCommunity.toFixed(1)} kW
+              </span>{' '}
               of clean energy available to share.
-            </div>
+            </h1>
           </div>
 
           {/* Action Row */}
@@ -192,7 +190,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             <button
               type="button"
               onClick={() => navigate('/network')}
-              className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#F6F7F4] text-[#17221D] text-xs sm:text-sm font-bold border border-[rgba(23,34,29,0.12)] shadow-xs transition flex items-center space-x-1.5 active:scale-98"
+              className="px-4 py-2.5 rounded-xl bg-white/90 hover:bg-white text-[#17221D] text-xs sm:text-sm font-bold border border-[rgba(23,34,29,0.12)] shadow-xs transition flex items-center space-x-1.5 active:scale-98"
             >
               <FaIcon name="network" className="text-xs text-[#5E6963]" />
               <span>Explore Energy Network</span>
@@ -210,8 +208,8 @@ export default function DashboardView({ onOpenDemoModal }) {
         </div>
       </div>
 
-      {/* 🌟 2. METRIC CARDS STRIP (White Unified Card with 4 Columns + Sparkline) */}
-      <div className="rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-5 sm:p-6 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-center">
+      {/* 🌟 2. METRIC CARDS STRIP (Glassmorphism Card with 4 Columns + Sparkline) */}
+      <div className="glass-card rounded-3xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-center">
         
         {/* Col 1: NET COMMUNITY BALANCE */}
         <div>
@@ -304,7 +302,7 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       {/* Dynamic Action Notification Banner */}
       {aiExecutionMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#1E9B68]/20 bg-[#E8F6EE] px-4 py-3 text-xs sm:text-sm text-[#12392B] font-bold shadow-xs animate-in fade-in">
+        <div className="flex items-center justify-between rounded-2xl border border-[#1E9B68]/20 bg-[#E8F6EE] px-4 py-3 text-xs sm:text-sm text-[#12392B] font-bold shadow-xs animate-in fade-in">
           <div className="flex items-center gap-2">
             <FaIcon name="check" className="text-[#1E9B68]" />
             <span>{aiExecutionMessage}</span>
@@ -315,11 +313,11 @@ export default function DashboardView({ onOpenDemoModal }) {
         </div>
       )}
 
-      {/* 🌟 3. EXPANDED TWO-PANEL CORE WORKSPACE (65% Full-Bleed 3D Simulation with Glass Overlay | 35% Hornet AI) */}
+      {/* 🌟 3. EXPANDED TWO-PANEL CORE WORKSPACE (65% Full-Bleed 3D Simulation | 35% Hornet AI with Glass Borders) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Expanded Panel: LIVE MICROGRID FLOW (8 cols ~ 65% width, Full-Bleed Glass Canvas) */}
-        <div className="lg:col-span-8 rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] shadow-xs relative overflow-hidden h-[460px] sm:h-[500px] lg:h-[530px] flex flex-col justify-between select-none">
+        <div className="lg:col-span-8 glass-card rounded-3xl relative overflow-hidden h-[460px] sm:h-[500px] lg:h-[530px] flex flex-col justify-between select-none">
           
           {/* Full-Bleed 3D Microgrid Viewport */}
           <div className="absolute inset-0 w-full h-full">
@@ -388,8 +386,8 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* Right Panel: HORNET AI — NEXT 15 MINUTES (4 cols ~ 35% width) */}
-        <div className="lg:col-span-4 rounded-3xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4 h-[460px] sm:h-[500px] lg:h-[530px]">
+        {/* Right Panel: HORNET AI — NEXT 15 MINUTES (4 cols ~ 35% width, Glass Card) */}
+        <div className="lg:col-span-4 glass-card rounded-3xl p-6 flex flex-col justify-between space-y-4 h-[460px] sm:h-[500px] lg:h-[530px]">
           <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -409,7 +407,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
 
           {/* 3 Mini Forecast Boxes */}
-          <div className="grid grid-cols-3 gap-2 text-center p-3 rounded-2xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)]">
+          <div className="grid grid-cols-3 gap-2 text-center p-3 rounded-2xl bg-[#F6F7F4]/80 border border-[rgba(23,34,29,0.06)]">
             <div className="space-y-0.5">
               <div className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase text-[#5E6963]">
                 <FaIcon name="solar" className="text-[#DDA12A]" />
@@ -494,11 +492,11 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       </div>
 
-      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION (50/50 Split for Impact & Activity) */}
+      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION (Glassmorphism Cards) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Left Expanded Card: TODAY'S COMMUNITY IMPACT (6 cols ~ 50%) */}
-        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-4">
+        {/* Left Expanded Card: TODAY'S COMMUNITY IMPACT (6 cols ~ 50%, Glass Card) */}
+        <div className="lg:col-span-6 glass-card rounded-3xl p-6 flex flex-col justify-between space-y-4">
           <div>
             <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
               Today's Community Impact
@@ -509,7 +507,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center py-2">
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+            <div className="flex flex-col items-center p-2 rounded-2xl bg-[#F6F7F4]/80">
               <div className="w-9 h-9 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="leaf" />
               </div>
@@ -517,7 +515,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Renewable Self-Consumption</div>
             </div>
 
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+            <div className="flex flex-col items-center p-2 rounded-2xl bg-[#F6F7F4]/80">
               <div className="w-9 h-9 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="users" />
               </div>
@@ -525,7 +523,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Shared Locally</div>
             </div>
 
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+            <div className="flex flex-col items-center p-2 rounded-2xl bg-[#F6F7F4]/80">
               <div className="w-9 h-9 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="rupee" />
               </div>
@@ -533,7 +531,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Estimated Savings</div>
             </div>
 
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F6F7F4]">
+            <div className="flex flex-col items-center p-2 rounded-2xl bg-[#F6F7F4]/80">
               <div className="w-9 h-9 rounded-xl bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="shield" />
               </div>
@@ -543,8 +541,8 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
         </div>
 
-        {/* Right Expanded Card: RECENT COMMUNITY ACTIVITY (6 cols ~ 50%) */}
-        <div className="lg:col-span-6 rounded-2xl bg-white border border-[rgba(23,34,29,0.08)] p-6 shadow-xs flex flex-col justify-between space-y-3">
+        {/* Right Expanded Card: RECENT COMMUNITY ACTIVITY (6 cols ~ 50%, Glass Card) */}
+        <div className="lg:col-span-6 glass-card rounded-3xl p-6 flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
@@ -567,7 +565,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             {transactions.slice(0, 4).map((tx) => (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-[#F6F7F4] text-xs hover:bg-[#EEF2ED] transition"
+                className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F6F7F4]/80 text-xs hover:bg-[#EEF2ED] transition"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-7 h-7 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
