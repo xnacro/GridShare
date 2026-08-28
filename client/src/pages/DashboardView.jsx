@@ -142,7 +142,7 @@ export default function DashboardView({ onOpenDemoModal }) {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
-      {/* 🌟 1. EXPANDED SEAMLESS HERO SECTION (Glassmorphism Borders with Fjalla One Typography) */}
+      {/* 🌟 1. EXPANDED SEAMLESS HERO SECTION (Changa One Typography & Glassmorphism Borders) */}
       <div className="glass-card rounded-3xl relative overflow-hidden min-h-[380px] lg:min-h-[420px]">
         
         {/* Background Expanded 3D Scene anchored to the right with smooth leftward fade */}
@@ -156,7 +156,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           />
         </div>
 
-        {/* Foreground Content: Refined Hero Welcome, Fjalla One Headline & Glass CTAs */}
+        {/* Foreground Content: Changa One Headline, Greeting & Glass CTAs */}
         <div className="relative z-10 p-6 sm:p-8 lg:p-10 max-w-xl pointer-events-auto flex flex-col justify-center min-h-[380px] lg:min-h-[420px] space-y-4">
           
           {/* Greeting Pill */}
@@ -165,9 +165,9 @@ export default function DashboardView({ onOpenDemoModal }) {
             <span>{greeting}, {userName} 👋</span>
           </div>
 
-          {/* Main Headline in Crisp Fjalla One Typography */}
+          {/* Main Headline in Crisp Changa One Typography */}
           <div className="space-y-1">
-            <h1 className="font-fjalla text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#17221D] leading-[1.16] tracking-wide">
+            <h1 className="font-changa text-3xl sm:text-4xl lg:text-[42px] font-normal text-[#17221D] leading-[1.18] tracking-wide">
               Your community has{' '}
               <span className="text-[#1E9B68] whitespace-nowrap">
                 +{netCommunity.toFixed(1)} kW
@@ -213,10 +213,10 @@ export default function DashboardView({ onOpenDemoModal }) {
         
         {/* Col 1: NET COMMUNITY BALANCE */}
         <div>
-          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
+          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             NET COMMUNITY BALANCE
           </div>
-          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
+          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
             +{netCommunity.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#5E6963] font-medium mt-0.5">
@@ -226,10 +226,10 @@ export default function DashboardView({ onOpenDemoModal }) {
 
         {/* Col 2: TOTAL GENERATION */}
         <div>
-          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
+          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             TOTAL GENERATION
           </div>
-          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
+          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
             {totalGen.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
@@ -240,10 +240,10 @@ export default function DashboardView({ onOpenDemoModal }) {
 
         {/* Col 3: TOTAL DEMAND */}
         <div>
-          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
+          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             TOTAL DEMAND
           </div>
-          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
+          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
             {totalCon.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
@@ -254,10 +254,10 @@ export default function DashboardView({ onOpenDemoModal }) {
 
         {/* Col 4: BATTERY STATE */}
         <div>
-          <div className="font-fjalla text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
+          <div className="font-changa text-[11px] font-normal uppercase tracking-wider text-[#5E6963]">
             BATTERY STATE
           </div>
-          <div className="font-fjalla text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
+          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
             {battery.soc.toFixed(0)}%
           </div>
           <div className="text-xs text-[#5E6963] font-medium mt-0.5">
@@ -337,7 +337,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#1E9B68] animate-pulse" />
-                <h3 className="font-fjalla text-sm sm:text-base font-normal uppercase tracking-wider text-[#17221D]">
+                <h3 className="font-changa text-sm sm:text-base font-normal uppercase tracking-wider text-[#17221D]">
                   Live Microgrid Flow
                 </h3>
               </div>
@@ -392,12 +392,12 @@ export default function DashboardView({ onOpenDemoModal }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <span className="h-2 w-2 rounded-full bg-[#7358C7]" />
-                <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
+                <h3 className="font-changa text-base font-normal uppercase tracking-wider text-[#17221D]">
                   Hornet AI — Next 15 Minutes
                 </h3>
               </div>
 
-              <span className="font-fjalla text-xs font-normal text-[#7358C7] bg-[#F1EDFF] px-2.5 py-0.5 rounded-full border border-[#7358C7]/20">
+              <span className="font-changa text-xs font-normal text-[#7358C7] bg-[#F1EDFF] px-2.5 py-0.5 rounded-full border border-[#7358C7]/20">
                 Next 15 min
               </span>
             </div>
@@ -413,7 +413,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 <FaIcon name="solar" className="text-[#DDA12A]" />
                 <span>SOLAR</span>
               </div>
-              <div className="font-fjalla text-sm sm:text-base font-normal text-[#DDA12A]">
+              <div className="font-changa text-sm sm:text-base font-normal text-[#DDA12A]">
                 {aiForecast.solar_kw?.toFixed(2) || '5.84'} kW
               </div>
             </div>
@@ -423,7 +423,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 <FaIcon name="home" className="text-[#17221D]" />
                 <span>DEMAND</span>
               </div>
-              <div className="font-fjalla text-sm sm:text-base font-normal text-[#17221D]">
+              <div className="font-changa text-sm sm:text-base font-normal text-[#17221D]">
                 {aiForecast.demand_kw?.toFixed(2) || '4.21'} kW
               </div>
             </div>
@@ -433,7 +433,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 <FaIcon name="network" className="text-[#1E9B68]" />
                 <span>BALANCE</span>
               </div>
-              <div className="font-fjalla text-sm sm:text-base font-normal text-[#1E9B68]">
+              <div className="font-changa text-sm sm:text-base font-normal text-[#1E9B68]">
                 +{aiForecast.balance_kw?.toFixed(2) || '1.63'} kW
               </div>
             </div>
@@ -443,7 +443,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="space-y-1.5 px-1">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#5E6963] font-medium">Forecast Range (Uncertainty)</span>
-              <span className="font-fjalla font-normal text-[#7358C7]">
+              <span className="font-changa font-normal text-[#7358C7]">
                 {Array.isArray(aiInterval) ? `${aiInterval[0]?.toFixed(2)} kW — ${aiInterval[1]?.toFixed(2)} kW` : '5.31 kW — 6.28 kW'}
               </span>
             </div>
@@ -455,14 +455,14 @@ export default function DashboardView({ onOpenDemoModal }) {
           {/* Recommended Action Box */}
           <div className="p-3.5 rounded-2xl bg-[#E8F6EE]/70 border border-[#1E9B68]/20 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="font-fjalla text-xs font-normal uppercase tracking-wider text-[#1E9B68]">
+              <span className="font-changa text-xs font-normal uppercase tracking-wider text-[#1E9B68]">
                 RECOMMENDED ACTION
               </span>
-              <span className="font-fjalla text-xs font-normal text-[#1E9B68] bg-white px-2 py-0.5 rounded-md border border-[#1E9B68]/20">
+              <span className="font-changa text-xs font-normal text-[#1E9B68] bg-white px-2 py-0.5 rounded-md border border-[#1E9B68]/20">
                 ₹4.50 / kWh
               </span>
             </div>
-            <div className="font-fjalla text-xs sm:text-sm font-normal text-[#12392B]">
+            <div className="font-changa text-xs sm:text-sm font-normal text-[#12392B]">
               {aiDecision.action_label || 'Trade 1.0 kWh locally (My Home → Eco House)'}
             </div>
             <p className="text-[11px] text-[#5E6963] leading-snug">
@@ -498,7 +498,7 @@ export default function DashboardView({ onOpenDemoModal }) {
         {/* Left Expanded Card: TODAY'S COMMUNITY IMPACT (6 cols ~ 50%, Glass Card) */}
         <div className="lg:col-span-6 glass-card rounded-3xl p-6 flex flex-col justify-between space-y-4">
           <div>
-            <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
+            <h3 className="font-changa text-base font-normal uppercase tracking-wider text-[#17221D]">
               Today's Community Impact
             </h3>
             <p className="text-xs text-[#5E6963] mt-1">
@@ -511,7 +511,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="leaf" />
               </div>
-              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#17221D]">84%</div>
+              <div className="font-changa text-lg sm:text-xl font-normal text-[#17221D]">84%</div>
               <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Renewable Self-Consumption</div>
             </div>
 
@@ -519,7 +519,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="users" />
               </div>
-              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#1E9B68]">2.0 kWh</div>
+              <div className="font-changa text-lg sm:text-xl font-normal text-[#1E9B68]">2.0 kWh</div>
               <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Shared Locally</div>
             </div>
 
@@ -527,7 +527,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="rupee" />
               </div>
-              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#17221D]">₹4.48</div>
+              <div className="font-changa text-lg sm:text-xl font-normal text-[#17221D]">₹4.48</div>
               <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Estimated Savings</div>
             </div>
 
@@ -535,7 +535,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <div className="w-9 h-9 rounded-xl bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-sm mb-1.5">
                 <FaIcon name="shield" />
               </div>
-              <div className="font-fjalla text-lg sm:text-xl font-normal text-[#17221D]">32%</div>
+              <div className="font-changa text-lg sm:text-xl font-normal text-[#17221D]">32%</div>
               <div className="text-[11px] text-[#5E6963] font-medium leading-tight mt-0.5">Peak Grid Strain Reduction</div>
             </div>
           </div>
@@ -545,7 +545,7 @@ export default function DashboardView({ onOpenDemoModal }) {
         <div className="lg:col-span-6 glass-card rounded-3xl p-6 flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-fjalla text-base font-normal uppercase tracking-wider text-[#17221D]">
+              <h3 className="font-changa text-base font-normal uppercase tracking-wider text-[#17221D]">
                 Recent Community Activity
               </h3>
               <p className="text-xs text-[#5E6963] mt-1">
@@ -572,14 +572,14 @@ export default function DashboardView({ onOpenDemoModal }) {
                     <FaIcon name={tx.icon || 'marketplace'} />
                   </div>
                   <div>
-                    <div className="font-fjalla text-xs sm:text-sm font-normal text-[#17221D] leading-tight">
+                    <div className="font-changa text-xs sm:text-sm font-normal text-[#17221D] leading-tight">
                       {tx.sellerName} {tx.buyerName ? `→ ${tx.buyerName}` : ''}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-3.5 text-right">
-                  <div className="font-fjalla text-xs sm:text-sm font-normal text-[#17221D]">
+                  <div className="font-changa text-xs sm:text-sm font-normal text-[#17221D]">
                     {tx.energyKwh.toFixed(1)} kWh
                   </div>
                   {tx.pricePerKwh > 0 && (

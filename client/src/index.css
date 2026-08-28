@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,14 +46,19 @@
     overflow-x: hidden;
   }
 
+  .font-changa {
+    font-family: 'Changa One', sans-serif;
+    letter-spacing: 0.015em;
+  }
+
   .font-fjalla {
-    font-family: 'Fjalla One', sans-serif;
-    letter-spacing: 0.025em;
+    font-family: 'Changa One', 'Fjalla One', sans-serif;
+    letter-spacing: 0.015em;
   }
 
   .font-display {
-    font-family: 'Fjalla One', 'Plus Jakarta Sans', sans-serif;
-    letter-spacing: 0.02em;
+    font-family: 'Changa One', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.015em;
   }
 }
 

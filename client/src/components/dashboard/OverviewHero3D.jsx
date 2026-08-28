@@ -32,7 +32,7 @@ export default function OverviewHero3D({
           <FaIcon name="solar" />
         </div>
         <div>
-          <div className="font-fjalla text-sm sm:text-base font-normal text-[#17221D] leading-tight">
+          <div className="font-changa text-sm sm:text-base font-normal text-[#17221D] leading-tight">
             {generation.toFixed(1)} kW
           </div>
           <div className="text-[9px] font-bold text-[#5E6963] uppercase tracking-wider leading-none">
@@ -47,7 +47,7 @@ export default function OverviewHero3D({
           <FaIcon name="grid" />
         </div>
         <div>
-          <div className="font-fjalla text-sm sm:text-base font-normal text-[#17221D] leading-tight">
+          <div className="font-changa text-sm sm:text-base font-normal text-[#17221D] leading-tight">
             {gridExchange > 0 ? `+${gridExchange.toFixed(1)}` : `${gridExchange.toFixed(1)}`} kW
           </div>
           <div className="text-[9px] font-bold text-[#5E6963] uppercase tracking-wider leading-none">
@@ -62,7 +62,7 @@ export default function OverviewHero3D({
           <FaIcon name="home" />
         </div>
         <div>
-          <div className="font-fjalla text-sm sm:text-base font-normal text-[#1E9B68] leading-tight">
+          <div className="font-changa text-sm sm:text-base font-normal text-[#1E9B68] leading-tight">
             +{myHomeNet.toFixed(1)} kW
           </div>
           <div className="text-[9px] font-bold text-[#5E6963] uppercase tracking-wider leading-none">
@@ -77,7 +77,7 @@ export default function OverviewHero3D({
           <FaIcon name="battery" />
         </div>
         <div>
-          <div className="font-fjalla text-sm sm:text-base font-normal text-[#17221D] leading-tight">
+          <div className="font-changa text-sm sm:text-base font-normal text-[#17221D] leading-tight">
             {batterySoc.toFixed(0)}%
           </div>
           <div className="text-[9px] font-bold text-[#5E6963] uppercase tracking-wider leading-none">
@@ -92,7 +92,7 @@ export default function OverviewHero3D({
           <span className="w-2 h-2 rounded-full bg-[#D45C5C] animate-pulse" />
         </div>
         <div>
-          <div className="font-fjalla text-sm sm:text-base font-normal text-[#D45C5C] leading-tight">
+          <div className="font-changa text-sm sm:text-base font-normal text-[#D45C5C] leading-tight">
             {heavyLoadNet.toFixed(1)} kW
           </div>
           <div className="text-[9px] font-bold text-[#5E6963] uppercase tracking-wider leading-none">
