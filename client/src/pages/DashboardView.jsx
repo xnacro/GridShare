@@ -199,10 +199,10 @@ export default function DashboardView({ onOpenDemoModal }) {
         <div className="relative z-10 flex flex-col lg:flex-row items-stretch" style={{ minHeight: 'calc(100vh - 100px)' }}>
 
           {/* ─── LEFT SIDE: Content & CTAs ─── */}
-          <div className="flex-1 lg:max-w-[50%] p-8 sm:p-10 lg:p-14 lg:pl-16 flex flex-col justify-center pt-10 sm:pt-14 lg:pt-16 space-y-6">
+          <div className="flex-1 lg:max-w-[50%] p-5 sm:p-8 lg:p-14 lg:pl-16 flex flex-col justify-center pt-8 sm:pt-14 lg:pt-16 space-y-5 sm:space-y-6">
 
             {/* Dynamic Headline — Outfit Typography */}
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#041D0D] leading-[1.18] tracking-tight">
+            <h1 className="font-display text-2xl sm:text-4xl lg:text-[46px] font-bold text-[#041D0D] leading-[1.18] tracking-tight">
               {netCommunity >= 0 ? (
                 <>
                   Your community has{' '}
@@ -223,7 +223,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             </h1>
 
             {/* Supporting Description */}
-            <p className="text-sm sm:text-base text-[#4A5B4F] leading-relaxed max-w-md">
+            <p className="text-xs sm:text-base text-[#4A5B4F] leading-relaxed max-w-md">
               GridShare tracks generation and demand across {computedHouseholds.length} households, then decides in real time whether to store the surplus, trade it locally, or export it to the grid.
             </p>
 
@@ -232,7 +232,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <button
                 type="button"
                 onClick={() => navigate('/network')}
-                className="px-6 py-2.5 rounded-full bg-[#012F13] hover:bg-[#0B3E1D] text-white text-sm font-bold shadow-xs transition flex items-center space-x-2 active:scale-[0.98]"
+                className="px-5 sm:px-6 py-2.5 rounded-full bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center space-x-2 active:scale-[0.98]"
               >
                 <span>View live map</span>
                 <span className="text-base leading-none">↗</span>
@@ -241,7 +241,7 @@ export default function DashboardView({ onOpenDemoModal }) {
               <button
                 type="button"
                 onClick={() => navigate('/ai')}
-                className="text-sm font-bold text-[#011207] hover:text-[#8BC53D] transition px-2 py-2"
+                className="text-xs sm:text-sm font-bold text-[#011207] hover:text-[#8BC53D] transition px-2 py-2"
               >
                 See recommendations
               </button>
@@ -249,7 +249,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
 
           {/* ─── RIGHT SIDE: Hand-Drawn Illustration & Lower Rotating Badge ─── */}
-          <div className="flex-1 lg:max-w-[50%] relative flex items-center justify-center p-4 lg:p-0 pt-8 sm:pt-12 lg:pt-14">
+          <div className="flex-1 lg:max-w-[50%] relative flex items-center justify-center p-2 sm:p-4 lg:p-0 pt-4 sm:pt-12 lg:pt-14">
 
             {/* The SVG Illustration */}
             <MicrogridSketchIllustration className="w-full h-auto max-h-[400px] lg:max-h-[440px] object-contain" />
@@ -657,11 +657,11 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
 
           {/* Interactive Quick Buffer Actions */}
-          <div className="grid grid-cols-2 gap-2.5 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
             <button
               type="button"
               onClick={() => handleBufferCharge(2.0)}
-              className="py-2 px-3 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
+              className="py-2.5 px-3 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
             >
               <FaIcon name="solar" className="text-[#8BC53D]" />
               <span>Buffer Solar (+2.0 kWh)</span>
@@ -669,7 +669,7 @@ export default function DashboardView({ onOpenDemoModal }) {
             <button
               type="button"
               onClick={() => handleBufferDischarge(1.5)}
-              className="py-2 px-3 rounded-xl bg-white hover:bg-[#F4F9EB] text-[#011207] border border-[#BED69E] text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
+              className="py-2.5 px-3 rounded-xl bg-white hover:bg-[#F4F9EB] text-[#011207] border border-[#BED69E] text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
             >
               <FaIcon name="battery" className="text-[#012F13]" />
               <span>Discharge Backup (-1.5 kWh)</span>

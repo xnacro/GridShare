@@ -48,7 +48,7 @@ export default function NavMobileDrawer({
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#DCE4DE]">
           <div className="flex items-center space-x-2.5">
-            <span className="font-changa text-xl font-normal tracking-tight text-[#15211B]">
+            <span className="font-display text-xl font-bold tracking-tight text-[#041D0D]">
               GridShare
             </span>
           </div>
@@ -56,7 +56,7 @@ export default function NavMobileDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-[#87918B] hover:bg-[#F5F7F3] hover:text-[#15211B]"
+            className="rounded-full p-2.5 text-[#4A5B4F] hover:bg-[#F4F9EB] hover:text-[#041D0D] transition active:scale-95"
             aria-label="Close navigation"
           >
             <FaIcon name="close" className="text-sm" />

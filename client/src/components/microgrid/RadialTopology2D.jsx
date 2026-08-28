@@ -420,16 +420,26 @@ export default function RadialTopology2D({
           })}
         </svg>
 
-        {/* Floating Tooltip Details when Hovered */}
+        {/* Floating Tooltip Details when Hovered / Tapped on Mobile */}
         {hoveredNode && (
-          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-[#BED69E] shadow-xl text-left z-20 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center space-x-2">
-              <span className="font-display font-bold text-xs text-[#041D0D]">
-                {hoveredNode.name || hoveredNode.label}
-              </span>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#E2F0CC] text-[#012F13]">
-                {hoveredNode.type || 'Household'}
-              </span>
+          <div className="absolute bottom-4 left-4 right-4 sm:right-auto max-w-sm bg-white/95 backdrop-blur-md p-3 rounded-xl border border-[#BED69E] shadow-xl text-left z-20 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between space-x-2">
+              <div className="flex items-center space-x-2">
+                <span className="font-display font-bold text-xs text-[#041D0D]">
+                  {hoveredNode.name || hoveredNode.label}
+                </span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#E2F0CC] text-[#012F13]">
+                  {hoveredNode.type || 'Household'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setHoveredNode(null)}
+                className="text-[#4A5B4F] hover:text-[#041D0D] text-xs p-1 sm:hidden font-bold"
+                aria-label="Close tooltip"
+              >
+                ✕
+              </button>
             </div>
             {hoveredNode.generation !== undefined && (
               <div className="text-[11px] text-[#4A5B4F] mt-1 space-y-0.5 font-mono">

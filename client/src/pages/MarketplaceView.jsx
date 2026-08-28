@@ -271,57 +271,57 @@ export default function MarketplaceView() {
           )}
 
           {/* 🌟 2. QUICK MARKET SUMMARY STRIP */}
-          <div className="glass-card rounded-xl p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center">
+          <div className="glass-card rounded-xl p-4 sm:p-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center">
 
             {/* Metric 1: Available Energy */}
             <div>
-              <div className="text-xs font-bold text-[#5E6963]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
                 Available Energy
               </div>
-              <div className="font-changa text-2xl sm:text-3xl font-normal text-[#1E9B68] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#8BC53D] mt-0.5">
                 {totalAvailableKwh.toFixed(1)} kWh
               </div>
-              <div className="text-xs text-[#5E6963] font-medium mt-0.5">
-                Community rooftop surplus
+              <div className="text-[10px] sm:text-xs text-[#4A5B4F] font-medium mt-0.5 truncate">
+                Community surplus
               </div>
             </div>
 
             {/* Metric 2: Active Matches */}
             <div>
-              <div className="text-xs font-bold text-[#5E6963]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
                 Active Matches
               </div>
-              <div className="font-changa text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#041D0D] mt-0.5">
                 {aiMatches.length} Pairs
               </div>
-              <div className="text-xs text-[#1E9B68] font-bold flex items-center gap-1 mt-0.5">
+              <div className="text-[10px] sm:text-xs text-[#8BC53D] font-bold flex items-center gap-1 mt-0.5">
                 <span>● Ready to settle</span>
               </div>
             </div>
 
             {/* Metric 3: Average P2P Price */}
             <div>
-              <div className="text-xs font-bold text-[#5E6963]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
                 Average P2P Price
               </div>
-              <div className="font-changa text-2xl sm:text-3xl font-normal text-[#17221D] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#041D0D] mt-0.5">
                 ₹{avgP2pPrice.toFixed(2)} / kWh
               </div>
-              <div className="text-xs text-[#5E6963] font-medium mt-0.5">
-                Algorithmically balanced tariff
+              <div className="text-[10px] sm:text-xs text-[#4A5B4F] font-medium mt-0.5 truncate">
+                Balanced tariff
               </div>
             </div>
 
             {/* Metric 4: Grid Benchmark */}
             <div>
-              <div className="text-xs font-bold text-[#5E6963]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
                 Grid Benchmark
               </div>
-              <div className="font-changa text-2xl sm:text-3xl font-normal text-[#D45C5C] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#D45C5C] mt-0.5">
                 ₹{gridBenchmarkRate.toFixed(2)} / kWh
               </div>
-              <div className="text-xs text-[#1E9B68] font-bold mt-0.5">
-                Buyer saves ₹{(gridBenchmarkRate - avgP2pPrice).toFixed(2)} / kWh
+              <div className="text-[10px] sm:text-xs text-[#8BC53D] font-bold mt-0.5 truncate">
+                Saves ₹{(gridBenchmarkRate - avgP2pPrice).toFixed(2)} / kWh
               </div>
             </div>
 
