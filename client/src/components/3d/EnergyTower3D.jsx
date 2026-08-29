@@ -47,9 +47,10 @@ function TowerColumn({ position, height, targetHeight, color, label, value, unit
         title={label}
         value={value}
         unit={unit}
-        badge={icon}
+        badge={badgeText}
+        iconName={iconName}
         badgeType={badgeType}
-        distanceFactor={15}
+        distanceFactor={11}
       />
     </group>
   );
@@ -68,7 +69,7 @@ export default function EnergyTower3D({
   const priceHeight = Math.max(0.4, Math.min(2.5, (gridPrice / 10) * 1.8));
 
   return (
-    <div className="relative h-64 w-full rounded-2xl border border-slate-200/90 bg-slate-50/50 p-2 shadow-xs overflow-hidden select-none">
+    <div className="relative h-64 w-full rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-2 shadow-xs overflow-hidden select-none">
       <Canvas camera={{ position: [0, 4, 7.5], fov: 38 }} shadows>
         <ambientLight intensity={0.8} />
         <directionalLight position={[6, 10, 6]} intensity={1.1} castShadow />
@@ -86,7 +87,8 @@ export default function EnergyTower3D({
             value={totalGen.toFixed(1)}
             unit="kW"
             badgeType="warning"
-            icon="☀️ Solar PV"
+            iconName="solar"
+            badgeText="Solar PV"
           />
 
           <TowerColumn
@@ -98,7 +100,8 @@ export default function EnergyTower3D({
             value={totalCon.toFixed(1)}
             unit="kW"
             badgeType="info"
-            icon="⚡ Load"
+            iconName="energy"
+            badgeText="Load"
           />
 
           <TowerColumn
@@ -110,7 +113,8 @@ export default function EnergyTower3D({
             value={`${batterySoc.toFixed(0)}%`}
             unit=""
             badgeType="positive"
-            icon="🔋 ESS"
+            iconName="battery"
+            badgeText="ESS"
           />
 
           <TowerColumn
@@ -122,7 +126,8 @@ export default function EnergyTower3D({
             value={`₹${gridPrice.toFixed(2)}`}
             unit="/kWh"
             badgeType="neutral"
-            icon="🌐 Grid"
+            iconName="grid"
+            badgeText="Grid"
           />
         </group>
       </Canvas>

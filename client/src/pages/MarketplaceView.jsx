@@ -196,44 +196,46 @@ export default function MarketplaceView() {
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
 
       {/* 🌟 1. COMPACT PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
               P2P Energy Marketplace
             </h1>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200">
               Avg P2P ₹{avgP2pPrice.toFixed(2)}/kWh
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Direct peer-to-peer trading connecting solar surplus prosumers with nearby community demand
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           {/* Segmented Sub-Tab Switcher */}
-          <div className="inline-flex rounded-xl bg-white border border-[#BED69E] p-1 shadow-2xs">
+          <div className="inline-flex rounded-xl bg-white/80 backdrop-blur-md border border-white/90 p-1 shadow-xs">
             <button
               type="button"
               onClick={() => setActiveMarketTab('exchange')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${activeMarketTab === 'exchange'
-                ? 'bg-[#012F13] text-white shadow-xs'
-                : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
-                }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${
+                activeMarketTab === 'exchange'
+                  ? 'bg-[#0F172A] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A] hover:bg-white/60'
+              }`}
             >
-              <FaIcon name="marketplace" className="text-xs mr-1.5 text-[#8BC53D]" />
+              <FaIcon name="marketplace" className="text-xs mr-1.5 text-[#0D9488]" />
               <span>MarketPlace</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveMarketTab('ledger')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${activeMarketTab === 'ledger'
-                ? 'bg-[#012F13] text-white shadow-xs'
-                : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
-                }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${
+                activeMarketTab === 'ledger'
+                  ? 'bg-[#0F172A] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A] hover:bg-white/60'
+              }`}
             >
-              <FaIcon name="history" className="text-xs mr-1.5" />
+              <FaIcon name="history" className="text-xs mr-1.5 text-[#64748B]" />
               <span>Trade History & Ledger</span>
             </button>
           </div>
@@ -244,9 +246,9 @@ export default function MarketplaceView() {
               setPrefilledOfferKwh(2.0);
               setIsCreateOfferOpen(true);
             }}
-            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs whitespace-nowrap"
+            className="px-4 py-2 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs whitespace-nowrap active:scale-98"
           >
-            <FaIcon name="plus" className="text-[#8BC53D]" />
+            <FaIcon name="sparkles" className="text-white text-xs" />
             <span>Post Energy Listing</span>
           </button>
         </div>
@@ -261,68 +263,69 @@ export default function MarketplaceView() {
         <>
           {/* Dynamic Status Notification */}
           {statusMessage && (
-            <div className="flex items-center justify-between rounded-xl border border-[#BED69E] bg-[#E2F0CC] px-4 py-3 text-xs sm:text-sm text-[#012F13] font-bold shadow-xs animate-in fade-in">
+            <div className="flex items-center justify-between rounded-xl border border-teal-200 bg-white/90 backdrop-blur-md px-4 py-3 text-xs sm:text-sm text-[#0F172A] font-bold shadow-xs animate-in fade-in">
               <div className="flex items-center gap-2">
-                <FaIcon name="check" className="text-[#8BC53D]" />
+                <FaIcon name="checkCircle" className="text-[#0D9488]" />
                 <span>{statusMessage}</span>
               </div>
-              <button type="button" onClick={() => setStatusMessage('')} className="text-[#012F13] text-xs p-1 font-bold">
-                ✕
+              <button type="button" onClick={() => setStatusMessage('')} className="text-[#64748B] hover:text-[#0F172A] text-xs p-1 font-bold">
+                <FaIcon name="close" />
               </button>
             </div>
           )}
 
           {/* 🌟 2. QUICK MARKET SUMMARY STRIP */}
-          <div className="glass-card rounded-xl p-4 sm:p-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center">
+          <div className="rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-4 sm:p-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center shadow-xs">
 
             {/* Metric 1: Available Energy */}
             <div>
-              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#64748B]">
                 Available Energy
               </div>
-              <div className="font-display text-xl sm:text-3xl font-bold text-[#8BC53D] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#0D9488] mt-0.5">
                 {totalAvailableKwh.toFixed(1)} kWh
               </div>
-              <div className="text-[10px] sm:text-xs text-[#4A5B4F] font-medium mt-0.5 truncate">
+              <div className="text-[10px] sm:text-xs text-[#64748B] font-medium mt-0.5 truncate">
                 Community surplus
               </div>
             </div>
 
             {/* Metric 2: Active Matches */}
             <div>
-              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#64748B]">
                 Active Matches
               </div>
-              <div className="font-display text-xl sm:text-3xl font-bold text-[#041D0D] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#0F172A] mt-0.5">
                 {aiMatches.length} Pairs
               </div>
-              <div className="text-[10px] sm:text-xs text-[#8BC53D] font-bold flex items-center gap-1 mt-0.5">
-                <span>● Ready to settle</span>
+              <div className="text-[10px] sm:text-xs text-[#0D9488] font-bold flex items-center gap-1 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#0D9488] inline-block" />
+                <span>Ready to settle</span>
               </div>
             </div>
 
             {/* Metric 3: Average P2P Price */}
             <div>
-              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#64748B]">
                 Average P2P Price
               </div>
-              <div className="font-display text-xl sm:text-3xl font-bold text-[#041D0D] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#0F172A] mt-0.5">
                 ₹{avgP2pPrice.toFixed(2)} / kWh
               </div>
-              <div className="text-[10px] sm:text-xs text-[#4A5B4F] font-medium mt-0.5 truncate">
+              <div className="text-[10px] sm:text-xs text-[#64748B] font-medium mt-0.5 truncate">
                 Balanced tariff
               </div>
             </div>
 
             {/* Metric 4: Grid Benchmark */}
             <div>
-              <div className="text-[11px] sm:text-xs font-bold text-[#4A5B4F]">
+              <div className="text-[11px] sm:text-xs font-bold text-[#64748B]">
                 Grid Benchmark
               </div>
-              <div className="font-display text-xl sm:text-3xl font-bold text-[#D45C5C] mt-0.5">
+              <div className="font-display text-xl sm:text-3xl font-bold text-[#E11D48] mt-0.5">
                 ₹{gridBenchmarkRate.toFixed(2)} / kWh
               </div>
-              <div className="text-[10px] sm:text-xs text-[#8BC53D] font-bold mt-0.5 truncate">
+              <div className="text-[10px] sm:text-xs text-[#0D9488] font-bold mt-0.5 truncate">
                 Saves ₹{(gridBenchmarkRate - avgP2pPrice).toFixed(2)} / kWh
               </div>
             </div>
@@ -330,31 +333,31 @@ export default function MarketplaceView() {
           </div>
 
           {/* 🌟 3. AI ENERGY OUTLOOK (Compact, 15-Minute ML Intelligence from solar_v1 & demand_v1) */}
-          <div className="glass-card rounded-xl p-5 border border-[#BED69E] bg-[#F4F9EB]/60 space-y-4">
+          <div className="rounded-2xl p-5 border border-white/90 bg-white/80 backdrop-blur-xl space-y-4 shadow-xs">
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#E2F0CC]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200/60">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm shadow-xs">
+                <div className="w-8 h-8 rounded-lg bg-teal-50 text-[#0D9488] flex items-center justify-center text-sm shadow-xs border border-teal-100">
                   <FaIcon name="sparkles" />
                 </div>
                 <div>
                   <div className="flex items-center space-x-2">
-                    <h3 className="font-display text-base font-bold text-[#011207]">
+                    <h3 className="font-display text-base font-bold text-[#0F172A]">
                       AI Energy Outlook
                     </h3>
-                    <span className="text-[10px] font-bold text-[#012F13] bg-[#E2F0CC] px-2 py-0.5 rounded-md border border-[#BED69E]">
+                    <span className="text-[10px] font-bold text-[#0D9488] bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
                       Next 15 min
                     </span>
                   </div>
-                  <p className="text-xs text-[#4A5B4F]">
+                  <p className="text-xs text-[#64748B]">
                     Predictive Random Forest solar & demand models with risk-aware battery constraints
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-2 text-xs">
-                <span className="text-[#4A5B4F]">Battery reserve:</span>
-                <span className="font-bold text-[#012F13] bg-[#E2F0CC] px-2.5 py-0.5 rounded-md border border-[#BED69E]">
+                <span className="text-[#64748B]">Battery reserve:</span>
+                <span className="font-bold text-[#0F172A] bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
                   {batteryState.community_battery_soc?.toFixed(0) || 40}% (Floor &gt; 20%)
                 </span>
               </div>
@@ -362,62 +365,62 @@ export default function MarketplaceView() {
 
             {/* 4 Compact Forecast Grid Pillars */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-              <div className="p-3 rounded-lg bg-[#F4F9EB] border border-[#E2F0CC] space-y-0.5">
-                <div className="text-[10px] font-bold text-[#4A5B4F] flex items-center justify-center gap-1">
-                  <FaIcon name="solar" className="text-[#8BC53D]" />
+              <div className="p-3 rounded-xl bg-white/60 border border-white/90 space-y-0.5 shadow-2xs">
+                <div className="text-[10px] font-bold text-[#64748B] flex items-center justify-center gap-1">
+                  <FaIcon name="solar" className="text-[#D97706]" />
                   <span>Solar Forecast</span>
                 </div>
-                <div className="font-display text-lg font-bold text-[#011207]">
+                <div className="font-display text-lg font-bold text-[#0F172A]">
                   {forecast.solar_kw?.toFixed(2) || '5.84'} kW
                 </div>
-                <div className="text-[10px] text-[#4A5B4F]">
+                <div className="text-[10px] text-[#64748B]">
                   Range: {riskCheck.forecast_range_solar_kw?.[0]?.toFixed(2) || '5.31'}–{riskCheck.forecast_range_solar_kw?.[1]?.toFixed(2) || '6.28'} kW
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-[#F4F9EB] border border-[#E2F0CC] space-y-0.5">
-                <div className="text-[10px] font-bold text-[#4A5B4F] flex items-center justify-center gap-1">
-                  <FaIcon name="home" className="text-[#011207]" />
+              <div className="p-3 rounded-xl bg-white/60 border border-white/90 space-y-0.5 shadow-2xs">
+                <div className="text-[10px] font-bold text-[#64748B] flex items-center justify-center gap-1">
+                  <FaIcon name="home" className="text-[#0F172A]" />
                   <span>Expected Demand</span>
                 </div>
-                <div className="font-display text-lg font-bold text-[#011207]">
+                <div className="font-display text-lg font-bold text-[#0F172A]">
                   {forecast.demand_kw?.toFixed(2) || '4.21'} kW
                 </div>
-                <div className="text-[10px] text-[#4A5B4F]">
+                <div className="text-[10px] text-[#64748B]">
                   Household load trend
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-[#F4F9EB] border border-[#E2F0CC] space-y-0.5">
-                <div className="text-[10px] font-bold text-[#4A5B4F] flex items-center justify-center gap-1">
-                  <FaIcon name="network" className="text-[#8BC53D]" />
+              <div className="p-3 rounded-xl bg-white/60 border border-white/90 space-y-0.5 shadow-2xs">
+                <div className="text-[10px] font-bold text-[#64748B] flex items-center justify-center gap-1">
+                  <FaIcon name="network" className="text-[#0D9488]" />
                   <span>Expected Surplus</span>
                 </div>
-                <div className="font-display text-lg font-bold text-[#8BC53D]">
+                <div className="font-display text-lg font-bold text-[#0D9488]">
                   +{forecast.balance_kw?.toFixed(2) || '1.63'} kW
                 </div>
-                <div className="text-[10px] text-[#4A5B4F]">
+                <div className="text-[10px] text-[#64748B]">
                   Conservative: +{conservativeKw.toFixed(2)} kW
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-white border border-[#BED69E] space-y-0.5 shadow-xs">
-                <div className="text-[10px] font-bold text-[#012F13] flex items-center justify-center gap-1">
-                  <FaIcon name="sparkles" className="text-[#8BC53D]" />
+              <div className="p-3 rounded-xl bg-white/90 border border-white/95 space-y-0.5 shadow-xs">
+                <div className="text-[10px] font-bold text-[#0F172A] flex items-center justify-center gap-1">
+                  <FaIcon name="sparkles" className="text-[#0D9488]" />
                   <span>Safe 15-min Headroom</span>
                 </div>
-                <div className="font-display text-lg font-bold text-[#012F13]">
+                <div className="font-display text-lg font-bold text-[#0D9488]">
                   {safeTradeableKwh.toFixed(2)} kWh
                 </div>
-                <div className="text-[10px] text-[#8BC53D] font-semibold">
+                <div className="text-[10px] text-[#0D9488] font-semibold">
                   Zero deficit risk
                 </div>
               </div>
             </div>
 
             {/* Action Suggestion Bar */}
-            <div className="p-3 rounded-lg bg-white border border-[#BED69E] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <div className="flex items-center space-x-2 text-[#011207]">
+            <div className="p-3 rounded-xl bg-white/80 border border-white/90 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-2xs">
+              <div className="flex items-center space-x-2 text-[#0F172A]">
                 <span>
                   <strong>AI Recommendation:</strong> Your solar surplus permits a safe trade of <strong>{safeTradeableKwh.toFixed(2)} kWh</strong> with nearby homes @ ₹{avgP2pPrice.toFixed(2)}/kWh without impacting storage.
                 </span>
@@ -426,7 +429,7 @@ export default function MarketplaceView() {
               <button
                 type="button"
                 onClick={handleOpenAiOffer}
-                className="px-4 py-1.5 rounded-lg bg-[#7358C7] hover:bg-[#5E44B2] text-white text-xs font-bold shadow-xs transition whitespace-nowrap active:scale-98"
+                className="px-4 py-2 rounded-xl bg-[#0F172A] hover:bg-[#0D9488] text-white text-xs font-bold shadow-xs transition whitespace-nowrap active:scale-98"
               >
                 Review AI Listing →
               </button>
@@ -438,35 +441,35 @@ export default function MarketplaceView() {
           <div className="space-y-3.5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-display text-xl sm:text-2xl font-bold text-[#17221D]">
+                <h2 className="font-display text-xl sm:text-2xl font-bold text-[#0F172A]">
                   Live Energy Matches
                 </h2>
-                <p className="text-xs text-[#5E6963] mt-0.5">
+                <p className="text-xs text-[#64748B] mt-0.5">
                   Nearby surplus and demand matched by GridShare algorithms
                 </p>
               </div>
 
-              <span className="text-xs font-bold text-[#1E9B68] bg-[#E8F6EE] px-3 py-1 rounded-lg border border-[#1E9B68]/20">
+              <span className="text-xs font-bold text-[#0D9488] bg-teal-50 px-3 py-1 rounded-lg border border-teal-200">
                 {aiMatches.length} Matches Available
               </span>
             </div>
 
             {aiMatches.length === 0 ? (
               /* Empty State */
-              <div className="glass-card rounded-xl p-10 text-center space-y-3 max-w-md mx-auto">
-                <div className="w-12 h-12 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center mx-auto text-lg shadow-xs">
+              <div className="rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-10 text-center space-y-3 max-w-md mx-auto shadow-xs">
+                <div className="w-12 h-12 rounded-xl bg-teal-50 text-[#0D9488] flex items-center justify-center mx-auto text-lg shadow-xs border border-teal-100">
                   <FaIcon name="check" />
                 </div>
-                <h3 className="font-display text-lg font-bold text-[#17221D]">No Active Matches</h3>
-                <p className="text-xs text-[#5E6963] leading-relaxed">
+                <h3 className="font-display text-lg font-bold text-[#0F172A]">No Active Matches</h3>
+                <p className="text-xs text-[#64748B] leading-relaxed">
                   Your community currently has zero open seller surplus. All local energy has been settled or balanced with storage.
                 </p>
                 <button
                   type="button"
                   onClick={() => setIsCreateOfferOpen(true)}
-                  className="px-4 py-2 rounded-xl bg-[#12392B] text-white text-xs font-bold shadow-xs hover:bg-[#174A37] transition flex items-center space-x-1.5 mx-auto"
+                  className="px-4 py-2 rounded-xl bg-[#0F172A] text-white text-xs font-bold shadow-xs hover:bg-[#0D9488] transition flex items-center space-x-1.5 mx-auto"
                 >
-                  <FaIcon name="plus" className="text-[#43CB8C]" />
+                  <FaIcon name="sparkles" className="text-[#0D9488]" />
                   <span>Post an Energy Listing</span>
                 </button>
               </div>
@@ -475,21 +478,21 @@ export default function MarketplaceView() {
                 {aiMatches.map((match) => (
                   <div
                     key={match.id}
-                    className="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4 transition-shadow hover:shadow-md"
+                    className="rounded-2xl border border-white/90 bg-white/85 backdrop-blur-xl p-5 sm:p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-md hover:bg-white transition-all"
                   >
                     {/* Top Match Header */}
-                    <div className="flex items-center justify-between pb-2.5 border-b border-[rgba(23,34,29,0.06)]">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
                       <div className="flex items-center space-x-2">
-                        <span className="px-2.5 py-0.5 rounded-lg bg-[#E8F6EE] text-[#1E9B68] text-[11px] font-bold flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-lg bg-teal-50 text-[#0D9488] text-[11px] font-bold flex items-center gap-1 border border-teal-100">
                           <FaIcon name="network" className="text-[10px]" />
                           <span>{match.distanceMeters} m away</span>
                         </span>
-                        <span className="text-xs text-[#5E6963] font-medium">
+                        <span className="text-xs text-[#64748B] font-medium">
                           Bilateral Pair
                         </span>
                       </div>
 
-                      <span className="font-display text-xs font-bold text-[#1E9B68]">
+                      <span className="font-display text-xs font-bold text-[#0D9488]">
                         Saves ₹{match.expectedSaving.toFixed(2)} vs Grid
                       </span>
                     </div>
@@ -497,49 +500,50 @@ export default function MarketplaceView() {
                     {/* Seller ➔ P2P Rate ➔ Buyer Visual Exchange */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-center sm:text-left">
                       {/* Seller */}
-                      <div className="p-3 rounded-lg bg-[#FFF7E4]/70 border border-[#DDA12A]/20 space-y-0.5">
-                        <div className="text-[10px] font-bold text-[#DDA12A]">Seller (Surplus)</div>
-                        <div className="text-xs font-bold text-[#17221D] truncate">{match.sellerName}</div>
-                        <div className="font-display text-sm font-bold text-[#DDA12A]">+{match.surplusKwh} kWh</div>
+                      <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200/60 space-y-0.5">
+                        <div className="text-[10px] font-bold text-[#D97706]">Seller (Surplus)</div>
+                        <div className="text-xs font-bold text-[#0F172A] truncate">{match.sellerName}</div>
+                        <div className="font-display text-sm font-bold text-[#D97706]">+{match.surplusKwh} kWh</div>
                       </div>
 
                       {/* Arrow & Tariff */}
                       <div className="text-center space-y-0.5">
-                        <div className="w-7 h-7 rounded-full bg-[#12392B] text-white flex items-center justify-center mx-auto text-xs shadow-xs">
+                        <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center mx-auto text-xs shadow-xs">
                           →
                         </div>
-                        <div className="font-display text-xs font-bold text-[#1E9B68]">
+                        <div className="font-display text-xs font-bold text-[#0D9488]">
                           ₹{match.pricePerKwh.toFixed(2)} / kWh
                         </div>
                       </div>
 
                       {/* Buyer */}
-                      <div className="p-3 rounded-lg bg-[#EDF3FD]/70 border border-[#3C78CC]/20 space-y-0.5">
-                        <div className="text-[10px] font-bold text-[#3C78CC]">Buyer (Demand)</div>
-                        <div className="text-xs font-bold text-[#17221D] truncate">{match.buyerName}</div>
-                        <div className="font-display text-sm font-bold text-[#3C78CC]">-{match.demandKwh} kWh</div>
+                      <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-200/60 space-y-0.5">
+                        <div className="text-[10px] font-bold text-[#2563EB]">Buyer (Demand)</div>
+                        <div className="text-xs font-bold text-[#0F172A] truncate">{match.buyerName}</div>
+                        <div className="font-display text-sm font-bold text-[#2563EB]">-{match.demandKwh} kWh</div>
                       </div>
                     </div>
 
-                    {/* Clean, Compact Metadata Tags (No text walls!) */}
-                    <div className="flex items-center gap-1.5 flex-wrap text-[11px] text-[#5E6963]">
+                    {/* Clean, Compact Metadata Tags */}
+                    <div className="flex items-center gap-1.5 flex-wrap text-[11px] text-[#64748B]">
                       {match.tags.map((tag, idx) => (
-                        <span key={idx} className="px-2.5 py-0.5 rounded-md bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] font-medium">
-                          ✓ {tag}
+                        <span key={idx} className="px-2.5 py-0.5 rounded-md bg-white border border-slate-200 font-medium flex items-center gap-1 shadow-2xs">
+                          <FaIcon name="check" className="text-[#0D9488] text-[9px]" />
+                          <span>{tag}</span>
                         </span>
                       ))}
                     </div>
 
                     {/* Bottom Action Row */}
-                    <div className="flex items-center justify-between pt-2 border-t border-[rgba(23,34,29,0.06)]">
-                      <span className="text-xs text-[#5E6963]">
-                        Grid comparison: <del className="text-[#D45C5C] font-mono">₹{match.gridPrice.toFixed(2)}/kWh</del>
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                      <span className="text-xs text-[#64748B]">
+                        Grid comparison: <del className="text-[#E11D48] font-mono">₹{match.gridPrice.toFixed(2)}/kWh</del>
                       </span>
 
                       <button
                         type="button"
                         onClick={() => handleOpenSettleMatch(match)}
-                        className="px-4 py-2 rounded-xl bg-[#1E9B68] hover:bg-[#168557] text-white text-xs font-bold shadow-xs transition active:scale-98 flex items-center space-x-1.5"
+                        className="px-4 py-2 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold shadow-xs transition active:scale-98 flex items-center space-x-1.5"
                       >
                         <span>Review & Settle Match →</span>
                       </button>
@@ -552,44 +556,44 @@ export default function MarketplaceView() {
           </div>
 
           {/* 🌟 5. PRICE EXPLANATION & COMPARISON CARD */}
-          <div className="glass-card rounded-xl p-5 sm:p-6 space-y-3.5">
+          <div className="rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-5 sm:p-6 space-y-3.5 shadow-xs">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-display text-lg font-bold text-[#17221D]">
+                <h3 className="font-display text-lg font-bold text-[#0F172A]">
                   Local P2P Price Transparency
                 </h3>
-                <p className="text-xs text-[#5E6963] mt-0.5">
+                <p className="text-xs text-[#64748B] mt-0.5">
                   Continuous double-auction clearing rate compared with standard utility baseline
                 </p>
               </div>
-              <span className="text-xs font-bold text-[#1E9B68] bg-[#E8F6EE] px-3 py-1 rounded-lg">
+              <span className="text-xs font-bold text-[#0D9488] bg-teal-50 px-3 py-1 rounded-lg border border-teal-200">
                 26% Average Community Savings
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3.5 text-center">
-              <div className="p-3.5 rounded-xl bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] space-y-0.5">
-                <div className="text-xs font-bold text-[#5E6963]">Local P2P Rate</div>
-                <div className="font-display text-xl font-bold text-[#1E9B68]">₹{avgP2pPrice.toFixed(2)} / kWh</div>
-                <div className="text-[10px] text-[#5E6963]">Agreed clearing tariff</div>
+              <div className="p-3.5 rounded-xl bg-white/60 border border-white/90 space-y-0.5 shadow-2xs">
+                <div className="text-xs font-bold text-[#64748B]">Local P2P Rate</div>
+                <div className="font-display text-xl font-bold text-[#0D9488]">₹{avgP2pPrice.toFixed(2)} / kWh</div>
+                <div className="text-[10px] text-[#64748B]">Agreed clearing tariff</div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] space-y-0.5">
-                <div className="text-xs font-bold text-[#5E6963]">Grid Utility Rate</div>
-                <div className="font-display text-xl font-bold text-[#D45C5C]">₹{gridBenchmarkRate.toFixed(2)} / kWh</div>
-                <div className="text-[10px] text-[#5E6963]">Retail DISCOM tariff</div>
+              <div className="p-3.5 rounded-xl bg-white/60 border border-white/90 space-y-0.5 shadow-2xs">
+                <div className="text-xs font-bold text-[#64748B]">Grid Utility Rate</div>
+                <div className="font-display text-xl font-bold text-[#E11D48]">₹{gridBenchmarkRate.toFixed(2)} / kWh</div>
+                <div className="text-[10px] text-[#64748B]">Retail DISCOM tariff</div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] space-y-0.5">
-                <div className="text-xs font-bold text-[#5E6963]">Buyer Savings</div>
-                <div className="font-display text-xl font-bold text-[#1E9B68]">₹{(gridBenchmarkRate - avgP2pPrice).toFixed(2)} / kWh</div>
-                <div className="text-[10px] text-[#5E6963]">Direct utility bill reduction</div>
+              <div className="p-3.5 rounded-xl bg-white/60 border border-white/90 space-y-0.5 shadow-2xs">
+                <div className="text-xs font-bold text-[#64748B]">Buyer Savings</div>
+                <div className="font-display text-xl font-bold text-[#0D9488]">₹{(gridBenchmarkRate - avgP2pPrice).toFixed(2)} / kWh</div>
+                <div className="text-[10px] text-[#64748B]">Direct utility bill reduction</div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] space-y-0.5">
-                <div className="text-xs font-bold text-[#5E6963]">Seller Extra Gain</div>
-                <div className="font-display text-xl font-bold text-[#1E9B68]">+₹{(avgP2pPrice - 3.50).toFixed(2)} / kWh</div>
-                <div className="text-[10px] text-[#5E6963]">vs ₹3.50 grid feed-in rate</div>
+              <div className="p-3.5 rounded-xl bg-white/60 border border-white/90 space-y-0.5 shadow-2xs">
+                <div className="text-xs font-bold text-[#64748B]">Seller Extra Gain</div>
+                <div className="font-display text-xl font-bold text-[#0D9488]">+₹{(avgP2pPrice - 3.50).toFixed(2)} / kWh</div>
+                <div className="text-[10px] text-[#64748B]">vs ₹3.50 grid feed-in rate</div>
               </div>
             </div>
           </div>
@@ -598,74 +602,74 @@ export default function MarketplaceView() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
             {/* Left Card: Community Marketplace Impact */}
-            <div className="lg:col-span-6 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-3.5">
+            <div className="lg:col-span-6 rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-5 sm:p-6 flex flex-col justify-between space-y-3.5 shadow-xs">
               <div>
-                <h3 className="font-display text-base font-bold text-[#17221D]">
+                <h3 className="font-display text-base font-bold text-[#0F172A]">
                   Community Marketplace Impact
                 </h3>
-                <p className="text-xs text-[#5E6963] mt-0.5">
+                <p className="text-xs text-[#64748B] mt-0.5">
                   Measurable ecological and economic gains from P2P energy trades
                 </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center py-1">
-                <div className="flex flex-col items-center p-2 rounded-xl bg-[#F8F9F6]">
-                  <div className="w-8 h-8 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1">
+                <div className="flex flex-col items-center p-2.5 rounded-xl bg-white/70 border border-white/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-teal-50 text-[#0D9488] flex items-center justify-center text-xs mb-1 border border-teal-100">
                     <FaIcon name="leaf" />
                   </div>
-                  <div className="font-display text-lg font-bold text-[#1E9B68]">
+                  <div className="font-display text-lg font-bold text-[#0D9488]">
                     {totalEnergyTraded.toFixed(1)} kWh
                   </div>
-                  <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Local Energy Used</div>
+                  <div className="text-[10px] text-[#64748B] font-medium leading-tight">Local Energy Used</div>
                 </div>
 
-                <div className="flex flex-col items-center p-2 rounded-xl bg-[#F8F9F6]">
-                  <div className="w-8 h-8 rounded-lg bg-[#EDF3FD] text-[#3C78CC] flex items-center justify-center text-xs mb-1">
+                <div className="flex flex-col items-center p-2.5 rounded-xl bg-white/70 border border-white/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#2563EB] flex items-center justify-center text-xs mb-1 border border-blue-100">
                     <FaIcon name="grid" />
                   </div>
-                  <div className="font-display text-lg font-bold text-[#17221D]">
+                  <div className="font-display text-lg font-bold text-[#0F172A]">
                     {(totalEnergyTraded * 1.15).toFixed(1)} kWh
                   </div>
-                  <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Grid Avoided</div>
+                  <div className="text-[10px] text-[#64748B] font-medium leading-tight">Grid Avoided</div>
                 </div>
 
-                <div className="flex flex-col items-center p-2 rounded-xl bg-[#F8F9F6]">
-                  <div className="w-8 h-8 rounded-lg bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs mb-1">
+                <div className="flex flex-col items-center p-2.5 rounded-xl bg-white/70 border border-white/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-[#D97706] flex items-center justify-center text-xs mb-1 border border-amber-100">
                     <FaIcon name="rupee" />
                   </div>
-                  <div className="font-display text-lg font-bold text-[#17221D]">
+                  <div className="font-display text-lg font-bold text-[#0F172A]">
                     ₹{(totalEnergyTraded * 1.60).toFixed(2)}
                   </div>
-                  <div className="text-[10px] text-[#5E6963] font-medium leading-tight">Total Savings</div>
+                  <div className="text-[10px] text-[#64748B] font-medium leading-tight">Total Savings</div>
                 </div>
 
-                <div className="flex flex-col items-center p-2 rounded-xl bg-[#F8F9F6]">
-                  <div className="w-8 h-8 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs mb-1">
+                <div className="flex flex-col items-center p-2.5 rounded-xl bg-white/70 border border-white/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-teal-50 text-[#0D9488] flex items-center justify-center text-xs mb-1 border border-teal-100">
                     <FaIcon name="shield" />
                   </div>
-                  <div className="font-display text-lg font-bold text-[#17221D]">
+                  <div className="font-display text-lg font-bold text-[#0F172A]">
                     {(totalEnergyTraded * 0.82).toFixed(1)} kg
                   </div>
-                  <div className="text-[10px] text-[#5E6963] font-medium leading-tight">CO₂ Avoided</div>
+                  <div className="text-[10px] text-[#64748B] font-medium leading-tight">CO₂ Avoided</div>
                 </div>
               </div>
             </div>
 
             {/* Right Card: Recent Local Trades */}
-            <div className="lg:col-span-6 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-3">
+            <div className="lg:col-span-6 rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-5 sm:p-6 flex flex-col justify-between space-y-3 shadow-xs">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-display text-base font-bold text-[#17221D]">
+                  <h3 className="font-display text-base font-bold text-[#0F172A]">
                     Recent Local Trades
                   </h3>
-                  <p className="text-xs text-[#5E6963] mt-0.5">
+                  <p className="text-xs text-[#64748B] mt-0.5">
                     Executed bilateral energy exchange receipts
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => navigate('/transactions')}
-                  className="text-xs font-bold text-[#1E9B68] hover:underline"
+                  className="text-xs font-bold text-[#0D9488] hover:underline"
                 >
                   View full ledger →
                 </button>
@@ -675,28 +679,28 @@ export default function MarketplaceView() {
                 {transactions.slice(0, 4).map((tx) => (
                   <div
                     key={tx.id}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-[#F8F9F6] text-xs hover:bg-[#EEF2ED] transition"
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-white/90 text-xs hover:bg-white transition shadow-2xs"
                   >
                     <div className="flex items-center space-x-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
-                        {/* <FaIcon name={tx.icon || 'marketplace'} /> */}
+                      <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#0D9488] flex items-center justify-center text-xs border border-teal-100">
+                        <FaIcon name="trade" />
                       </div>
                       <div>
-                        <div className="font-bold text-[#17221D] leading-tight">
+                        <div className="font-bold text-[#0F172A] leading-tight">
                           {tx.sellerName} → {tx.buyerName}
                         </div>
-                        <div className="text-[10px] text-[#89938D]">{tx.time} • P2P Cleared</div>
+                        <div className="text-[10px] text-[#64748B]">{tx.time} • P2P Cleared</div>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-3 text-right">
-                      <div className="font-display text-xs sm:text-sm font-bold text-[#17221D]">
+                      <div className="font-display text-xs sm:text-sm font-bold text-[#0F172A]">
                         {tx.energyKwh.toFixed(1)} kWh
                       </div>
-                      <div className="text-[11px] font-mono text-[#5E6963]">
+                      <div className="text-[11px] font-mono text-[#64748B]">
                         ₹{tx.pricePerKwh.toFixed(2)}/kWh
                       </div>
-                      <span className="text-[10px] font-bold text-[#1E9B68] bg-[#E8F6EE] px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] font-bold text-[#0D9488] bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
                         ₹{tx.totalValue.toFixed(2)}
                       </span>
                     </div>
@@ -708,61 +712,61 @@ export default function MarketplaceView() {
           </div>
 
           {/* 🌟 7. "HOW GRIDSHARE MARKETPLACE WORKS" (Bottom/Last as Requested) */}
-          <div className="space-y-3.5 pt-2 border-t border-[rgba(23,34,29,0.06)]">
+          <div className="space-y-3.5 pt-2 border-t border-slate-200/60">
             <div className="text-center space-y-0.5">
-              <h2 className="font-display text-xl sm:text-2xl font-bold text-[#17221D]">
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-[#0F172A]">
                 How GridShare Marketplace Works
               </h2>
-              <p className="text-xs text-[#5E6963]">
+              <p className="text-xs text-[#64748B]">
                 Your surplus energy finds a nearby home that needs it.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Step 1 */}
-              <div className="glass-card rounded-xl p-5 space-y-2">
+              <div className="rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-5 space-y-2 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-xl font-bold text-[#1E9B68]">01</span>
-                  <div className="w-7 h-7 rounded-lg bg-[#FFF7E4] text-[#E5A72D] flex items-center justify-center text-xs">
+                  <span className="font-display text-xl font-bold text-[#0D9488]">01</span>
+                  <div className="w-7 h-7 rounded-lg bg-amber-50 text-[#D97706] flex items-center justify-center text-xs border border-amber-100">
                     <FaIcon name="solar" />
                   </div>
                 </div>
-                <h3 className="text-sm font-bold text-[#17221D]">
+                <h3 className="text-sm font-bold text-[#0F172A]">
                   Generate
                 </h3>
-                <p className="text-xs text-[#5E6963] leading-relaxed">
+                <p className="text-xs text-[#64748B] leading-relaxed">
                   A household produces more clean rooftop solar energy than it currently consumes.
                 </p>
               </div>
 
               {/* Step 2 */}
-              <div className="glass-card rounded-xl p-5 space-y-2">
+              <div className="rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-5 space-y-2 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-xl font-bold text-[#7358C7]">02</span>
-                  <div className="w-7 h-7 rounded-lg bg-[#F1EDFF] text-[#7358C7] flex items-center justify-center text-xs">
+                  <span className="font-display text-xl font-bold text-[#2563EB]">02</span>
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-[#2563EB] flex items-center justify-center text-xs border border-blue-100">
                     <FaIcon name="network" />
                   </div>
                 </div>
-                <h3 className="text-sm font-bold text-[#17221D]">
+                <h3 className="text-sm font-bold text-[#0F172A]">
                   Match
                 </h3>
-                <p className="text-xs text-[#5E6963] leading-relaxed">
+                <p className="text-xs text-[#64748B] leading-relaxed">
                   GridShare finds nearby electrical demand and computes a fair local P2P price below utility rates.
                 </p>
               </div>
 
               {/* Step 3 */}
-              <div className="glass-card rounded-xl p-5 space-y-2">
+              <div className="rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-5 space-y-2 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-xl font-bold text-[#1E9B68]">03</span>
-                  <div className="w-7 h-7 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
+                  <span className="font-display text-xl font-bold text-[#0D9488]">03</span>
+                  <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#0D9488] flex items-center justify-center text-xs border border-teal-100">
                     <FaIcon name="check" />
                   </div>
                 </div>
-                <h3 className="text-sm font-bold text-[#17221D]">
+                <h3 className="text-sm font-bold text-[#0F172A]">
                   Settle
                 </h3>
-                <p className="text-xs text-[#5E6963] leading-relaxed">
+                <p className="text-xs text-[#64748B] leading-relaxed">
                   Energy is routed locally and the transaction is recorded in the verifiable community ledger.
                 </p>
               </div>

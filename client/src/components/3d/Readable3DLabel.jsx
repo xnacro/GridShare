@@ -1,5 +1,6 @@
 import React from 'react';
 import { Html } from '@react-three/drei';
+import FaIcon from '../icons/FaIcon';
 
 export default function Readable3DLabel({
   position = [0, 0, 0],
@@ -8,8 +9,9 @@ export default function Readable3DLabel({
   value,
   unit = '',
   badge,
+  iconName,
   badgeType = 'neutral',
-  distanceFactor = 14,
+  distanceFactor = 10,
   className = '',
 }) {
   const badgeColors = {
@@ -27,16 +29,17 @@ export default function Readable3DLabel({
       distanceFactor={distanceFactor}
       className={`pointer-events-none select-none transition-all duration-150 ${className}`}
     >
-      <div className="flex flex-col items-center rounded-lg border border-slate-200/90 bg-white/95 px-2 py-1 shadow-xs backdrop-blur-md">
+      <div className="flex flex-col items-center rounded-xl border border-white/90 bg-white/90 px-2.5 py-1 shadow-sm backdrop-blur-md">
         {title && (
-          <span className="font-bold text-[10.5px] text-slate-900 tracking-tight whitespace-nowrap">
+          <span className="font-bold text-[10px] text-slate-900 tracking-tight whitespace-nowrap">
             {title}
           </span>
         )}
         <div className="flex items-center space-x-1 mt-0.5">
-          {badge && (
-            <span className={`rounded border px-1 py-0.2 text-[8.5px] font-bold font-mono ${badgeColors}`}>
-              {badge}
+          {(badge || iconName) && (
+            <span className={`rounded-md border px-1.5 py-0.5 text-[8.5px] font-bold font-mono flex items-center gap-1 ${badgeColors}`}>
+              {iconName && <FaIcon name={iconName} className="text-[9px]" />}
+              {badge && <span>{badge}</span>}
             </span>
           )}
           {value !== undefined && (

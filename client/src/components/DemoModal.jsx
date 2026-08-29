@@ -105,20 +105,20 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#15221B]/50 p-4 sm:p-6 backdrop-blur-sm animate-in fade-in select-none">
-      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-[rgba(23,56,43,0.10)] p-6 sm:p-8 shadow-modal space-y-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6 backdrop-blur-md animate-in fade-in select-none">
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white/90 backdrop-blur-2xl border border-white/95 p-6 sm:p-8 shadow-2xl space-y-6">
         
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[rgba(23,56,43,0.08)]">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200/60">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#12382A] text-[#43CB8C] flex items-center justify-center text-lg flex-shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-[#0F172A] text-[#0D9488] flex items-center justify-center text-lg flex-shrink-0 shadow-xs">
               <FaIcon name="scenarios" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-[#15221B]">
+              <h2 className="text-xl font-extrabold text-[#0F172A]">
                 Interactive Scenario Engine
               </h2>
-              <p className="text-xs text-[#5E6B63]">
+              <p className="text-xs text-[#64748B]">
                 Evaluate microgrid balancing, continuous double auctions, and 20% battery reserve limits
               </p>
             </div>
@@ -127,9 +127,9 @@ export default function DemoModal({ isOpen, onClose, onScenarioExecuted }) {
           <button
             type="button"
             onClick={onClose}
-            className="text-[#5E6B63] hover:text-[#15221B] text-sm font-bold p-1.5 rounded-xl hover:bg-[#F5F7F3] transition"
+            className="text-[#64748B] hover:text-[#0F172A] text-sm font-bold p-1.5 rounded-xl hover:bg-white/80 transition"
           >
-            ✕
+            <FaIcon name="close" />
           </button>
         </div>
 

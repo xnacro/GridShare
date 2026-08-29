@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import NavMoreMenu from './NavMoreMenu';
+import FaIcon from '../icons/FaIcon';
 
 export default function NavPill({
   onOpenDemoModal,
@@ -50,8 +50,8 @@ export default function NavPill({
               to={item.path}
               className={`px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 active
-                  ? 'bg-gradient-to-r from-[#156B5C] to-[#0E5246] text-white shadow-[0_4px_12px_rgba(21,107,92,0.35)] font-bold'
-                  : 'text-[#526B66] hover:text-[#0F2233] hover:bg-white/70 hover:backdrop-blur-md'
+                  ? 'bg-gradient-to-r from-[#0D9488] to-[#0F766E] text-white shadow-[0_4px_12px_rgba(13,148,136,0.35)] font-bold'
+                  : 'text-[#64748B] hover:text-[#0F172A] hover:bg-white/70 hover:backdrop-blur-md'
               }`}
             >
               {item.name}
@@ -59,15 +59,15 @@ export default function NavPill({
           );
         })}
 
-        {/* ⚡ Quick Guided Scenarios Runner for Demos */}
+        {/* Quick Guided Scenarios Runner for Demos */}
         {onOpenDemoModal && (
           <button
             type="button"
             onClick={onOpenDemoModal}
             title="Launch guided storm, outage & high-solar demo scenarios"
-            className="px-3 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap text-[#0F2233] bg-white/90 hover:bg-white border border-[#D99A1F]/30 flex items-center gap-1.5 shadow-2xs hover:shadow-xs"
+            className="px-3 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap text-[#0F172A] bg-white/90 hover:bg-white border border-[#D97706]/30 flex items-center gap-1.5 shadow-2xs hover:shadow-xs"
           >
-            <span className="text-[#D99A1F]">⚡</span>
+            <FaIcon name="bolt" className="text-[#D97706] text-xs" />
             <span className="hidden xl:inline">Scenarios</span>
           </button>
         )}

@@ -87,34 +87,34 @@ export default function InteractiveMicrogridView() {
     <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
 
       {/* 🌟 1. COMPACT PAGE HEADER WITH 2D/3D SEGMENTED TOGGLE */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
               Live Microgrid Twin
             </h1>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200">
               {netCommunity >= 0 ? `+${netCommunity.toFixed(1)} kW Surplus` : `${netCommunity.toFixed(1)} kW Deficit`}
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Real-time power routing across prosumers, smart circuits, 20 kWh central ESS, and utility grid
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           {/* Segmented 2D / 3D Toggle */}
-          <div className="inline-flex rounded-xl bg-white border border-[#BED69E] p-1 shadow-2xs">
+          <div className="inline-flex rounded-xl bg-white/80 backdrop-blur-md border border-white/90 p-1 shadow-xs">
             <button
               type="button"
               onClick={() => setViewMode('2d')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${
                 viewMode === '2d'
-                  ? 'bg-[#012F13] text-white shadow-xs'
-                  : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
+                  ? 'bg-[#0F172A] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A] hover:bg-white/60'
               }`}
             >
-              <FaIcon name="chart" className="text-xs mr-1.5 text-[#8BC53D]" />
+              <FaIcon name="chart" className="text-xs mr-1.5 text-[#0D9488]" />
               <span>2D Topology</span>
             </button>
             <button
@@ -122,11 +122,11 @@ export default function InteractiveMicrogridView() {
               onClick={() => setViewMode('3d')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${
                 viewMode === '3d'
-                  ? 'bg-[#012F13] text-white shadow-xs'
-                  : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
+                  ? 'bg-[#0F172A] text-white shadow-xs'
+                  : 'text-[#64748B] hover:text-[#0F172A] hover:bg-white/60'
               }`}
             >
-              <FaIcon name="network" className="text-xs mr-1.5 text-[#8BC53D]" />
+              <FaIcon name="network" className="text-xs mr-1.5 text-[#0D9488]" />
               <span>3D Twin</span>
             </button>
           </div>
@@ -136,7 +136,7 @@ export default function InteractiveMicrogridView() {
               <button
                 type="button"
                 onClick={() => sceneRef.current?.setTopDownView?.()}
-                className="px-3 py-1.5 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+                className="px-3 py-1.5 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 text-[#0F172A] text-xs font-bold hover:bg-white transition flex items-center gap-1.5 shadow-xs"
               >
                 <FaIcon name="network" />
                 <span>Top-Down</span>
@@ -144,7 +144,7 @@ export default function InteractiveMicrogridView() {
               <button
                 type="button"
                 onClick={() => sceneRef.current?.resetCamera?.()}
-                className="px-3 py-1.5 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+                className="px-3 py-1.5 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 text-[#0F172A] text-xs font-bold hover:bg-white transition flex items-center gap-1.5 shadow-xs"
               >
                 <FaIcon name="refresh" />
                 <span>Reset 3D</span>
@@ -154,8 +154,8 @@ export default function InteractiveMicrogridView() {
         </div>
       </div>
 
-      {/* 🌟 2. MAIN VISUALIZATION VIEWPORT (2D Radial Topology by Default, 3D Twin on Toggle) */}
-      <div className="relative glass-card rounded-xl p-4 sm:p-6 overflow-hidden">
+      {/* 🌟 2. MAIN VISUALIZATION VIEWPORT */}
+      <div className="relative rounded-3xl border border-white/90 bg-white/80 backdrop-blur-2xl p-4 sm:p-6 shadow-[0_20px_50px_rgba(15,23,42,0.04)] overflow-hidden">
         {viewMode === '2d' ? (
           <RadialTopology2D
             households={computedHouseholds}
@@ -165,7 +165,7 @@ export default function InteractiveMicrogridView() {
             onSelectNode={(node) => setSelectedNodeId(node.id)}
           />
         ) : (
-          <div className="h-[520px] sm:h-[620px] w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.05)]">
+          <div className="h-[520px] sm:h-[620px] w-full relative rounded-2xl overflow-hidden bg-slate-50/50 border border-slate-200/40">
             <MarketplaceScene3D
               ref={sceneRef}
               households={computedHouseholds}
@@ -177,33 +177,33 @@ export default function InteractiveMicrogridView() {
             />
 
             {/* Floating Glass Controls Top-Left */}
-            <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 p-1.5 rounded-xl gs-glass shadow-xs z-10">
+            <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 p-1.5 rounded-xl bg-white/90 backdrop-blur-md border border-white/90 shadow-sm z-10">
               <button
                 type="button"
                 onClick={() => sceneRef.current?.setTopDownView?.()}
-                className="px-3 py-1.5 text-xs font-bold text-[#17221D] hover:bg-white/80 rounded-lg transition flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs font-bold text-[#0F172A] hover:bg-white rounded-lg transition flex items-center gap-1.5"
               >
-                <FaIcon name="network" className="text-[10px] text-[#5E6963]" />
+                <FaIcon name="network" className="text-[10px] text-[#64748B]" />
                 <span>Top-Down</span>
               </button>
 
-              <span className="w-px h-4 bg-[rgba(23,34,29,0.15)] mx-0.5" />
+              <span className="w-px h-4 bg-slate-200 mx-0.5" />
 
-              <div className="flex items-center gap-1.5 px-2 text-[11px] font-bold text-[#1E9B68]">
-                <span className="w-2 h-2 rounded-full bg-[#1E9B68] animate-pulse" />
+              <div className="flex items-center gap-1.5 px-2 text-[11px] font-bold text-[#0D9488]">
+                <span className="w-2 h-2 rounded-full bg-[#0D9488] animate-pulse" />
                 <span>{activeFlows.length} Active Flow Conduits</span>
               </div>
             </div>
 
             {/* Floating Glass Node Inspector Card Bottom-Right */}
             {activeNode && (
-              <div className="absolute bottom-4 right-4 max-w-sm w-full p-5 rounded-xl gs-glass shadow-lg z-10 space-y-3 animate-in fade-in">
-                <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,34,29,0.08)]">
+              <div className="absolute bottom-4 right-4 max-w-sm w-full p-5 rounded-2xl bg-white/90 backdrop-blur-2xl border border-white/95 shadow-lg z-10 space-y-3 animate-in fade-in">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
+                    <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#0D9488] flex items-center justify-center text-xs border border-teal-100">
                       <FaIcon name="home" />
                     </div>
-                    <span className="text-xs font-extrabold text-[#17221D]">{activeNode.name}</span>
+                    <span className="text-xs font-extrabold text-[#0F172A]">{activeNode.name}</span>
                   </div>
                   <Badge variant={nodeNet >= 0 ? 'surplus' : 'deficit'} size="xs">
                     {nodeNet >= 0 ? 'SURPLUS' : 'DEFICIT'}
@@ -211,17 +211,17 @@ export default function InteractiveMicrogridView() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
-                    <div className="text-[10px] text-[#5E6963] uppercase font-bold">Solar</div>
-                    <div className="font-mono font-bold text-[#E5A72D]">{activeNode.generation.toFixed(1)} kW</div>
+                  <div className="p-2 rounded-xl bg-white/80 border border-slate-100 shadow-2xs">
+                    <div className="text-[10px] text-[#64748B] uppercase font-bold">Solar</div>
+                    <div className="font-mono font-bold text-[#D97706]">{activeNode.generation.toFixed(1)} kW</div>
                   </div>
-                  <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
-                    <div className="text-[10px] text-[#5E6963] uppercase font-bold">Demand</div>
-                    <div className="font-mono font-bold text-[#17221D]">{activeNode.consumption.toFixed(1)} kW</div>
+                  <div className="p-2 rounded-xl bg-white/80 border border-slate-100 shadow-2xs">
+                    <div className="text-[10px] text-[#64748B] uppercase font-bold">Demand</div>
+                    <div className="font-mono font-bold text-[#0F172A]">{activeNode.consumption.toFixed(1)} kW</div>
                   </div>
-                  <div className="p-2 rounded-lg bg-white/70 border border-[rgba(23,34,29,0.05)]">
-                    <div className="text-[10px] text-[#5E6963] uppercase font-bold">Net</div>
-                    <div className={`font-mono font-bold ${nodeNet >= 0 ? 'text-[#1E9B68]' : 'text-[#D45C5C]'}`}>
+                  <div className="p-2 rounded-xl bg-white/80 border border-slate-100 shadow-2xs">
+                    <div className="text-[10px] text-[#64748B] uppercase font-bold">Net</div>
+                    <div className={`font-mono font-bold ${nodeNet >= 0 ? 'text-[#0D9488]' : 'text-[#E11D48]'}`}>
                       {nodeNet >= 0 ? `+${nodeNet.toFixed(1)}` : nodeNet.toFixed(1)} kW
                     </div>
                   </div>
@@ -230,16 +230,17 @@ export default function InteractiveMicrogridView() {
             )}
 
             {/* Quick Node Selector Pills Bottom-Left */}
-            <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-1.5 p-1.5 rounded-2xl gs-glass shadow-sm z-10">
+            <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-1.5 p-1.5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/90 shadow-sm z-10">
               {computedHouseholds.map((h) => (
                 <button
                   key={h.id}
                   type="button"
                   onClick={() => setSelectedNodeId(h.id)}
-                  className={`px-3 py-1 text-xs font-bold rounded-xl transition ${selectedNodeId === h.id
-                    ? 'bg-[#12382A] text-white shadow-xs'
-                    : 'text-[#5E6B63] hover:text-[#15221B] hover:bg-white/60'
-                    }`}
+                  className={`px-3 py-1 text-xs font-bold rounded-xl transition ${
+                    selectedNodeId === h.id
+                      ? 'bg-[#0F172A] text-white shadow-xs'
+                      : 'text-[#64748B] hover:text-[#0F172A] hover:bg-white'
+                  }`}
                 >
                   {h.id.toUpperCase().replace('_', ' ')}
                 </button>

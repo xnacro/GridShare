@@ -56,58 +56,58 @@ export default function TradeConfirmationModal({
             type="button"
             onClick={onCancel}
             disabled={isSettling}
-            className="text-[#89938D] hover:text-[#17221D] text-sm p-1 rounded-md transition"
+            className="text-slate-400 hover:text-slate-700 text-sm p-1 rounded-md transition"
           >
-            ✕
+            <FaIcon name="close" />
           </button>
         </div>
 
         {/* Counterparty Cards */}
         <div className="grid grid-cols-2 gap-3 text-xs">
           {/* Seller */}
-          <div className="rounded-lg border border-[#1E9B68]/20 bg-[#E8F6EE]/70 p-3 space-y-1">
+          <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 space-y-1">
             <div className="flex items-center justify-between text-[10px]">
-              <span className="font-bold text-[#1E9B68]">Seller (Prosumer)</span>
-              <span className="font-mono text-[#5E6963]">#{sellOrder?.id || 'GS-001'}</span>
+              <span className="font-bold text-[#D97706]">Seller (Prosumer)</span>
+              <span className="font-mono text-slate-500">#{sellOrder?.id || 'GS-001'}</span>
             </div>
-            <div className="font-bold text-[#17221D] text-sm truncate">
+            <div className="font-bold text-[#0F172A] text-sm truncate">
               {displaySeller}
             </div>
-            <div className="text-[11px] text-[#5E6963]">
-              Surplus: <span className="font-mono font-bold text-[#1E9B68]">+{qty.toFixed(1)} kWh</span>
+            <div className="text-[11px] text-slate-600">
+              Surplus: <span className="font-mono font-bold text-[#D97706]">+{qty.toFixed(1)} kWh</span>
             </div>
           </div>
 
           {/* Buyer */}
-          <div className="rounded-lg border border-[#3C78CC]/20 bg-[#EDF3FD]/70 p-3 space-y-1">
+          <div className="rounded-xl border border-blue-200/80 bg-blue-50/70 p-3 space-y-1">
             <div className="flex items-center justify-between text-[10px]">
-              <span className="font-bold text-[#3C78CC]">Buyer (Consumer)</span>
-              <span className="font-mono text-[#5E6963]">Local Feeder</span>
+              <span className="font-bold text-[#2563EB]">Buyer (Consumer)</span>
+              <span className="font-mono text-slate-500">Local Feeder</span>
             </div>
-            <div className="font-bold text-[#17221D] text-sm truncate">
+            <div className="font-bold text-[#0F172A] text-sm truncate">
               {displayBuyer}
             </div>
-            <div className="text-[11px] text-[#5E6963]">
-              Demand: <span className="font-mono font-bold text-[#3C78CC]">-{qty.toFixed(1)} kWh</span>
+            <div className="text-[11px] text-slate-600">
+              Demand: <span className="font-mono font-bold text-[#2563EB]">-{qty.toFixed(1)} kWh</span>
             </div>
           </div>
         </div>
 
         {/* AI Deterministic Reasoning Checklist */}
-        <div className="p-3 rounded-lg bg-[#F8F9F6] border border-[rgba(23,34,29,0.06)] space-y-1.5 text-xs">
+        <div className="p-3.5 rounded-xl bg-white/70 border border-slate-100 space-y-2 text-xs shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#5E6963]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               Why GridShare Recommends This
             </span>
-            <span className="text-[10px] font-bold text-[#7358C7] bg-[#F1EDFF] px-2 py-0.5 rounded-md border border-[#7358C7]/20">
+            <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200">
               5-Point Verification
             </span>
           </div>
-          <div className="space-y-1 text-[11px] text-[#17221D]">
+          <div className="space-y-1.5 text-[11px] text-[#0F172A]">
             {aiValidationSteps.map((step, idx) => (
               <div key={idx} className="flex items-start space-x-1.5">
-                <span className="text-[#1E9B68] font-bold">✓</span>
-                <span className="text-[#5E6963]">{step}</span>
+                <FaIcon name="check" className="text-[#0D9488] text-[9px] mt-0.5 shrink-0" />
+                <span className="text-slate-600">{step}</span>
               </div>
             ))}
           </div>

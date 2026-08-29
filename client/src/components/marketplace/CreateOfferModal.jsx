@@ -75,9 +75,9 @@ export default function CreateOfferModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-[#89938D] hover:text-[#17221D] text-sm p-1 rounded-md transition"
+            className="text-slate-400 hover:text-slate-700 text-sm p-1 rounded-md transition"
           >
-            ✕
+            <FaIcon name="close" />
           </button>
         </div>
 

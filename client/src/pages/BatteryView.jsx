@@ -99,7 +99,7 @@ export default function BatteryView() {
 
   const handleExecuteDischarge = () => {
     if (battery.soc <= battery.minSoc) {
-      setStatusMessage('⚠️ Cannot discharge: 20% Emergency Reserve Floor is strictly locked for blackout resilience.');
+      setStatusMessage('Cannot discharge: 20% Emergency Reserve Floor is strictly locked for blackout resilience.');
       setTimeout(() => setStatusMessage(''), 5000);
       return;
     }
@@ -138,17 +138,17 @@ export default function BatteryView() {
     <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
       {/* 🌟 1. COMPACT PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#011207]">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#0F172A]">
               Community Storage Equity & ESS Health
             </h1>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200">
               100 kWh Microgrid BESS
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             50 kWh central battery with 90% round-trip efficiency and {battery.minSoc}% emergency backup reserve floor
           </p>
         </div>
@@ -157,17 +157,17 @@ export default function BatteryView() {
           <button
             type="button"
             onClick={handleExecuteCharge}
-            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-4 py-2 rounded-xl bg-[#0F172A] hover:bg-[#0D9488] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
           >
-            <FaIcon name="battery" className="text-[#8BC53D]" />
+            <FaIcon name="battery" className="text-[#0D9488]" />
             <span>Buffer Solar Surplus</span>
           </button>
           <button
             type="button"
             onClick={handleExecuteDischarge}
-            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+            className="px-3.5 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 text-[#0F172A] text-xs font-bold hover:bg-white transition flex items-center gap-1.5 shadow-xs"
           >
-            <FaIcon name="flash" />
+            <FaIcon name="energy" />
             <span>Withdraw Credit</span>
           </button>
         </div>
@@ -175,13 +175,13 @@ export default function BatteryView() {
 
       {/* Dynamic Status Notification */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-2xl border border-[#DCE4DE] bg-[#E6F5EC] px-4 py-3 text-xs sm:text-sm text-[#12382A] font-bold shadow-sm animate-in fade-in">
+        <div className="flex items-center justify-between rounded-2xl border border-teal-200 bg-white/90 backdrop-blur-md px-4 py-3 text-xs sm:text-sm text-[#0F172A] font-bold shadow-sm animate-in fade-in">
           <div className="flex items-center gap-2">
-            <FaIcon name="check" className="text-[#1E9B67]" />
+            <FaIcon name="checkCircle" className="text-[#0D9488]" />
             <span>{statusMessage}</span>
           </div>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#1E9B67] text-xs p-1 font-bold">
-            ✕
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#64748B] hover:text-[#0F172A] text-xs p-1 font-bold">
+            <FaIcon name="close" />
           </button>
         </div>
       )}

@@ -51,17 +51,17 @@ export default function DevicesView() {
     <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
       {/* 🌟 1. COMPACT PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
               Hardware & Edge Telemetry
             </h1>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200">
               {onlineCount}/{devices.length} Online
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Streaming real-time hardware telemetry across smart meters, solar inverters, and BMS controllers
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function DevicesView() {
               setRefreshing(true);
               fetchDevices();
             }}
-            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-4 py-2 rounded-xl bg-[#0F172A] hover:bg-[#0D9488] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
           >
             <FaIcon name="refresh" className={refreshing ? 'animate-spin' : ''} />
             <span>{refreshing ? 'Polling...' : 'Poll Telemetry'}</span>
@@ -94,7 +94,7 @@ export default function DevicesView() {
 
         <HeroMetric
           label="Ingestion Mode"
-          value={ingestionMode}
+          value="SIMULATED"
           unit=""
           subtitle="Physics simulator active"
           iconName="network"
@@ -121,7 +121,7 @@ export default function DevicesView() {
       </div>
 
       {/* 🌟 3. DEVICE NODES TABLE */}
-      <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
+      <div className="rounded-3xl border border-white/90 bg-white/80 backdrop-blur-2xl p-6 sm:p-8 space-y-4 shadow-[0_20px_50px_rgba(15,23,42,0.04)]">
         <SectionHeader
           title="Registered Edge Devices & Circuits"
           subtitle="Virtual smart meters, inverters, and central battery telemetry units"
@@ -135,31 +135,33 @@ export default function DevicesView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-[rgba(23,34,29,0.06)] bg-[#F6F7F4] text-[11px] font-bold uppercase tracking-wider text-[#5E6963]">
-                <th className="py-2.5 px-3.5 rounded-l-lg">Device Identifier</th>
+              <tr className="border-b border-slate-100 bg-white/60 text-[11px] font-bold uppercase tracking-wider text-[#64748B]">
+                <th className="py-2.5 px-3.5 rounded-l-xl">Device Identifier</th>
                 <th className="py-2.5 px-3.5">Circuit Name</th>
                 <th className="py-2.5 px-3.5">Type</th>
                 <th className="py-2.5 px-3.5">Telemetry Power</th>
                 <th className="py-2.5 px-3.5">Voltage</th>
-                <th className="py-2.5 px-3.5 rounded-r-lg">Status</th>
+                <th className="py-2.5 px-3.5 rounded-r-xl">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(23,34,29,0.04)] font-medium text-[#17221D]">
+            <tbody className="divide-y divide-slate-100/60 font-medium text-[#0F172A]">
               {devices.map((d) => (
                 <tr
                   key={d.id}
                   onClick={() => setSelectedDevice(d)}
-                  className={`hover:bg-[#F6F7F4]/60 cursor-pointer transition ${
-                    selectedDevice?.id === d.id ? 'bg-[#E8F6EE]/40' : ''
-                  }`}
+                  className="hover:bg-white/70 cursor-pointer transition"
                 >
-                  <td className="py-3 px-3.5 font-mono font-bold text-[#12392B]">{d.id}</td>
-                  <td className="py-3 px-3.5 font-bold">{d.name}</td>
-                  <td className="py-3 px-3.5 text-[#5E6963]">{d.type}</td>
-                  <td className="py-3 px-3.5 font-mono font-bold text-[#1E9B68]">{d.powerKw ? `${d.powerKw.toFixed(1)} kW` : 'N/A'}</td>
-                  <td className="py-3 px-3.5 font-mono">{d.voltage || 230} V</td>
+                  <td className="py-3 px-3.5 font-mono text-[11px] text-[#64748B]">{d.id}</td>
+                  <td className="py-3 px-3.5 font-bold text-[#0F172A]">{d.name}</td>
                   <td className="py-3 px-3.5">
-                    <Badge variant={d.status === 'ONLINE' ? 'surplus' : 'deficit'} size="xs">
+                    <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                      {d.type}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3.5 font-mono font-bold text-[#0D9488]">{d.powerKw.toFixed(2)} kW</td>
+                  <td className="py-3 px-3.5 font-mono text-slate-600">{d.voltageV} V</td>
+                  <td className="py-3 px-3.5">
+                    <Badge variant={d.status === 'ONLINE' ? 'surplus' : 'neutral'} size="xs">
                       {d.status}
                     </Badge>
                   </td>

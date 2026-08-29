@@ -94,9 +94,9 @@ export default function LoginModal({ isOpen, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="text-[#87918B] hover:text-[#15211B] text-sm font-bold p-1 rounded-lg hover:bg-[#F5F7F3]"
+            className="text-slate-400 hover:text-slate-700 text-sm font-bold p-1 rounded-lg hover:bg-slate-100"
           >
-            ✕
+            <FaIcon name="close" />
           </button>
         </div>
 

@@ -103,17 +103,17 @@ export default function TransactionsView() {
     <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
       {/* 🌟 1. COMPACT PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#041D0D]">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
               Settlement & Ledger Audit
             </h1>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200">
               100% Cleared
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Audit history tracking {transactions.length} settlements totaling {totalEnergyTraded.toFixed(1)} kWh across peer trades and storage
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function TransactionsView() {
               setIsRefreshing(true);
               fetchLedgerData();
             }}
-            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-4 py-2 rounded-xl bg-[#0F172A] hover:bg-[#0D9488] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
           >
             <FaIcon name="refresh" className={isRefreshing ? 'animate-spin' : ''} />
             <span>{isRefreshing ? 'Refreshing...' : 'Refresh Ledger'}</span>
@@ -173,7 +173,7 @@ export default function TransactionsView() {
       </div>
 
       {/* 🌟 3. TRANSACTIONS TABLE */}
-      <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
+      <div className="rounded-3xl border border-white/90 bg-white/80 backdrop-blur-2xl p-6 sm:p-8 space-y-4 shadow-[0_20px_50px_rgba(15,23,42,0.04)]">
         <SectionHeader
           title="Executed Smart Transactions"
           subtitle="Chronological audit records of all microgrid energy flows"

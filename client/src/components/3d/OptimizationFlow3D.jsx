@@ -59,7 +59,9 @@ function AnimatedSpline({ start, end, color = '#059669', particleCount = 6, spee
   );
 }
 
-function DispatchNode({ position, title, subtitle, value, unit, color, icon }) {
+import FaIcon from '../icons/FaIcon';
+
+function DispatchNode({ position, title, subtitle, value, unit, color, iconName }) {
   return (
     <group position={position}>
       <mesh position={[0, 0.35, 0]} castShadow receiveShadow>
@@ -73,8 +75,11 @@ function DispatchNode({ position, title, subtitle, value, unit, color, icon }) {
       </mesh>
 
       <Html position={[0, 1.4, 0]} center distanceFactor={12} className="pointer-events-none select-none">
-        <div className="flex flex-col items-center rounded-lg border border-slate-200/90 bg-white/95 px-2 py-0.8 shadow-xs backdrop-blur-md min-w-[95px] text-center">
-          <span className="font-bold text-[10px] text-slate-900 leading-tight">{title}</span>
+        <div className="flex flex-col items-center rounded-lg border border-white/90 bg-white/95 px-2.5 py-1 shadow-xs backdrop-blur-md min-w-[95px] text-center">
+          <div className="flex items-center gap-1">
+            {iconName && <FaIcon name={iconName} className="text-[10px]" style={{ color }} />}
+            <span className="font-bold text-[10px] text-slate-900 leading-tight">{title}</span>
+          </div>
           <div className="flex items-center space-x-1 mt-0.5">
             <span className="rounded bg-slate-100 px-1 py-0.2 text-[8px] font-bold font-mono text-slate-700">
               {subtitle}
@@ -101,7 +106,7 @@ export default function OptimizationFlow3D({
   const exportPos = [3.2, 0, 1.8];
 
   return (
-    <div className="relative h-60 w-full rounded-xl border border-slate-200/90 bg-slate-50/40 p-2 shadow-xs overflow-hidden select-none">
+    <div className="relative h-60 w-full rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-2 shadow-xs overflow-hidden select-none">
       <Canvas camera={{ position: [0, 5, 7.5], fov: 36 }} shadows>
         <ambientLight intensity={0.9} />
         <directionalLight position={[6, 10, 6]} intensity={1.1} castShadow />
@@ -117,7 +122,7 @@ export default function OptimizationFlow3D({
           value={surplusKw.toFixed(2)}
           unit="kW"
           color="#d97706"
-          icon="☀️"
+          iconName="solar"
         />
 
         {/* Priority 1: P2P Local Trade */}
@@ -128,7 +133,7 @@ export default function OptimizationFlow3D({
           value={tradeKw.toFixed(2)}
           unit="kW"
           color="#059669"
-          icon="🤝"
+          iconName="trade"
         />
 
         {/* Priority 2: Battery ESS */}
@@ -139,7 +144,7 @@ export default function OptimizationFlow3D({
           value={storeKw.toFixed(2)}
           unit="kW"
           color="#0d9488"
-          icon="🔋"
+          iconName="battery"
         />
 
         {/* Priority 3: Utility Grid Sync */}
@@ -150,7 +155,7 @@ export default function OptimizationFlow3D({
           value={exportKw.toFixed(2)}
           unit="kW"
           color="#2563eb"
-          icon="🌐"
+          iconName="grid"
         />
 
         {/* Connecting 3D Conduits */}

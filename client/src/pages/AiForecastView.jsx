@@ -128,17 +128,17 @@ export default function AiForecastView() {
     <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
       
       {/* 🌟 1. COMPACT PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#011207]">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#0F172A]">
               Hornet AI Forecasting & Dispatch
             </h1>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200">
               15-Min Real-Time
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Real-time Random Forest predictions (solar_v1 & demand_v1) paired with battery constraints and deterministic dispatch rules
           </p>
         </div>
@@ -147,15 +147,15 @@ export default function AiForecastView() {
           <button
             type="button"
             onClick={() => setIsAssistantOpen(true)}
-            className="px-4 py-2 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-4 py-2 rounded-xl bg-[#0F172A] hover:bg-[#0D9488] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
           >
-            <FaIcon name="brain" className="text-[#8BC53D]" />
+            <FaIcon name="brain" className="text-[#0D9488]" />
             <span>Ask Hornet AI</span>
           </button>
           <button
             type="button"
             onClick={() => setViewMode(viewMode === 'SCENARIO' ? 'OVERVIEW' : 'SCENARIO')}
-            className="px-3.5 py-2 rounded-xl bg-white border border-[#BED69E] text-[#011207] text-xs font-bold hover:bg-[#F4F9EB] transition flex items-center gap-1.5 shadow-xs"
+            className="px-3.5 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white/90 text-[#0F172A] text-xs font-bold hover:bg-white transition flex items-center gap-1.5 shadow-xs"
           >
             <FaIcon name="sliders" />
             <span>{viewMode === 'SCENARIO' ? 'Standard Matrix' : 'Scenario Lab'}</span>
@@ -165,31 +165,31 @@ export default function AiForecastView() {
 
       {/* Action Toast Notice */}
       {actionNotice && (
-        <div className="glass-card rounded-xl p-4 border border-[#1E9B68]/30 bg-[#EBF7F1] text-xs font-semibold text-[#1E9B68] flex items-center justify-between shadow-md animate-slideDown">
+        <div className="rounded-2xl p-4 border border-teal-200 bg-white/90 backdrop-blur-md text-xs font-semibold text-[#0D9488] flex items-center justify-between shadow-md animate-slideDown">
           <div className="flex items-center space-x-2">
-            <FaIcon name="check" className="text-sm" />
+            <FaIcon name="checkCircle" className="text-sm" />
             <span>{actionNotice.text}</span>
           </div>
-          <button onClick={() => setActionNotice(null)} className="text-[#5E6963] hover:text-[#17221D]">
+          <button onClick={() => setActionNotice(null)} className="text-[#64748B] hover:text-[#0F172A]">
             <FaIcon name="close" />
           </button>
         </div>
       )}
 
       {/* 🌟 2. TOP CONTROLS & MODE SWITCHER STRIP */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 glass-card rounded-xl p-3 sm:p-4">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 rounded-2xl border border-white/90 bg-white/80 backdrop-blur-xl p-3 sm:p-4 shadow-xs">
         
         {/* Mode Selector Tabs */}
-        <div className="flex items-center space-x-1.5 bg-[#F4F6F4] p-1 rounded-xl w-full sm:w-auto">
+        <div className="flex items-center space-x-1.5 bg-slate-100/80 p-1 rounded-xl w-full sm:w-auto">
           <button
             onClick={() => setViewMode('SIMPLE')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
               viewMode === 'SIMPLE'
-                ? 'bg-white text-[#17221D] shadow-subtle'
-                : 'text-[#5E6963] hover:text-[#17221D]'
+                ? 'bg-white text-[#0F172A] shadow-xs'
+                : 'text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
-            <FaIcon name="chart" className="text-[11px]" />
+            <FaIcon name="chart" className="text-[11px] text-[#0D9488]" />
             <span>Decision Flow</span>
           </button>
 
@@ -197,11 +197,11 @@ export default function AiForecastView() {
             onClick={() => setViewMode('SCENARIO')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
               viewMode === 'SCENARIO'
-                ? 'bg-white text-[#17221D] shadow-subtle'
-                : 'text-[#5E6963] hover:text-[#17221D]'
+                ? 'bg-white text-[#0F172A] shadow-xs'
+                : 'text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
-            <FaIcon name="sliders-h" className="text-[11px]" />
+            <FaIcon name="sliders" className="text-[11px] text-[#0D9488]" />
             <span>Scenario Lab</span>
           </button>
 
@@ -209,11 +209,11 @@ export default function AiForecastView() {
             onClick={() => setViewMode('TECHNICAL')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
               viewMode === 'TECHNICAL'
-                ? 'bg-white text-[#17221D] shadow-subtle'
-                : 'text-[#5E6963] hover:text-[#17221D]'
+                ? 'bg-white text-[#0F172A] shadow-xs'
+                : 'text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
-            <FaIcon name="brain" className="text-[11px]" />
+            <FaIcon name="brain" className="text-[11px] text-[#0D9488]" />
             <span>Technical AI</span>
           </button>
         </div>
@@ -222,11 +222,11 @@ export default function AiForecastView() {
         <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
           {/* Household selector */}
           <div className="flex items-center space-x-2 text-xs">
-            <span className="text-[#5E6963] font-medium hidden sm:inline">Scope:</span>
+            <span className="text-[#64748B] font-medium hidden sm:inline">Scope:</span>
             <select
               value={selectedHousehold}
               onChange={(e) => setSelectedHousehold(e.target.value)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-[rgba(23,34,29,0.12)] text-xs font-bold text-[#17221D] focus:outline-none"
+              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-[#0F172A] focus:outline-none shadow-2xs"
             >
               <option value="COMMUNITY">Community Aggregate</option>
               {households.map((h) => (
@@ -243,7 +243,7 @@ export default function AiForecastView() {
             size="xs"
             onClick={fetchInsights}
             disabled={isLoading}
-            className="border border-[rgba(23,34,29,0.1)]"
+            className="border border-slate-200"
           >
             <FaIcon name="refresh" className={isLoading ? 'animate-spin' : ''} />
           </Button>
@@ -282,7 +282,7 @@ export default function AiForecastView() {
               unit="kW"
               subtitle={`Active load forecast (demand_v1)`}
               iconName="bolt"
-              variant="cyan"
+              variant="default"
             />
 
             <HeroMetric
@@ -330,17 +330,17 @@ export default function AiForecastView() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Primary Recommendation Card (7 cols) */}
-            <div className="lg:col-span-7 glass-card rounded-xl p-5 sm:p-6 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
+            <div className="lg:col-span-7 rounded-3xl border border-white/90 bg-white/80 backdrop-blur-2xl p-5 sm:p-6 space-y-4 shadow-[0_20px_50px_rgba(15,23,42,0.04)]">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div className="flex items-center space-x-2.5">
-                  <div className="h-8 w-8 rounded-lg bg-[#7358C7]/15 flex items-center justify-center text-[#7358C7]">
+                  <div className="h-8 w-8 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-200">
                     <FaIcon name="brain" className="text-sm" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                       Authoritative Dispatch Recommendation
                     </h3>
-                    <p className="text-[11px] text-[#5E6963]">Determined by RuleBasedOptimizer with human-in-the-loop approval</p>
+                    <p className="text-[11px] text-[#64748B]">Determined by RuleBasedOptimizer with human-in-the-loop approval</p>
                   </div>
                 </div>
 
@@ -350,10 +350,10 @@ export default function AiForecastView() {
               </div>
 
               {/* Action Headline & Approve Row */}
-              <div className="p-4 rounded-xl bg-[#F8FAF9] border border-[rgba(23,34,29,0.08)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="p-4 rounded-2xl bg-white/70 border border-white/90 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-2xs">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-[#5E6963]">Recommended Action</span>
-                  <p className="text-base font-bold text-[#17221D] mt-0.5">{aiDecision.action_label}</p>
+                  <span className="text-[10px] uppercase font-bold text-[#64748B]">Recommended Action</span>
+                  <p className="text-base font-bold text-[#0F172A] mt-0.5">{aiDecision.action_label}</p>
                 </div>
                 <Button
                   variant="primary"
@@ -367,7 +367,7 @@ export default function AiForecastView() {
 
               {/* Explainable Reasoning Bullets */}
               <div className="space-y-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#17221D] block">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0F172A] block">
                   Explainable Reasoning (Why GridShare Recommends This):
                 </span>
                 <ul className="space-y-1.5">
@@ -377,8 +377,8 @@ export default function AiForecastView() {
                     `Battery storage reserve is protected at ${curState.battery_soc}% SOC (exceeds 20% minimum safety floor).`,
                     `Local P2P tariff ₹${curState.p2p_market_price_rs}/kWh offers ₹${(curState.grid_tariff_rs - curState.p2p_market_price_rs).toFixed(2)}/kWh savings vs utility grid.`
                   ]).map((reason, idx) => (
-                    <li key={idx} className="flex items-start text-xs text-[#5E6963] leading-relaxed">
-                      <span className="text-[#1E9B68] font-bold mr-2 mt-0.5">✓</span>
+                    <li key={idx} className="flex items-start text-xs text-[#64748B] leading-relaxed">
+                      <FaIcon name="check" className="text-[#0D9488] text-[10px] mr-2 mt-1 shrink-0" />
                       <span>{reason}</span>
                     </li>
                   ))}
@@ -390,28 +390,28 @@ export default function AiForecastView() {
             <div className="lg:col-span-5 space-y-4">
               
               {/* Impact Card */}
-              <div className="glass-card rounded-xl p-5 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+              <div className="rounded-3xl border border-white/90 bg-white/80 backdrop-blur-2xl p-5 space-y-3 shadow-[0_20px_50px_rgba(15,23,42,0.04)]">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                   Estimated Action Impact
                 </h4>
                 <div className="grid grid-cols-2 gap-3 text-center">
-                  <div className="bg-[#F8FAF9] p-3 rounded-lg border border-[rgba(23,34,29,0.06)]">
-                    <span className="text-[10px] uppercase font-bold text-[#5E6963]">Financial Value</span>
-                    <p className="text-sm font-bold text-[#1E9B68] mt-0.5">₹{aiImpact.estimated_saving_rs || '1.26'}</p>
-                    <span className="text-[10px] text-[#89938D]">vs ₹6.10 grid tariff</span>
+                  <div className="bg-white/70 p-3 rounded-2xl border border-white/90 shadow-2xs">
+                    <span className="text-[10px] uppercase font-bold text-[#64748B]">Financial Value</span>
+                    <p className="text-sm font-bold text-[#0D9488] mt-0.5">₹{aiImpact.estimated_saving_rs || '1.26'}</p>
+                    <span className="text-[10px] text-[#94A3B8]">vs ₹6.10 grid tariff</span>
                   </div>
-                  <div className="bg-[#F8FAF9] p-3 rounded-lg border border-[rgba(23,34,29,0.06)]">
-                    <span className="text-[10px] uppercase font-bold text-[#5E6963]">CO₂ Avoided</span>
-                    <p className="text-sm font-bold text-[#1E9B68] mt-0.5">{aiImpact.co2_avoided_kg || '0.65'} kg</p>
-                    <span className="text-[10px] text-[#89938D]">Clean solar offset</span>
+                  <div className="bg-white/70 p-3 rounded-2xl border border-white/90 shadow-2xs">
+                    <span className="text-[10px] uppercase font-bold text-[#64748B]">CO₂ Avoided</span>
+                    <p className="text-sm font-bold text-[#0D9488] mt-0.5">{aiImpact.co2_avoided_kg || '0.65'} kg</p>
+                    <span className="text-[10px] text-[#94A3B8]">Clean solar offset</span>
                   </div>
                 </div>
               </div>
 
               {/* AI Priority Queue */}
-              <div className="glass-card rounded-xl p-5 space-y-2.5">
+              <div className="rounded-3xl border border-white/90 bg-white/80 backdrop-blur-2xl p-5 space-y-2.5 shadow-[0_20px_50px_rgba(15,23,42,0.04)]">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                     AI Operational Priority Queue
                   </h4>
                   <Badge variant="neutral" size="xs">Top Signals</Badge>
@@ -423,13 +423,13 @@ export default function AiForecastView() {
                     { priority: 2, type: 'STATUS', title: `Battery Healthy (${curState.battery_soc}% SOC)`, desc: 'Preserves 20% emergency safety floor' },
                     { priority: 3, type: 'STATUS', title: 'Data Stream Fresh', desc: 'Telemetry updated <1 minute ago' },
                   ]).map((item, i) => (
-                    <div key={i} className="p-2.5 rounded-lg bg-[#F8FAF9] border border-[rgba(23,34,29,0.06)] flex items-center space-x-2.5 text-xs">
-                      <span className="h-5 w-5 rounded-full bg-[#17221D] text-white flex items-center justify-center font-bold text-[10px]">
+                    <div key={i} className="p-2.5 rounded-2xl bg-white/70 border border-white/90 flex items-center space-x-2.5 text-xs shadow-2xs">
+                      <span className="h-5 w-5 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-bold text-[10px]">
                         {item.priority}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-[#17221D] truncate">{item.title}</p>
-                        <p className="text-[11px] text-[#5E6963] truncate">{item.desc}</p>
+                        <p className="font-bold text-[#0F172A] truncate">{item.title}</p>
+                        <p className="text-[11px] text-[#64748B] truncate">{item.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -441,15 +441,15 @@ export default function AiForecastView() {
           </div>
 
           {/* 🌟 D. MULTI-HORIZON DECISION TIMELINE */}
-          <div className="glass-card rounded-xl p-5 space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-[rgba(23,34,29,0.06)]">
+          <div className="rounded-3xl border border-white/90 bg-white/80 backdrop-blur-2xl p-5 space-y-3 shadow-[0_20px_50px_rgba(15,23,42,0.04)]">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center space-x-2">
-                <FaIcon name="clock" className="text-[#1E9B68] text-xs" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#17221D]">
+                <FaIcon name="clock" className="text-[#0D9488] text-xs" />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
                   Forward-Looking Decision Trajectory (15M to 24H)
                 </h4>
               </div>
-              <span className="text-[11px] text-[#5E6963]">Autoregressive multi-step rollout</span>
+              <span className="text-[11px] text-[#64748B]">Autoregressive multi-step rollout</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -460,12 +460,12 @@ export default function AiForecastView() {
                 { horizon: '6H', solar_kw: 0.00, demand_kw: 3.50, balance_kw: -3.50, action: 'DISCHARGE' },
                 { horizon: '24H', solar_kw: 0.00, demand_kw: 1.80, balance_kw: -1.80, action: 'DISCHARGE' },
               ]).map((step, idx) => (
-                <div key={idx} className="p-3 rounded-lg bg-[#F8FAF9] border border-[rgba(23,34,29,0.06)] text-center space-y-1">
-                  <span className="text-[10px] font-bold text-[#7358C7] uppercase">{step.horizon}</span>
-                  <p className={`text-xs font-bold ${step.balance_kw >= 0 ? 'text-[#1E9B68]' : 'text-[#D45C5C]'}`}>
+                <div key={idx} className="p-3 rounded-2xl bg-white/70 border border-white/90 text-center space-y-1 shadow-2xs">
+                  <span className="text-[10px] font-bold text-purple-600 uppercase">{step.horizon}</span>
+                  <p className={`text-xs font-bold ${step.balance_kw >= 0 ? 'text-[#0D9488]' : 'text-[#E11D48]'}`}>
                     {step.balance_kw >= 0 ? `+${step.balance_kw}` : step.balance_kw} kW
                   </p>
-                  <p className="text-[10px] text-[#5E6963] font-medium truncate">{step.action}</p>
+                  <p className="text-[10px] text-[#64748B] font-medium truncate">{step.action}</p>
                 </div>
               ))}
             </div>

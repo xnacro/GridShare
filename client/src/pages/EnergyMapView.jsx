@@ -410,8 +410,8 @@ export default function EnergyMapView() {
         {/* Demo Stage Live Progress Banner */}
         {demoStatusText && (
           <div className="absolute top-18 left-1/2 -translate-x-1/2 z-10 select-none max-w-xl w-full px-4">
-            <div className="rounded-xl border border-emerald-300 bg-emerald-50/95 p-2.5 shadow-lg backdrop-blur-md text-center text-xs font-bold text-emerald-950 animate-in fade-in slide-in-from-top-2">
-              <span className="mr-2">⚡</span>
+            <div className="rounded-2xl border border-teal-200 bg-white/95 p-2.5 shadow-lg backdrop-blur-md text-center text-xs font-bold text-[#0F172A] animate-in fade-in slide-in-from-top-2 flex items-center justify-center gap-2">
+              <FaIcon name="bolt" className="text-[#0D9488]" />
               <span>{demoStatusText}</span>
             </div>
           </div>

@@ -135,7 +135,10 @@ export default function WeatherShockSimulator({ onShockApplied }) {
       {shockResult && (
         <div className="mt-2 p-3 rounded-xl bg-purple-900/5 border border-purple-200 text-xs space-y-1.5 animate-fadeIn">
           <div className="flex items-center justify-between text-purple-900 font-bold">
-            <span>⚡ {shockResult.summary}</span>
+            <span className="flex items-center gap-1">
+              <FaIcon name="bolt" className="text-amber-600" />
+              <span>{shockResult.summary}</span>
+            </span>
             <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-purple-200">
               Hornet AI Adapted in 12ms
             </span>

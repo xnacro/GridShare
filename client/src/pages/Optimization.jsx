@@ -289,7 +289,7 @@ export default function Optimization() {
 
             setActiveRoutes(routes);
             setStatus('PLAN_READY');
-            setStatusMessage(`✅ OPTIMAL PLAN READY: Total Cost ₹${plan.optimizedCost.toFixed(2)} (Savings: ₹${plan.savings.toFixed(2)}). Click [APPLY PLAN] to execute.`);
+            setStatusMessage(`OPTIMAL PLAN READY: Total Cost ₹${plan.optimizedCost.toFixed(2)} (Savings: ₹${plan.savings.toFixed(2)}). Click [APPLY PLAN] to execute.`);
           }, 400);
         }, 400);
       }, 400);
@@ -320,7 +320,7 @@ export default function Optimization() {
       setHistory((prev) => [newEntry, ...prev]);
 
       setStatus('COMPLETED');
-      setStatusMessage('🎉 OPTIMIZATION APPLIED: All community households, ESS battery, and P2P order state synchronized.');
+      setStatusMessage('OPTIMIZATION APPLIED: All community households, ESS battery, and P2P order state synchronized.');
     }, 1800);
   };
 
@@ -429,13 +429,13 @@ export default function Optimization() {
 
       {/* Dynamic Narrative Banner */}
       {statusMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#1E9B68]/30 bg-[#E8F6EE] px-4 py-3 text-xs text-[#12392B] font-bold shadow-xs">
+        <div className="flex items-center justify-between rounded-2xl border border-teal-200 bg-white/90 backdrop-blur-md px-4 py-3 text-xs text-[#0F172A] font-bold shadow-xs">
           <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-[#1E9B68] animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-[#0D9488] animate-pulse" />
             <span>{statusMessage}</span>
           </div>
-          <button type="button" onClick={() => setStatusMessage('')} className="text-[#1E9B68] font-bold text-xs p-0.5">
-            ✕
+          <button type="button" onClick={() => setStatusMessage('')} className="text-[#64748B] hover:text-[#0F172A] font-bold text-xs p-0.5">
+            <FaIcon name="close" />
           </button>
         </div>
       )}
@@ -846,7 +846,7 @@ export default function Optimization() {
                   <td className="px-3 py-2 text-right text-blue-900">{h.gridImport.toFixed(1)} kWh</td>
                   <td className="px-3 py-2 text-right font-bold text-slate-900">₹{h.cost.toFixed(2)}</td>
                   <td className="px-3 py-2 text-right font-bold text-emerald-700">+₹{h.savings.toFixed(2)}</td>
-                  <td className="px-3 py-2 text-right text-emerald-700 font-bold">{h.status} ✓</td>
+                  <td className="px-3 py-2 text-right text-emerald-700 font-bold">{h.status}</td>
                 </tr>
               ))}
             </tbody>

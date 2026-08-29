@@ -40,7 +40,7 @@ export default function DashboardView({ onOpenDemoModal }) {
     const nextSoc = Math.min(95, battery.soc + Math.round((kwh / (battery.capacity || 20.0)) * 100));
     const nextStored = Math.round((((battery.capacity || 20.0) * nextSoc) / 100) * 10) / 10;
     setBattery((prev) => ({ ...prev, soc: nextSoc, storedKwh: nextStored }));
-    setAiExecutionMessage(`⚡ Buffered +${kwh} kWh solar surplus into Community ESS (SOC now ${nextSoc}%)`);
+    setAiExecutionMessage(`Buffered +${kwh} kWh solar surplus into Community ESS (SOC now ${nextSoc}%)`);
     setTimeout(() => setAiExecutionMessage(''), 4500);
   };
 
@@ -53,7 +53,7 @@ export default function DashboardView({ onOpenDemoModal }) {
     const nextSoc = Math.max(20, battery.soc - Math.round((kwh / (battery.capacity || 20.0)) * 100));
     const nextStored = Math.round((((battery.capacity || 20.0) * nextSoc) / 100) * 10) / 10;
     setBattery((prev) => ({ ...prev, soc: nextSoc, storedKwh: nextStored }));
-    setAiExecutionMessage(`🔋 Discharged ${kwh} kWh clean battery reserve to support local peak load (SOC now ${nextSoc}%)`);
+    setAiExecutionMessage(`Discharged ${kwh} kWh clean battery reserve to support local peak load (SOC now ${nextSoc}%)`);
     setTimeout(() => setAiExecutionMessage(''), 4500);
   };
 
@@ -387,8 +387,8 @@ export default function DashboardView({ onOpenDemoModal }) {
             </div>
             <span>{aiExecutionMessage}</span>
           </div>
-          <button type="button" onClick={() => setAiExecutionMessage('')} className="text-[#526B66] hover:text-[#0F2233] text-xs p-1 font-bold">
-            ✕
+          <button type="button" onClick={() => setAiExecutionMessage('')} className="text-[#64748B] hover:text-[#0F172A] text-xs p-1 font-bold">
+            <FaIcon name="close" />
           </button>
         </div>
       )}

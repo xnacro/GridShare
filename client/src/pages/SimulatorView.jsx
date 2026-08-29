@@ -28,10 +28,10 @@ export default function SimulatorView() {
       // Run optimization engine
       await api.runOptimization();
 
-      setStatusMsg('✅ PPT Demo Scenario successfully published & matched! Check Dashboard.');
+      setStatusMsg('PPT Demo Scenario successfully published & matched! Check Dashboard.');
     } catch (err) {
       console.error(err);
-      setStatusMsg(`❌ Error triggering PPT scenario: ${err.message}`);
+      setStatusMsg(`Error triggering PPT scenario: ${err.message}`);
     } finally {
       setIsSending(false);
     }
