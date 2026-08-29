@@ -2,6 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
+import FaIcon from '../icons/FaIcon';
 
 /**
  * Animated 3D Energy Conduit Particle Stream
@@ -148,68 +149,68 @@ export default function ResidentialHouse3D({
       {/* Outer Ground Plane */}
       <mesh position={[0, -0.05, 0]} receiveShadow>
         <boxGeometry args={[11.5, 0.1, 9.5]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.9} />
+        <meshStandardMaterial color="#D7E6CD" roughness={0.8} />
       </mesh>
 
       {/* Paved Perimeter */}
       <mesh position={[0, 0.02, 0]} receiveShadow>
         <boxGeometry args={[7.6, 0.06, 6.4]} />
-        <meshStandardMaterial color="#334155" roughness={0.7} />
+        <meshStandardMaterial color="#C2D9B3" roughness={0.6} />
       </mesh>
 
       {/* House Concrete Plinth */}
       <mesh position={[0, 0.1, 0]} receiveShadow>
         <boxGeometry args={[4.8, 0.15, 4.0]} />
-        <meshStandardMaterial color="#475569" roughness={0.5} />
+        <meshStandardMaterial color="#EBF3E7" roughness={0.4} />
       </mesh>
 
       {/* Driveway Base */}
       <mesh position={[2.6, 0.06, -0.8]} receiveShadow>
         <boxGeometry args={[1.8, 0.08, 2.6]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.8} />
+        <meshStandardMaterial color="#C8DDBA" roughness={0.7} />
       </mesh>
 
       {/* Pathway */}
       <mesh position={[0.6, 0.06, 2.3]} receiveShadow>
         <boxGeometry args={[1.0, 0.06, 1.2]} />
-        <meshStandardMaterial color="#64748b" roughness={0.6} />
+        <meshStandardMaterial color="#D5E4CE" roughness={0.5} />
       </mesh>
 
       {/* ==================== 2. CUTAWAY ARCHITECTURAL STRUCTURE ==================== */}
       {/* Back Wall */}
       <mesh position={[0, 1.35, -1.95]} receiveShadow>
         <boxGeometry args={[4.6, 2.4, 0.1]} />
-        <meshStandardMaterial color="#e2e8f0" roughness={0.4} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.3} />
       </mesh>
 
       {/* Left Wall (Cutaway partial) */}
       <mesh position={[-2.35, 1.35, 0]} receiveShadow>
         <boxGeometry args={[0.1, 2.4, 3.9]} />
-        <meshStandardMaterial color="#cbd5e1" roughness={0.3} />
+        <meshStandardMaterial color="#F0F6EB" roughness={0.3} />
       </mesh>
 
       {/* Right Wall (Cutaway partial) */}
       <mesh position={[2.35, 1.35, -0.8]} receiveShadow>
         <boxGeometry args={[0.1, 2.4, 2.3]} />
-        <meshStandardMaterial color="#e2e8f0" roughness={0.4} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.3} />
       </mesh>
 
       {/* Floor Slab / Second Story Base */}
       <mesh position={[0.2, 1.35, -0.2]} receiveShadow>
         <boxGeometry args={[4.2, 0.1, 3.4]} />
-        <meshStandardMaterial color="#cbd5e1" roughness={0.5} />
+        <meshStandardMaterial color="#E4EFE0" roughness={0.4} />
       </mesh>
 
       {/* Semi-transparent Divider */}
       <mesh position={[-0.2, 0.7, 0.3]} receiveShadow>
         <boxGeometry args={[0.08, 1.1, 2.4]} />
-        <meshStandardMaterial color="#94a3b8" opacity={0.6} transparent roughness={0.3} />
+        <meshStandardMaterial color="#BED69E" opacity={0.4} transparent roughness={0.2} />
       </mesh>
 
       {/* Front Glass Railing */}
       <mesh position={[0.2, 0.4, 1.95]}>
         <boxGeometry args={[4.2, 0.45, 0.04]} />
-        <meshStandardMaterial color="#38bdf8" opacity={0.3} transparent roughness={0.1} />
+        <meshStandardMaterial color="#8BC53D" opacity={0.35} transparent roughness={0.1} />
       </mesh>
 
       {/* ==================== 3. ROOFTOP SOLAR ARRAY (HERO) ==================== */}
@@ -254,20 +255,21 @@ export default function ResidentialHouse3D({
         )}
 
         {/* Minimal Glassmorphic Label (Offset upward away from panels) */}
-        <Html position={[0, 1.25, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
+        <Html position={[0, 1.45, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
           <div
             onClick={(e) => {
               e.stopPropagation();
               onSelectElement('solar');
             }}
-            className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all text-center ${
+            className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all text-center flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
               selectedElement === 'solar'
-                ? 'bg-amber-500/90 text-white border-amber-300 ring-2 ring-amber-400 shadow-md'
-                : 'bg-slate-950/50 text-amber-300 border-white/10 hover:bg-slate-900/80 shadow-xs'
+                ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
+                : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
             }`}
           >
-            <span className="font-bold text-[10.5px] whitespace-nowrap">
-              ☀ Solar PV • {solarKw.toFixed(1)} kW {cloudCover ? '(☁ Clouded)' : ''}
+            <FaIcon name="solar" className="text-amber-500 text-xs" />
+            <span className="font-extrabold text-[10.5px] whitespace-nowrap tracking-tight">
+              Solar PV • {solarKw.toFixed(1)} kW {cloudCover ? '(Clouded)' : ''}
             </span>
           </div>
         </Html>
@@ -285,7 +287,7 @@ export default function ResidentialHouse3D({
       >
         <mesh position={[0, 0, -0.05]}>
           <boxGeometry args={[0.65, 1.25, 0.06]} />
-          <meshStandardMaterial color="#1e293b" metalness={0.5} roughness={0.4} />
+          <meshStandardMaterial color="#C8DDBA" metalness={0.4} roughness={0.3} />
         </mesh>
 
         <mesh position={[0, 0, 0.05]} castShadow>
@@ -299,7 +301,7 @@ export default function ResidentialHouse3D({
 
         <mesh position={[0, 0, 0.155]}>
           <boxGeometry args={[0.48, 1.05, 0.02]} />
-          <meshStandardMaterial color="#0f172a" roughness={0.3} />
+          <meshStandardMaterial color="#012F13" roughness={0.3} />
         </mesh>
 
         {/* Vertical Glowing SOC LED Strip */}
@@ -313,20 +315,21 @@ export default function ResidentialHouse3D({
         </mesh>
 
         {/* Minimal Glassmorphic Label (Offset upward & outward) */}
-        <Html position={[-0.4, 0.95, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
+        <Html position={[-0.6, 0.95, 0.4]} center distanceFactor={15} zIndexRange={[12, 0]}>
           <div
             onClick={(e) => {
               e.stopPropagation();
               onSelectElement('battery');
             }}
-            className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all text-center ${
+            className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all text-center flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
               selectedElement === 'battery'
-                ? 'bg-emerald-600/90 text-white border-emerald-300 ring-2 ring-emerald-400 shadow-md'
-                : 'bg-slate-950/50 text-emerald-300 border-white/10 hover:bg-slate-900/80 shadow-xs'
+                ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
+                : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
             }`}
           >
-            <span className="font-bold text-[10px] whitespace-nowrap">
-              🔋 Home Battery • {batterySoc.toFixed(0)}%
+            <FaIcon name="battery" className="text-emerald-600 text-xs" />
+            <span className="font-extrabold text-[10px] whitespace-nowrap tracking-tight">
+              Home Battery • {batterySoc.toFixed(0)}%
               {isBatteryCharging ? ` (+${batteryPowerKw.toFixed(1)}kW)` : isBatteryDischarging ? ` (${batteryPowerKw.toFixed(1)}kW)` : ''}
             </span>
           </div>
@@ -345,7 +348,7 @@ export default function ResidentialHouse3D({
       >
         <mesh castShadow>
           <boxGeometry args={[0.35, 0.45, 0.15]} />
-          <meshStandardMaterial color="#334155" roughness={0.4} metalness={0.4} />
+          <meshStandardMaterial color="#475569" roughness={0.3} metalness={0.4} />
         </mesh>
         <mesh position={[0, 0.05, 0.08]}>
           <boxGeometry args={[0.26, 0.18, 0.02]} />
@@ -358,20 +361,21 @@ export default function ResidentialHouse3D({
         </mesh>
 
         {/* Minimal Glassmorphic Label */}
-        <Html position={[0.4, 0.6, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
+        <Html position={[0.6, 0.7, 0.3]} center distanceFactor={15} zIndexRange={[12, 0]}>
           <div
             onClick={(e) => {
               e.stopPropagation();
               onSelectElement('meter');
             }}
-            className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all text-center ${
+            className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all text-center flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
               selectedElement === 'meter'
-                ? 'bg-blue-600/90 text-white border-blue-300 ring-2 ring-blue-400 shadow-md'
-                : 'bg-slate-950/50 text-blue-300 border-white/10 hover:bg-slate-900/80 shadow-xs'
+                ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
+                : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
             }`}
           >
-            <span className="font-bold text-[10px] whitespace-nowrap">
-              ⚡ Smart Meter • {isGridExporting ? `EXP +${gridPowerKw.toFixed(1)}kW` : isGridImporting ? `IMP ${Math.abs(gridPowerKw).toFixed(1)}kW` : '230V OK'}
+            <FaIcon name="overview" className="text-blue-600 text-xs" />
+            <span className="font-extrabold text-[10px] whitespace-nowrap tracking-tight">
+              Smart Meter • {isGridExporting ? `EXP +${gridPowerKw.toFixed(1)}kW` : isGridImporting ? `IMP ${Math.abs(gridPowerKw).toFixed(1)}kW` : '230V OK'}
             </span>
           </div>
         </Html>
@@ -380,20 +384,21 @@ export default function ResidentialHouse3D({
       {/* ==================== 6. APPLIANCES & INTERIOR VISUALS (WITHOUT CLUTTER) ==================== */}
 
       {/* Unified Minimalist House Load Badge */}
-      <Html position={[POS.livingRoom[0], 1.0, POS.livingRoom[2]]} center distanceFactor={15} zIndexRange={[12, 0]}>
+      <Html position={[POS.livingRoom[0] + 0.3, 0.4, POS.livingRoom[2] + 1.1]} center distanceFactor={15} zIndexRange={[12, 0]}>
         <div
           onClick={(e) => {
             e.stopPropagation();
             onSelectElement('load');
           }}
-          className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all ${
+          className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
             selectedElement === 'load'
-              ? 'bg-cyan-600/90 text-white border-cyan-300 ring-2 ring-cyan-400'
-              : 'bg-slate-950/50 text-cyan-300 border-white/10 hover:bg-slate-900/80'
+              ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
+              : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
           }`}
         >
-          <span className="font-bold text-[10px] whitespace-nowrap">
-            🏠 Home Load • {loadKw.toFixed(1)} kW
+          <FaIcon name="home" className="text-[#1E9B68] text-xs" />
+          <span className="font-extrabold text-[10px] whitespace-nowrap tracking-tight">
+            Home Load • {loadKw.toFixed(1)} kW
           </span>
         </div>
       </Html>
@@ -556,9 +561,10 @@ export default function ResidentialHouse3D({
           </mesh>
         ))}
 
-        <Html position={[0, 1.4, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
-          <div className="select-none rounded-full px-2 py-0.5 backdrop-blur-md bg-slate-950/50 border border-white/10 text-[9.5px] font-semibold text-slate-300 shadow-xs">
-            🌐 Utility Grid (₹6.10/kWh)
+        <Html position={[0, 1.5, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
+          <div className="select-none rounded-full px-3 py-1 backdrop-blur-xl bg-white/95 border border-[#BED69E] text-[9.5px] font-extrabold text-[#012F13] shadow-[0_4px_16px_rgba(1,47,19,0.12)] flex items-center gap-1.5">
+            <FaIcon name="grid" className="text-[#475569] text-xs" />
+            <span>Utility Grid (₹6.10/kWh)</span>
           </div>
         </Html>
       </group>
@@ -567,16 +573,17 @@ export default function ResidentialHouse3D({
       <group position={POS.p2pGateway}>
         <mesh position={[0, -0.5, 0]}>
           <cylinderGeometry args={[0.06, 0.07, 3.0, 12]} />
-          <meshStandardMaterial color="#334155" roughness={0.6} metalness={0.6} />
+          <meshStandardMaterial color="#64748b" roughness={0.4} metalness={0.6} />
         </mesh>
         <mesh position={[0, 0.9, 0]}>
           <sphereGeometry args={[0.13, 16, 16]} />
           <meshStandardMaterial color="#8b5cf6" emissive="#7c3aed" emissiveIntensity={1.0} />
         </mesh>
 
-        <Html position={[0, 1.4, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
-          <div className="select-none rounded-full px-2 py-0.5 backdrop-blur-md bg-slate-950/50 border border-purple-500/20 text-[9.5px] font-semibold text-purple-300 shadow-xs">
-            🤝 P2P Microgrid (₹4.50/kWh)
+        <Html position={[0, 1.5, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
+          <div className="select-none rounded-full px-3 py-1 backdrop-blur-xl bg-white/95 border border-purple-300 text-[9.5px] font-extrabold text-[#012F13] shadow-[0_4px_16px_rgba(124,58,237,0.14)] flex items-center gap-1.5">
+            <FaIcon name="trade" className="text-[#7C3AED] text-xs" />
+            <span>P2P Microgrid (₹4.50/kWh)</span>
           </div>
         </Html>
       </group>

@@ -290,7 +290,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-xs font-bold text-[#4A5B4F]">
             Net Community Balance
           </div>
-          <div className={`font-changa text-2xl sm:text-3xl font-normal mt-0.5 ${netCommunity >= 0 ? 'text-[#8BC53D]' : 'text-[#012F13]'}`}>
+          <div className={`font-display text-2xl sm:text-3xl font-bold mt-0.5 ${netCommunity >= 0 ? 'text-[#8BC53D]' : 'text-[#012F13]'}`}>
             {netCommunity >= 0 ? `+${netCommunity.toFixed(1)}` : `${netCommunity.toFixed(1)}`} kW
           </div>
           <div className="text-xs text-[#4A5B4F] font-medium mt-0.5">
@@ -303,7 +303,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-xs font-bold text-[#4A5B4F]">
             Total Generation
           </div>
-          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#011207] mt-0.5">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#011207] mt-0.5">
             {totalGen.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#8BC53D] font-bold flex items-center gap-1 mt-0.5">
@@ -317,7 +317,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-xs font-bold text-[#4A5B4F]">
             Total Demand
           </div>
-          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#011207] mt-0.5">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#011207] mt-0.5">
             {totalCon.toFixed(1)} kW
           </div>
           <div className="text-xs text-[#8BC53D] font-bold flex items-center gap-1 mt-0.5">
@@ -331,7 +331,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <div className="text-xs font-bold text-[#4A5B4F]">
             Battery State
           </div>
-          <div className="font-changa text-2xl sm:text-3xl font-normal text-[#8BC53D] mt-0.5">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#8BC53D] mt-0.5">
             {battery?.soc ? battery.soc.toFixed(0) : '40'}%
           </div>
           <div className="text-xs text-[#4A5B4F] font-medium mt-0.5">
@@ -352,11 +352,11 @@ export default function DashboardView({ onOpenDemoModal }) {
             <path
               d="M0 16 Q 15 8, 30 14 T 60 8 T 85 15 T 100 6 L 100 24 L 0 24 Z"
               fill="url(#sparklineGrad)"
-              opacity="0.25"
+              opacity="0.15"
             />
             <defs>
               <linearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#8BC53D" />
+                <stop offset="0%" stopColor="#8BC53D" stopOpacity="0.6" />
                 <stop offset="100%" stopColor="#8BC53D" stopOpacity="0" />
               </linearGradient>
             </defs>
@@ -394,7 +394,7 @@ export default function DashboardView({ onOpenDemoModal }) {
         <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between">
-              <h3 className="font-changa text-base font-normal text-[#011207]">
+              <h3 className="font-display text-base font-bold text-[#011207]">
                 Community Microgrid Overview
               </h3>
               <button
@@ -426,7 +426,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                       <div className="w-6 h-6 rounded-full bg-white border border-[#BED69E] flex items-center justify-center text-[10px] font-bold text-[#012F13]">
                         {h.name.charAt(0)}
                       </div>
-                      <span className="font-changa text-xs sm:text-sm font-normal text-[#011207]">
+                      <span className="font-display text-xs sm:text-sm font-bold text-[#012F13]">
                         {h.name}
                       </span>
                     </div>
@@ -444,13 +444,13 @@ export default function DashboardView({ onOpenDemoModal }) {
                   <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-[rgba(23,34,29,0.04)]">
                     <div>
                       <div className="text-[10px] text-[#4A5B4F]">Solar Gen</div>
-                      <div className="font-changa text-xs font-normal text-[#8BC53D]">
+                      <div className="font-display text-xs font-bold text-[#8BC53D]">
                         {h.generation.toFixed(1)} kW
                       </div>
                     </div>
                     <div>
                       <div className="text-[10px] text-[#4A5B4F]">Demand</div>
-                      <div className="font-changa text-xs font-normal text-[#011207]">
+                      <div className="font-display text-xs font-bold text-[#012F13]">
                         {h.consumption.toFixed(1)} kW
                       </div>
                     </div>
@@ -468,7 +468,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 P2P Trade Conduit: <strong>Anjali → Prince</strong> active @ ₹4.50/kWh
               </span>
             </div>
-            <span className="font-changa font-normal text-[#012F13] bg-white px-2 py-0.5 rounded-lg border border-[#BED69E] text-[11px]">
+            <span className="font-display font-bold text-[#012F13] bg-white px-2 py-0.5 rounded-lg border border-[#BED69E] text-[11px]">
               -26% vs Grid Tariff
             </span>
           </div>
@@ -478,11 +478,11 @@ export default function DashboardView({ onOpenDemoModal }) {
         <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between">
-              <h3 className="font-changa text-base font-normal text-[#011207]">
+              <h3 className="font-display text-base font-bold text-[#011207]">
                 Hornet AI — Next 15 Minutes
               </h3>
 
-              <span className="font-changa text-xs font-normal text-[#012F13] bg-[#E2F0CC] px-2.5 py-0.5 rounded-xl border border-[#BED69E]">
+              <span className="font-display text-xs font-bold text-[#012F13] bg-[#E2F0CC] px-2.5 py-0.5 rounded-xl border border-[#BED69E]">
                 Next 15 min
               </span>
             </div>
@@ -498,7 +498,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 <FaIcon name="solar" className="text-[#8BC53D]" />
                 <span>Solar</span>
               </div>
-              <div className="font-changa text-sm sm:text-base font-normal text-[#011207]">
+              <div className="font-display text-sm sm:text-base font-bold text-[#011207]">
                 {aiForecast.solar_kw?.toFixed(2) || '5.84'} kW
               </div>
             </div>
@@ -508,7 +508,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 <FaIcon name="home" className="text-[#011207]" />
                 <span>Demand</span>
               </div>
-              <div className="font-changa text-sm sm:text-base font-normal text-[#011207]">
+              <div className="font-display text-sm sm:text-base font-bold text-[#011207]">
                 {aiForecast.demand_kw?.toFixed(2) || '4.21'} kW
               </div>
             </div>
@@ -518,7 +518,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                 <FaIcon name="network" className="text-[#8BC53D]" />
                 <span>Balance</span>
               </div>
-              <div className="font-changa text-sm sm:text-base font-normal text-[#8BC53D]">
+              <div className="font-display text-sm sm:text-base font-bold text-[#8BC53D]">
                 +{aiForecast.balance_kw?.toFixed(2) || '1.63'} kW
               </div>
             </div>
@@ -533,7 +533,7 @@ export default function DashboardView({ onOpenDemoModal }) {
                   {aiVariation > 0 ? `+${aiVariation}%` : `${aiVariation}%`}
                 </span>
               </span>
-              <span className="font-changa font-normal text-[#012F13]">
+              <span className="font-display font-bold text-[#012F13]">
                 {aiForecast.solar_lower_kw?.toFixed(2)} kW — {aiForecast.solar_upper_kw?.toFixed(2)} kW
               </span>
             </div>
@@ -570,11 +570,11 @@ export default function DashboardView({ onOpenDemoModal }) {
               <span className="text-xs font-bold text-[#012F13]">
                 Recommended Action
               </span>
-              <span className="font-changa text-xs font-normal text-[#012F13] bg-white px-2 py-0.5 rounded-lg border border-[#BED69E]">
+              <span className="font-display text-xs font-bold text-[#012F13] bg-white px-2 py-0.5 rounded-lg border border-[#BED69E]">
                 {aiDecision.tariff_badge || '₹4.50 / kWh'}
               </span>
             </div>
-            <div className="font-changa text-xs sm:text-sm font-normal text-[#011207]">
+            <div className="font-display text-xs sm:text-sm font-bold text-[#011207]">
               {aiDecision.action_label}
             </div>
             <p className="text-[11px] text-[#4A5B4F] leading-snug">

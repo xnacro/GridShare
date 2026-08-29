@@ -131,11 +131,11 @@ export default function AiForecastView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="font-changa text-2xl sm:text-3xl font-normal text-[#011207]">
-              Hornet AI Forecasting Hub
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#011207]">
+              Hornet AI Forecasting & Dispatch
             </h1>
             <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
-              Dual ML Regression Active
+              15-Min Real-Time
             </span>
           </div>
           <p className="text-xs sm:text-sm text-[#4A5B4F] mt-0.5">

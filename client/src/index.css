@@ -70,8 +70,16 @@
     overflow-x: hidden;
   }
 
-  /* Sleek Modern Display Font (Option A: Outfit) */
-  .font-display {
+  /* All Headings default to Main Display Font (Outfit) */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  /* Sleek Modern Display Font (Outfit) */
+  .font-display, .font-heading {
     font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.015em;
   }
@@ -83,16 +91,9 @@
   }
 
   /* Smooth aliases for legacy font utility classes */
-  .font-changa {
+  .font-changa, .font-fjalla {
     font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.015em;
-    font-weight: 700;
-  }
-
-  .font-fjalla {
-    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.015em;
-    font-weight: 700;
   }
 }
 

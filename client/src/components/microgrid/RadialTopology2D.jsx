@@ -262,17 +262,11 @@ export default function RadialTopology2D({
             />
             {/* Grid Icon */}
             <circle cx={cx} cy={gridY} r="22" fill={gridNetKw < 0 ? '#D45C5C' : '#012F13'} />
-            <text
-              x={cx}
-              y={gridY + 4}
-              textAnchor="middle"
+            {/* Grid Vector Lightning Bolt */}
+            <path
+              d={`M ${cx - 1} ${gridY - 10} L ${cx - 7} ${gridY + 1} L ${cx - 1} ${gridY + 1} L ${cx - 4} ${gridY + 10} L ${cx + 7} ${gridY - 2} L ${cx + 1} ${gridY - 2} Z`}
               fill="#FFFFFF"
-              fontSize="12"
-              fontWeight="bold"
-              fontFamily="Outfit, sans-serif"
-            >
-              ⚡
-            </text>
+            />
 
             {/* Grid Text Labels */}
             <text
@@ -325,18 +319,12 @@ export default function RadialTopology2D({
               stroke="#BED69E"
               strokeWidth="1.5"
             />
-            {/* Battery Glyph */}
-            <text
-              x={cx}
-              y={cy - 2}
-              textAnchor="middle"
-              fill="#012F13"
-              fontSize="16"
-              fontWeight="bold"
-              fontFamily="Outfit, sans-serif"
-            >
-              🔋
-            </text>
+            {/* Battery Vector Glyph */}
+            <g transform={`translate(${cx - 10}, ${cy - 12})`}>
+              <rect x="0" y="0" width="18" height="10" rx="2" fill="none" stroke="#012F13" strokeWidth="1.6" />
+              <rect x="18" y="2.5" width="2" height="5" rx="0.5" fill="#012F13" />
+              <rect x="2" y="2" width={`${Math.max(2, Math.min(14, 14 * ((battery.soc || 40) / 100)))}`} height="6" rx="1" fill="#8BC53D" />
+            </g>
             {/* Battery SOC */}
             <text
               x={cx}

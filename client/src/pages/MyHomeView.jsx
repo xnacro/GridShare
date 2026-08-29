@@ -147,7 +147,7 @@ export default function MyHomeView() {
 
   return (
     <div className="space-y-6 max-w-[1520px] mx-auto pb-12 select-none animate-fadeIn">
-      
+
       {/* 🌟 1. COMPACT PAGE HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[rgba(23,34,29,0.06)]">
         <div>
@@ -244,92 +244,97 @@ export default function MyHomeView() {
         />
       </div>
 
-      {/* 🌟 3. 3D RESIDENTIAL ARCHITECTURAL TWIN + SMART APPLIANCES */}
+      {/* 🌟 3. MAIN WORKSPACE: 65% 3D RESIDENTIAL DIGITAL TWIN (8 cols) + 35% APPLIANCE BALANCER (4 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
-        {/* LEFT: 3D RESIDENTIAL HOUSE CANVAS (7 cols) */}
-        <div className="lg:col-span-7 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
+
+        {/* LEFT: 65% 3D RESIDENTIAL HOUSE CANVAS (8 cols) */}
+        <div className="lg:col-span-8 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-3.5 border border-[#BED69E] shadow-xl ring-1 ring-[#8BC53D]/25">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b border-[rgba(23,34,29,0.08)]">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs">
+              <div className="w-8 h-8 rounded-xl bg-[#E8F6EE] text-[#1E9B68] flex items-center justify-center text-xs shadow-xs">
                 <FaIcon name="home" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-[#17221D]">
-                  3D Residential Architectural Twin
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-extrabold text-[#17221D]">
+                    3D Residential Architectural Twin
+                  </h3>
+                  <Badge variant="surplus" size="xs">
+                    {householdTitle}
+                  </Badge>
+                </div>
                 <p className="text-xs text-[#5E6963]">
-                  Spatial view of rooftop panels, living circuits, and home storage
+                  End-to-end spatial view of rooftop PV, smart circuits, and bilateral P2P conduits
                 </p>
               </div>
             </div>
-            <Badge variant="surplus" size="xs">
-              {householdTitle}
-            </Badge>
+
+            {/* Live Net Balance Pill */}
+            <div className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs ${
+              isSurplus ? 'bg-[#E8F6EE] text-[#1E9B68] border border-[#1E9B68]/30' : 'bg-[#FDECEC] text-[#D45C5C] border border-[#D45C5C]/30'
+            }`}>
+              <FaIcon name={isSurplus ? 'solar' : 'energy'} className="text-xs" />
+              <span>{isSurplus ? `Surplus: +${netHomeKw.toFixed(1)} kW` : `Deficit: ${netHomeKw.toFixed(1)} kW`}</span>
+            </div>
           </div>
 
-          <div className="h-[380px] w-full relative rounded-xl overflow-hidden bg-[#F6F7F4] border border-[rgba(23,34,29,0.05)]">
+          {/* End-to-End 3D Viewport with 3D Glassmorphic Border */}
+          <div className="h-[430px] sm:h-[490px] w-full relative rounded-xl overflow-hidden shadow-2xl">
             <ResidentialHouseCanvas3D
-              solarGen={activeGenKw}
-              consumption={totalApplianceKw}
+              solarKw={activeGenKw}
+              loadKw={totalApplianceKw}
               batterySoc={batterySoc}
               appliances={appliances}
               energyMode={energyMode}
             />
-
-            {/* Floating Glass Surplus Pill */}
-            <div className="absolute top-3 left-3 pointer-events-none p-2 rounded-xl gs-glass shadow-xs flex items-center gap-2">
-              <FaIcon name="solar" className="text-[#1E9B68] text-xs" />
-              <span className="text-xs font-bold text-[#17221D]">
-                {isSurplus ? `Surplus: +${netHomeKw.toFixed(1)} kW` : `Deficit: ${netHomeKw.toFixed(1)} kW`}
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* RIGHT: SMART APPLIANCE BALANCER (5 cols) */}
-        <div id="appliance-manager" className="lg:col-span-5 glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+        {/* RIGHT: 35% APPLIANCE BALANCER & SIMULATOR (4 cols) */}
+        <div id="appliance-manager" className="lg:col-span-4 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4 border border-[#BED69E] shadow-lg">
           <div className="flex items-center justify-between pb-3 border-b border-[rgba(23,34,29,0.06)]">
             <div>
-              <h3 className="text-base font-extrabold text-[#17221D]">
-                Appliance Load Balancing
+              <h3 className="text-base font-extrabold text-[#17221D] flex items-center gap-2">
+                <FaIcon name="sliders" className="text-[#1E9B68] text-sm" />
+                <span>Load Balancing</span>
               </h3>
               <p className="text-xs text-[#5E6963]">
-                Toggle smart circuits to shift peak consumption
+                Shift peak consumption
               </p>
             </div>
-            <span className="text-xs font-mono font-bold text-[#1E9B68]">
-              Total: {totalApplianceKw.toFixed(1)} kW
+            <span className="text-xs font-mono font-bold text-[#1E9B68] px-2.5 py-1 rounded-lg bg-[#E8F6EE]">
+              {totalApplianceKw.toFixed(1)} kW
             </span>
           </div>
 
-          <div className="space-y-2.5">
+          {/* Appliance Switches */}
+          <div className="space-y-2">
             {Object.entries(appliances).map(([key, app]) => (
               <div
                 key={key}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)] hover:bg-white transition"
+                className="flex items-center justify-between p-3 rounded-xl bg-[#F6F7F4] border border-[rgba(23,34,29,0.06)] hover:bg-white transition"
               >
-                <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs ${
+                <div className="flex items-center space-x-2.5">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
                     app.active ? 'bg-[#E8F6EE] text-[#1E9B68]' : 'bg-[#F6F7F4] text-[#89938D]'
                   }`}>
                     <FaIcon name={app.icon || 'plug'} />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#17221D]">{app.name}</div>
-                    <div className="text-[11px] font-mono text-[#5E6963]">{app.kw} kW draw</div>
+                    <div className="text-xs font-bold text-[#17221D] leading-tight">{app.name}</div>
+                    <div className="text-[10.5px] font-mono text-[#5E6963]">{app.kw} kW draw</div>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => toggleAppliance(key)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  className={`relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                     app.active ? 'bg-[#1E9B68]' : 'bg-[#DCE4DE]'
                   }`}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out ${
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out ${
                       app.active ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
@@ -340,7 +345,7 @@ export default function MyHomeView() {
 
           {/* Quick Simulation Slider if in simulation */}
           {sourceType === 'SIMULATION' && (
-            <div className="p-3.5 rounded-xl bg-[#FFF7E4] border border-[#E5A72D]/20 space-y-2 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#FFF7E4] border border-[#E5A72D]/25 space-y-2 text-xs">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-[#E5A72D] flex items-center gap-1.5">
                   <FaIcon name="solar" />
@@ -363,19 +368,19 @@ export default function MyHomeView() {
 
       </div>
 
-      {/* 🌟 4. SMART ENERGY MODES */}
-      <div className="glass-card rounded-xl p-6 sm:p-8 space-y-4">
+      {/* 🌟 4. SMART ENERGY OPERATING MODES */}
+      <div className="glass-card rounded-2xl p-5 sm:p-7 space-y-4 border border-[#BED69E]/80">
         <SectionHeader
           title="Smart Household Operating Modes"
-          subtitle="Configure how your home allocates solar energy, preserves battery reserve, and participates in P2P trading"
+          subtitle="Configure how your residence allocates solar energy, buffers ESS battery reserves, and trades on the P2P marketplace"
           rightAction={
             <Badge variant="ai" size="xs">
-              Automated Dispatch
+              AI Dispatch
             </Badge>
           }
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 pt-1">
           {energyModes.map((mode) => {
             const isSelected = energyMode === mode.id;
             return (
@@ -435,11 +440,10 @@ export default function MyHomeView() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div
             onClick={() => setSourceType('SIMULATION')}
-            className={`p-4 rounded-xl border cursor-pointer transition ${
-              sourceType === 'SIMULATION'
+            className={`p-4 rounded-xl border cursor-pointer transition ${sourceType === 'SIMULATION'
                 ? 'bg-[#E8F6EE] border-[#1E9B68] ring-2 ring-[#1E9B68]/20'
                 : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] hover:bg-white'
-            }`}
+              }`}
           >
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-[#17221D]">SIMULATION Mode</span>
@@ -454,11 +458,10 @@ export default function MyHomeView() {
 
           <div
             onClick={() => setSourceType('MANUAL')}
-            className={`p-4 rounded-xl border cursor-pointer transition ${
-              sourceType === 'MANUAL'
+            className={`p-4 rounded-xl border cursor-pointer transition ${sourceType === 'MANUAL'
                 ? 'bg-[#F3EEFC] border-[#7358C7] ring-2 ring-[#7358C7]/20'
                 : 'bg-[#F6F7F4] border-[rgba(23,34,29,0.08)] hover:bg-white'
-            }`}
+              }`}
           >
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-[#17221D]">MANUAL Override Mode</span>

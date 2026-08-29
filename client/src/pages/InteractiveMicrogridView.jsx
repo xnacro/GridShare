@@ -108,24 +108,26 @@ export default function InteractiveMicrogridView() {
             <button
               type="button"
               onClick={() => setViewMode('2d')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${
                 viewMode === '2d'
                   ? 'bg-[#012F13] text-white shadow-xs'
                   : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
               }`}
             >
-              📊 2D Topology
+              <FaIcon name="chart" className="text-xs mr-1.5 text-[#8BC53D]" />
+              <span>2D Topology</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode('3d')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center ${
                 viewMode === '3d'
                   ? 'bg-[#012F13] text-white shadow-xs'
                   : 'text-[#4A5B4F] hover:text-[#012F13] hover:bg-[#F4F9EB]'
               }`}
             >
-              🌐 3D Twin
+              <FaIcon name="network" className="text-xs mr-1.5 text-[#8BC53D]" />
+              <span>3D Twin</span>
             </button>
           </div>
 
