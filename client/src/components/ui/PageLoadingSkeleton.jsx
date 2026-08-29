@@ -6,7 +6,7 @@ import React from 'react';
 export function Skeleton({ className = '' }) {
   return (
     <div
-      className={`animate-pulse bg-[#E2EED7]/70 rounded-xl ${className}`}
+      className={`animate-pulse bg-[#D6D1BE]/40 rounded-xl ${className}`}
     />
   );
 }
@@ -19,7 +19,7 @@ export default function PageLoadingSkeleton({ variant = 'dashboard' }) {
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
       
       {/* 🌟 1. SKELETON HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E2EED7]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#D6D1BE]">
         <div className="space-y-2">
           <div className="flex items-center space-x-3">
             <Skeleton className="h-8 w-48 sm:w-64" />

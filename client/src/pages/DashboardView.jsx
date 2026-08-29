@@ -189,50 +189,54 @@ export default function DashboardView({ onOpenDemoModal }) {
   }, [balanceKw]);
 
   return (
-    <div className="space-y-6 max-w-[1600px] mx-auto pb-12 select-none animate-fadeIn">
+    <div className="space-y-7 max-w-[1600px] mx-auto pb-14 select-none animate-fadeIn relative">
 
-      {/* 🌟 1. VELUNO-STYLE UNIFIED HERO (Soft Sage Mint #E2F0CC) */}
-      <div
-        className="rounded-2xl relative overflow-hidden border border-[#BED69E] shadow-sm bg-gradient-to-br from-[#E2F0CC] via-[#E8F4D6] to-[#DCEDC4]"
-        style={{ minHeight: 'calc(100vh - 100px)' }}
-      >
-        <div className="relative z-10 flex flex-col lg:flex-row items-stretch" style={{ minHeight: 'calc(100vh - 100px)' }}>
+      {/* 🌟 AMBIENT GLASSMORPHISM GLOW ORBS (Underneath glass layer) */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-[650px] h-[650px] bg-gradient-to-br from-[#60A5FA]/25 via-[#38BDF8]/20 to-transparent rounded-full blur-[100px]" />
+        <div className="absolute top-[35%] -left-32 w-[550px] h-[550px] bg-gradient-to-tr from-[#10B981]/15 via-[#6EE7B7]/18 to-transparent rounded-full blur-[95px]" />
+        <div className="absolute bottom-10 right-[15%] w-[480px] h-[480px] bg-gradient-to-bl from-[#F59E0B]/12 via-[#FCD34D]/10 to-transparent rounded-full blur-[90px]" />
+      </div>
+
+      {/* 🌟 1. EDITORIAL FROSTED GLASS HERO */}
+      <div className="rounded-3xl relative overflow-hidden border border-white/95 shadow-[0_20px_50px_rgba(15,23,42,0.04),inset_0_1px_2px_rgba(255,255,255,1)] bg-white/80 backdrop-blur-2xl">
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between p-6 sm:p-8 lg:p-10 lg:pl-12 gap-6 lg:gap-8">
 
           {/* ─── LEFT SIDE: Content & CTAs ─── */}
-          <div className="flex-1 lg:max-w-[50%] p-5 sm:p-8 lg:p-14 lg:pl-16 flex flex-col justify-center pt-8 sm:pt-14 lg:pt-16 space-y-5 sm:space-y-6">
+          <div className="flex-1 lg:max-w-[52%] flex flex-col justify-center space-y-4 sm:space-y-5">
 
-            {/* Dynamic Headline — Outfit Typography */}
-            <h1 className="font-display text-2xl sm:text-4xl lg:text-[46px] font-bold text-[#041D0D] leading-[1.18] tracking-tight">
+            {/* Large Editorial Headline — Deep Navy */}
+            <h1 className="font-display text-2xl sm:text-3xl lg:text-[38px] font-bold text-[#0F2233] leading-[1.2] tracking-tight">
               {netCommunity >= 0 ? (
                 <>
                   Your community has{' '}
-                  <span className="text-[#8BC53D] whitespace-nowrap">
+                  <span className="text-[#156B5C] whitespace-nowrap drop-shadow-xs">
                     +{netCommunity.toFixed(1)} kW
                   </span>{' '}
-                  right now.
+                  of clean energy ready to share.
                 </>
               ) : (
                 <>
                   Your community needs{' '}
-                  <span className="text-[#012F13] whitespace-nowrap">
+                  <span className="text-[#C2571F] whitespace-nowrap drop-shadow-xs">
                     {Math.abs(netCommunity).toFixed(1)} kW
                   </span>{' '}
-                  right now.
+                  from local storage right now.
                 </>
               )}
             </h1>
 
-            {/* Supporting Description */}
-            <p className="text-xs sm:text-base text-[#4A5B4F] leading-relaxed max-w-md">
-              GridShare tracks generation and demand across {computedHouseholds.length} households, then decides in real time whether to store the surplus, trade it locally, or export it to the grid.
+            {/* Concise Supporting Description */}
+            <p className="text-xs sm:text-sm text-[#526B66] leading-relaxed max-w-md font-medium">
+              GridShare tracks generation and demand across {computedHouseholds.length} households, deciding in real time whether to store surplus in the central ESS, trade peer-to-peer, or optimize self-consumption.
             </p>
 
-            {/* CTA Row — Veluno Style */}
-            <div className="flex items-center gap-3 pt-2 flex-wrap">
+            {/* Primary & Secondary CTA Row */}
+            <div className="flex items-center gap-3 pt-1 flex-wrap">
               <button
                 type="button"
                 onClick={() => navigate('/network')}
-                className="px-5 sm:px-6 py-2.5 rounded-full bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center space-x-2 active:scale-[0.98]"
+                className="px-5 py-3 rounded-full bg-[#156B5C] hover:bg-[#0F5347] text-white text-xs sm:text-sm font-bold shadow-[0_4px_14px_rgba(21,107,92,0.3)] transition flex items-center space-x-2 active:scale-[0.98]"
               >
                 <span>View live map</span>
                 <span className="text-base leading-none">↗</span>
@@ -241,39 +245,39 @@ export default function DashboardView({ onOpenDemoModal }) {
               <button
                 type="button"
                 onClick={() => navigate('/ai')}
-                className="text-xs sm:text-sm font-bold text-[#011207] hover:text-[#8BC53D] transition px-2 py-2"
+                className="px-4.5 py-3 rounded-full bg-white/85 hover:bg-white text-[#0F2233] border border-white/90 text-xs sm:text-sm font-bold shadow-xs backdrop-blur-md transition hover:shadow-md"
               >
                 See recommendations
               </button>
             </div>
           </div>
 
-          {/* ─── RIGHT SIDE: Hand-Drawn Illustration & Lower Rotating Badge ─── */}
-          <div className="flex-1 lg:max-w-[50%] relative flex items-center justify-center p-2 sm:p-4 lg:p-0 pt-4 sm:pt-12 lg:pt-14">
+          {/* ─── RIGHT SIDE: Hand-Drawn SVG Illustration & Lower Rotating Badge ─── */}
+          <div className="flex-1 lg:max-w-[48%] relative flex items-center justify-center p-2 sm:p-4">
 
             {/* The SVG Illustration */}
-            <MicrogridSketchIllustration className="w-full h-auto max-h-[400px] lg:max-h-[440px] object-contain" />
+            <MicrogridSketchIllustration className="w-full h-auto max-h-[300px] sm:max-h-[340px] lg:max-h-[360px] object-contain drop-shadow-xs" />
 
-            {/* Spinning Circular Badge */}
-            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-8 lg:bottom-16 lg:left-2 w-[90px] h-[90px] sm:w-[100px] sm:h-[100px] z-20">
-              <svg viewBox="0 0 100 100" className="w-full h-full animate-[spin_12s_linear_infinite]">
+            {/* Spinning Circular Badge with Frosted Glass Inset */}
+            <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 w-[84px] h-[84px] sm:w-[92px] sm:h-[92px] z-20">
+              <svg viewBox="0 0 100 100" className="w-full h-full animate-[spin_14s_linear_infinite]">
                 <defs>
                   <path id="circlePath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
                 </defs>
-                <text fontSize="8.5" fontWeight="700" fill="#011207" letterSpacing="3">
+                <text fontSize="8.5" fontWeight="700" fill="#0F2233" letterSpacing="3">
                   <textPath href="#circlePath">
                     SIMULATED DEMO • LIVE BATTERY •
                   </textPath>
                 </text>
               </svg>
-              {/* Center Arrow Button */}
+              {/* Center Glass Arrow Button */}
               <button
                 type="button"
                 onClick={() => navigate('/marketplace')}
-                className="absolute inset-0 m-auto w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#012F13] hover:bg-[#0B3E1D] text-white flex items-center justify-center shadow-md transition active:scale-95"
+                className="absolute inset-0 m-auto w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0F2233] hover:bg-[#156B5C] text-white flex items-center justify-center shadow-lg transition active:scale-95 border border-white/40"
                 aria-label="Go to marketplace"
               >
-                <span className="text-lg leading-none">↗</span>
+                <span className="text-base leading-none">↗</span>
               </button>
             </div>
 
@@ -282,82 +286,82 @@ export default function DashboardView({ onOpenDemoModal }) {
         </div>
       </div>
 
-      {/* 🌟 2. METRIC CARDS STRIP (Glassmorphism Card with 12px Radius) */}
-      <div className="glass-card rounded-xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-center">
+      {/* 🌟 2. 5 FLOATING GLASS METRIC TILES STRIP */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-4.5 items-stretch">
 
-        {/* Col 1: Net Community Balance */}
-        <div>
-          <div className="text-xs font-bold text-[#4A5B4F]">
-            Net Community Balance
+        {/* Tile 1: Net Community Balance */}
+        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+            Net Balance
           </div>
-          <div className={`font-display text-2xl sm:text-3xl font-bold mt-0.5 ${netCommunity >= 0 ? 'text-[#8BC53D]' : 'text-[#012F13]'}`}>
+          <div className={`font-display text-2xl sm:text-3xl font-bold ${netCommunity >= 0 ? 'text-[#156B5C]' : 'text-[#C2571F]'}`}>
             {netCommunity >= 0 ? `+${netCommunity.toFixed(1)}` : `${netCommunity.toFixed(1)}`} kW
           </div>
-          <div className="text-xs text-[#4A5B4F] font-medium mt-0.5">
-            {netCommunity >= 0 ? 'Clean surplus' : 'Net community load'}
+          <div className="text-xs text-[#526B66] font-medium">
+            {netCommunity >= 0 ? 'Clean surplus' : 'Net deficit'}
           </div>
         </div>
 
-        {/* Col 2: Total Generation */}
-        <div>
-          <div className="text-xs font-bold text-[#4A5B4F]">
-            Total Generation
+        {/* Tile 2: Total Generation */}
+        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+            Solar Gen
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-[#011207] mt-0.5">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#D99A1F]">
             {totalGen.toFixed(1)} kW
           </div>
-          <div className="text-xs text-[#8BC53D] font-bold flex items-center gap-1 mt-0.5">
+          <div className="text-xs text-[#156B5C] font-bold flex items-center gap-1">
             <span>↑ 12%</span>
-            <span className="text-[#4A5B4F] font-normal">vs yesterday</span>
+            <span className="text-[#526B66] font-normal">vs yesterday</span>
           </div>
         </div>
 
-        {/* Col 3: Total Demand */}
-        <div>
-          <div className="text-xs font-bold text-[#4A5B4F]">
-            Total Demand
+        {/* Tile 3: Total Demand */}
+        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+            Community Demand
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-[#011207] mt-0.5">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#0F2233]">
             {totalCon.toFixed(1)} kW
           </div>
-          <div className="text-xs text-[#8BC53D] font-bold flex items-center gap-1 mt-0.5">
+          <div className="text-xs text-[#526B66] font-bold flex items-center gap-1">
             <span>↑ 8%</span>
-            <span className="text-[#4A5B4F] font-normal">vs yesterday</span>
+            <span className="text-[#526B66] font-normal">vs yesterday</span>
           </div>
         </div>
 
-        {/* Col 4: Battery State */}
-        <div>
-          <div className="text-xs font-bold text-[#4A5B4F]">
-            Battery State
+        {/* Tile 4: Battery Storage */}
+        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+            Battery Reserve
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-[#8BC53D] mt-0.5">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#156B5C]">
             {battery?.soc ? battery.soc.toFixed(0) : '40'}%
           </div>
-          <div className="text-xs text-[#4A5B4F] font-medium mt-0.5">
+          <div className="text-xs text-[#526B66] font-medium">
             8.0 / 20 kWh usable
           </div>
         </div>
 
-        {/* Col 5: Mini Sparkline & View Link */}
-        <div className="flex flex-col justify-between items-end space-y-2">
+        {/* Tile 5: Mini Sparkline & Quick Link */}
+        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between space-y-2">
           <svg className="w-full h-8 overflow-visible" viewBox="0 0 100 24" fill="none">
             <path
               d="M0 16 Q 15 8, 30 14 T 60 8 T 85 15 T 100 6"
-              stroke="#8BC53D"
-              strokeWidth="2"
+              stroke="#156B5C"
+              strokeWidth="2.2"
               fill="none"
               strokeLinecap="round"
             />
             <path
               d="M0 16 Q 15 8, 30 14 T 60 8 T 85 15 T 100 6 L 100 24 L 0 24 Z"
               fill="url(#sparklineGrad)"
-              opacity="0.15"
+              opacity="0.14"
             />
             <defs>
               <linearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#8BC53D" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#8BC53D" stopOpacity="0" />
+                <stop offset="0%" stopColor="#156B5C" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#156B5C" stopOpacity="0" />
               </linearGradient>
             </defs>
           </svg>
@@ -365,9 +369,9 @@ export default function DashboardView({ onOpenDemoModal }) {
           <button
             type="button"
             onClick={() => navigate('/network')}
-            className="text-xs font-bold text-[#012F13] hover:text-[#8BC53D] hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-[#0F2233] hover:text-[#156B5C] hover:underline flex items-center justify-between"
           >
-            <span>View Energy Flow</span>
+            <span>Energy Flow</span>
             <span>→</span>
           </button>
         </div>
@@ -376,12 +380,14 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       {/* Dynamic Action Notification Banner */}
       {aiExecutionMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-[#BED69E] bg-[#E2F0CC] px-4 py-3 text-xs sm:text-sm text-[#012F13] font-bold shadow-xs animate-in fade-in">
-          <div className="flex items-center gap-2">
-            <FaIcon name="check" className="text-[#8BC53D]" />
+        <div className="flex items-center justify-between rounded-2xl border border-white/90 bg-white/85 backdrop-blur-xl px-4.5 py-3.5 text-xs sm:text-sm text-[#0F2233] font-bold shadow-sm animate-in fade-in">
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-full bg-[#E8F3F1] text-[#156B5C] flex items-center justify-center text-xs">
+              <FaIcon name="check" />
+            </div>
             <span>{aiExecutionMessage}</span>
           </div>
-          <button type="button" onClick={() => setAiExecutionMessage('')} className="text-[#012F13] text-xs p-1 font-bold">
+          <button type="button" onClick={() => setAiExecutionMessage('')} className="text-[#526B66] hover:text-[#0F2233] text-xs p-1 font-bold">
             ✕
           </button>
         </div>
@@ -390,23 +396,23 @@ export default function DashboardView({ onOpenDemoModal }) {
       {/* 🌟 3. BALANCED 50/50 CORE WORKSPACE */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
-        {/* Left Panel (6 cols): Community Microgrid Overview & Live Power Flow */}
-        <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
+        {/* Left Panel (6 cols): Community Microgrid Overview */}
+        <div className="lg:col-span-6 rounded-3xl bg-white/75 backdrop-blur-xl border border-white/90 p-6 sm:p-7 shadow-[0_10px_30px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between">
-              <h3 className="font-display text-base font-bold text-[#011207]">
+              <h3 className="font-display text-base sm:text-lg font-bold text-[#0F2233]">
                 Community Microgrid Overview
               </h3>
               <button
                 type="button"
                 onClick={() => navigate('/network')}
-                className="text-xs font-bold text-[#012F13] hover:text-[#8BC53D] hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-[#0F2233] hover:text-[#156B5C] hover:underline flex items-center gap-1"
               >
                 <span>Explore Live Map</span>
                 <span>↗</span>
               </button>
             </div>
-            <p className="text-xs text-[#4A5B4F] mt-1">
+            <p className="text-xs text-[#526B66] mt-1">
               Live generation, consumption, and real-time power balance across 4 member households
             </p>
           </div>
@@ -419,38 +425,37 @@ export default function DashboardView({ onOpenDemoModal }) {
               return (
                 <div
                   key={h.id}
-                  className="p-3.5 rounded-xl bg-[#F4F9EB]/90 border border-[#E2F0CC] hover:bg-[#E2F0CC]/50 transition space-y-2"
+                  className="p-4 rounded-2xl bg-white/85 backdrop-blur-md border border-white/90 hover:border-[#156B5C]/40 hover:bg-white transition-all space-y-2.5 shadow-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 rounded-full bg-white border border-[#BED69E] flex items-center justify-center text-[10px] font-bold text-[#012F13]">
+                    <div className="flex items-center space-x-2.5">
+                      <div className="w-7 h-7 rounded-xl bg-[#E8F3F1] border border-white flex items-center justify-center text-xs font-bold text-[#156B5C] shadow-2xs">
                         {h.name.charAt(0)}
                       </div>
-                      <span className="font-display text-xs sm:text-sm font-bold text-[#012F13]">
+                      <span className="font-display text-xs sm:text-sm font-bold text-[#0F2233]">
                         {h.name}
                       </span>
                     </div>
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                        hasSurplus
-                          ? 'bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]'
-                          : 'bg-[#F4F9EB] text-[#4A5B4F] border border-[#D5E6BE]'
-                      }`}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${hasSurplus
+                          ? 'bg-[#E8F3F1] text-[#156B5C] border-[#156B5C]/20'
+                          : 'bg-[#F9ECE6] text-[#C2571F] border-[#C2571F]/20'
+                        }`}
                     >
                       {hasSurplus ? `+${netKw.toFixed(1)} kW Surplus` : `${netKw.toFixed(1)} kW Deficit`}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-[rgba(23,34,29,0.04)]">
+                  <div className="grid grid-cols-2 gap-2 text-xs pt-1.5 border-t border-[rgba(15,34,51,0.06)]">
                     <div>
-                      <div className="text-[10px] text-[#4A5B4F]">Solar Gen</div>
-                      <div className="font-display text-xs font-bold text-[#8BC53D]">
+                      <div className="text-[10px] text-[#526B66] font-medium">Solar Gen</div>
+                      <div className="font-display text-xs font-bold text-[#D99A1F]">
                         {h.generation.toFixed(1)} kW
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#4A5B4F]">Demand</div>
-                      <div className="font-display text-xs font-bold text-[#012F13]">
+                      <div className="text-[10px] text-[#526B66] font-medium">Demand</div>
+                      <div className="font-display text-xs font-bold text-[#0F2233]">
                         {h.consumption.toFixed(1)} kW
                       </div>
                     </div>
@@ -461,79 +466,79 @@ export default function DashboardView({ onOpenDemoModal }) {
           </div>
 
           {/* Active Bilateral Sharing Conduit Banner */}
-          <div className="p-3 rounded-xl bg-[#E2F0CC]/80 border border-[#BED69E] flex items-center justify-between text-xs">
+          <div className="p-3.5 rounded-2xl bg-white/90 border border-white flex items-center justify-between text-xs shadow-xs">
             <div className="flex items-center space-x-2">
-              <FaIcon name="network" className="text-[#8BC53D]" />
-              <span className="text-[#011207] font-medium">
+              <FaIcon name="network" className="text-[#156B5C]" />
+              <span className="text-[#0F2233] font-medium">
                 P2P Trade Conduit: <strong>Anjali → Prince</strong> active @ ₹4.50/kWh
               </span>
             </div>
-            <span className="font-display font-bold text-[#012F13] bg-white px-2 py-0.5 rounded-lg border border-[#BED69E] text-[11px]">
+            <span className="font-display font-bold text-[#156B5C] bg-[#E8F3F1] px-2.5 py-1 rounded-full border border-[#156B5C]/20 text-[11px]">
               -26% vs Grid Tariff
             </span>
           </div>
         </div>
 
         {/* Right Panel (6 cols): Hornet AI — Next 15 Minutes */}
-        <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
+        <div className="lg:col-span-6 rounded-3xl bg-white/75 backdrop-blur-xl border border-white/90 p-6 sm:p-7 shadow-[0_10px_30px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between">
-              <h3 className="font-display text-base font-bold text-[#011207]">
+              <h3 className="font-display text-base sm:text-lg font-bold text-[#0F2233]">
                 Hornet AI — Next 15 Minutes
               </h3>
 
-              <span className="font-display text-xs font-bold text-[#012F13] bg-[#E2F0CC] px-2.5 py-0.5 rounded-xl border border-[#BED69E]">
+              <span className="font-display text-xs font-bold text-[#156B5C] bg-[#E8F3F1] px-3 py-1 rounded-full border border-[#156B5C]/20">
                 Next 15 min
               </span>
             </div>
-            <p className="text-xs text-[#4A5B4F] mt-1">
+            <p className="text-xs text-[#526B66] mt-1">
               Predictive ML forecast, uncertainty corridor & optimal dispatch action
             </p>
           </div>
 
-          {/* 3 Mini Forecast Boxes (12px radius) */}
-          <div className="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-[#F4F9EB]/80 border border-[#E2F0CC]">
+          {/* 3 Mini Forecast Boxes */}
+          <div className="grid grid-cols-3 gap-2.5 text-center p-3.5 rounded-2xl bg-white/85 border border-white shadow-xs">
             <div className="space-y-0.5">
-              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#4A5B4F]">
-                <FaIcon name="solar" className="text-[#8BC53D]" />
+              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#526B66]">
+                <FaIcon name="solar" className="text-[#D99A1F]" />
                 <span>Solar</span>
               </div>
-              <div className="font-display text-sm sm:text-base font-bold text-[#011207]">
+              <div className="font-display text-sm sm:text-base font-bold text-[#D99A1F]">
                 {aiForecast.solar_kw?.toFixed(2) || '5.84'} kW
               </div>
             </div>
 
-            <div className="space-y-0.5 border-x border-[#BED69E]">
-              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#4A5B4F]">
-                <FaIcon name="home" className="text-[#011207]" />
+            <div className="space-y-0.5 border-x border-[rgba(15,34,51,0.08)]">
+              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#526B66]">
+                <FaIcon name="home" className="text-[#0F2233]" />
                 <span>Demand</span>
               </div>
-              <div className="font-display text-sm sm:text-base font-bold text-[#011207]">
+              <div className="font-display text-sm sm:text-base font-bold text-[#0F2233]">
                 {aiForecast.demand_kw?.toFixed(2) || '4.21'} kW
               </div>
             </div>
 
             <div className="space-y-0.5">
-              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#4A5B4F]">
-                <FaIcon name="network" className="text-[#8BC53D]" />
+              <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#526B66]">
+                <FaIcon name="network" className="text-[#156B5C]" />
                 <span>Balance</span>
               </div>
-              <div className="font-display text-sm sm:text-base font-bold text-[#8BC53D]">
+              <div className="font-display text-sm sm:text-base font-bold text-[#156B5C]">
                 +{aiForecast.balance_kw?.toFixed(2) || '1.63'} kW
               </div>
             </div>
           </div>
 
           {/* Forecast Range (Uncertainty) & Interactive Dragger */}
-          <div className="space-y-1.5 px-1">
+          <div className="space-y-2 px-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[#4A5B4F] font-medium flex items-center gap-1.5">
+              <span className="text-[#526B66] font-medium flex items-center gap-1.5">
                 <span>Forecast Variation</span>
-                <span className="text-[10px] text-[#012F13] bg-[#E2F0CC] px-1.5 py-0.5 rounded-md font-bold">
+                <span className="text-[10px] text-[#0F2233] bg-white/90 px-2 py-0.5 rounded-full font-bold border border-white">
                   {aiVariation > 0 ? `+${aiVariation}%` : `${aiVariation}%`}
                 </span>
               </span>
-              <span className="font-display font-bold text-[#012F13]">
+              <span className="font-display font-bold text-[#0F2233]">
                 {aiForecast.solar_lower_kw?.toFixed(2)} kW — {aiForecast.solar_upper_kw?.toFixed(2)} kW
               </span>
             </div>
@@ -546,16 +551,16 @@ export default function DashboardView({ onOpenDemoModal }) {
               step="5"
               value={aiVariation}
               onChange={(e) => setAiVariation(Number(e.target.value))}
-              className="w-full accent-[#012F13] cursor-pointer h-2 bg-[#E2F0CC] rounded-lg"
+              className="w-full accent-[#156B5C] cursor-pointer h-2 bg-white/80 rounded-lg shadow-inner"
               title="Drag to adjust solar variation and test AI response"
             />
 
-            <div className="flex items-center justify-between text-[10px] text-[#7A8C7F]">
+            <div className="flex items-center justify-between text-[10px] text-[#526B66]">
               <span>-50% (Clouds)</span>
               <button
                 type="button"
                 onClick={() => setAiVariation(0)}
-                className="hover:text-[#012F13] font-semibold transition"
+                className="hover:text-[#0F2233] font-semibold transition underline"
                 title="Reset to 0% baseline"
               >
                 Baseline (0%)
@@ -564,38 +569,38 @@ export default function DashboardView({ onOpenDemoModal }) {
             </div>
           </div>
 
-          {/* Recommended Action Box (12px radius) */}
-          <div className="p-3.5 rounded-xl bg-[#E2F0CC]/70 border border-[#BED69E] space-y-1">
+          {/* Recommended Action Box */}
+          <div className="p-4 rounded-2xl bg-[#E8F3F1]/80 backdrop-blur-md border border-[#156B5C]/20 space-y-1.5 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#012F13]">
+              <span className="text-xs font-bold text-[#156B5C]">
                 Recommended Action
               </span>
-              <span className="font-display text-xs font-bold text-[#012F13] bg-white px-2 py-0.5 rounded-lg border border-[#BED69E]">
+              <span className="font-display text-xs font-bold text-[#0F2233] bg-white px-2.5 py-0.5 rounded-full border border-white shadow-2xs">
                 {aiDecision.tariff_badge || '₹4.50 / kWh'}
               </span>
             </div>
-            <div className="font-display text-xs sm:text-sm font-bold text-[#011207]">
+            <div className="font-display text-xs sm:text-sm font-bold text-[#0F2233]">
               {aiDecision.action_label}
             </div>
-            <p className="text-[11px] text-[#4A5B4F] leading-snug">
+            <p className="text-[11px] text-[#526B66] leading-snug font-medium">
               {aiDecision.reason}
             </p>
           </div>
 
-          {/* CTAs (12px radius) */}
-          <div className="flex items-center gap-2 pt-1">
+          {/* CTAs */}
+          <div className="flex items-center gap-2.5 pt-1">
             <button
               type="button"
               onClick={handleExecuteRecommendation}
               disabled={isAiExecuting}
-              className="flex-1 justify-center py-2.5 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold shadow-xs transition active:scale-98 disabled:opacity-50"
+              className="flex-1 justify-center py-3 rounded-full bg-[#156B5C] hover:bg-[#0F5347] text-white text-xs font-bold shadow-[0_4px_14px_rgba(21,107,92,0.3)] transition active:scale-98 disabled:opacity-50"
             >
               {isAiExecuting ? 'Executing...' : 'Review Decision →'}
             </button>
             <button
               type="button"
               onClick={() => navigate('/ai')}
-              className="py-2.5 px-3.5 rounded-xl bg-white hover:bg-[#F4F9EB] text-[#011207] text-xs font-bold border border-[#BED69E] transition"
+              className="py-3 px-4 rounded-full bg-white/85 hover:bg-white text-[#0F2233] text-xs font-bold border border-white shadow-xs transition"
             >
               View Details
             </button>
@@ -604,30 +609,30 @@ export default function DashboardView({ onOpenDemoModal }) {
 
       </div>
 
-      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION: ESS BATTERY HUB & COMMUNITY IMPACT */}
+      {/* 🌟 4. EXPANDED TWO-PANEL BOTTOM SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
-        {/* Left Card: Community ESS Battery Storage & Buffer Control */}
-        <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
+        {/* Left Card: Community ESS Battery Storage */}
+        <div className="lg:col-span-6 rounded-3xl bg-white/75 backdrop-blur-xl border border-white/90 p-6 sm:p-7 shadow-[0_10px_30px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-display text-base font-bold text-[#041D0D]">
+                <h3 className="font-display text-base sm:text-lg font-bold text-[#0F2233]">
                   Central ESS Battery Buffer
                 </h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#E2F0CC] text-[#012F13] border border-[#BED69E]">
-                  20.0 kWh Capacity
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#E8F3F1] text-[#156B5C] border border-[#156B5C]/20">
+                  20.0 kWh
                 </span>
               </div>
-              <p className="text-xs text-[#4A5B4F] mt-0.5">
+              <p className="text-xs text-[#526B66] mt-0.5">
                 Community energy storage balancing diurnal solar surplus and evening peak loads
               </p>
             </div>
             <div className="text-right">
-              <div className="font-mono text-xl font-bold text-[#8BC53D]">
+              <div className="font-mono text-xl font-bold text-[#156B5C]">
                 {battery?.soc || 40}%
               </div>
-              <div className="text-[10px] text-[#4A5B4F] font-medium">
+              <div className="text-[10px] text-[#526B66] font-medium">
                 {(((battery?.capacity || 20.0) * (battery?.soc || 40)) / 100).toFixed(1)} / 20.0 kWh
               </div>
             </div>
@@ -635,22 +640,22 @@ export default function DashboardView({ onOpenDemoModal }) {
 
           {/* SOC Progress Bar with 20% Emergency Reserve Floor Indicator */}
           <div className="space-y-1.5">
-            <div className="relative w-full h-3.5 bg-[#F4F9EB] rounded-full border border-[#BED69E] overflow-hidden p-0.5">
+            <div className="relative w-full h-3.5 bg-white/90 rounded-full border border-white overflow-hidden p-0.5 shadow-inner">
               <div
-                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#8BC53D] to-[#75AA2F]"
+                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#156B5C] to-[#2DD4BF]"
                 style={{ width: `${battery?.soc || 40}%` }}
               />
               {/* 20% Emergency Reserve Marker */}
               <div
-                className="absolute top-0 bottom-0 left-[20%] w-0.5 bg-[#D45C5C]/80 z-10"
+                className="absolute top-0 bottom-0 left-[20%] w-0.5 bg-[#C2571F] z-10"
                 title="20% Emergency Reserve Floor"
               />
             </div>
-            <div className="flex items-center justify-between text-[10.5px] text-[#4A5B4F]">
-              <span className="text-[#D45C5C] font-semibold flex items-center gap-1">
+            <div className="flex items-center justify-between text-[10.5px] text-[#526B66]">
+              <span className="text-[#C2571F] font-semibold flex items-center gap-1">
                 <span>▲</span> 20% Emergency Floor (4.0 kWh reserve)
               </span>
-              <span className="font-semibold text-[#012F13]">
+              <span className="font-semibold text-[#0F2233]">
                 {Math.max(0, (((battery?.capacity || 20.0) * ((battery?.soc || 40) - 20)) / 100)).toFixed(1)} kWh usable
               </span>
             </div>
@@ -661,98 +666,98 @@ export default function DashboardView({ onOpenDemoModal }) {
             <button
               type="button"
               onClick={() => handleBufferCharge(2.0)}
-              className="py-2.5 px-3 rounded-xl bg-[#012F13] hover:bg-[#0B3E1D] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
+              className="py-3 px-3 rounded-full bg-[#156B5C] hover:bg-[#0F5347] text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(21,107,92,0.3)] active:scale-98"
             >
-              <FaIcon name="solar" className="text-[#8BC53D]" />
+              <FaIcon name="solar" className="text-[#D99A1F]" />
               <span>Buffer Solar (+2.0 kWh)</span>
             </button>
             <button
               type="button"
               onClick={() => handleBufferDischarge(1.5)}
-              className="py-2.5 px-3 rounded-xl bg-white hover:bg-[#F4F9EB] text-[#011207] border border-[#BED69E] text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
+              className="py-3 px-3 rounded-full bg-white/85 hover:bg-white text-[#0F2233] border border-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs active:scale-98"
             >
-              <FaIcon name="battery" className="text-[#012F13]" />
+              <FaIcon name="battery" className="text-[#156B5C]" />
               <span>Discharge Backup (-1.5 kWh)</span>
             </button>
           </div>
 
           {/* Live ESS Telemetry Strip */}
-          <div className="grid grid-cols-3 gap-2 pt-1 border-t border-[#E2F0CC] text-center">
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[rgba(15,34,51,0.06)] text-center">
             <div>
-              <div className="text-[10px] text-[#7A8C7F] font-bold uppercase">Cell Health</div>
-              <div className="font-mono text-xs font-bold text-[#012F13]">98% SOH</div>
+              <div className="text-[10px] text-[#526B66] font-bold uppercase">Cell Health</div>
+              <div className="font-mono text-xs font-bold text-[#0F2233]">98% SOH</div>
             </div>
             <div>
-              <div className="text-[10px] text-[#7A8C7F] font-bold uppercase">Operating Temp</div>
-              <div className="font-mono text-xs font-bold text-[#012F13]">27.5°C</div>
+              <div className="text-[10px] text-[#526B66] font-bold uppercase">Operating Temp</div>
+              <div className="font-mono text-xs font-bold text-[#0F2233]">27.5°C</div>
             </div>
             <div>
-              <div className="text-[10px] text-[#7A8C7F] font-bold uppercase">DC Bus Voltage</div>
-              <div className="font-mono text-xs font-bold text-[#012F13]">400.0 V</div>
+              <div className="text-[10px] text-[#526B66] font-bold uppercase">DC Bus Voltage</div>
+              <div className="font-mono text-xs font-bold text-[#0F2233]">400.0 V</div>
             </div>
           </div>
         </div>
 
         {/* Right Expanded Card: Today's Community Impact */}
-        <div className="lg:col-span-6 glass-card rounded-xl p-6 flex flex-col justify-between space-y-4">
+        <div className="lg:col-span-6 rounded-3xl bg-white/75 backdrop-blur-xl border border-white/90 p-6 sm:p-7 shadow-[0_10px_30px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-display text-base font-bold text-[#041D0D]">
+              <h3 className="font-display text-base sm:text-lg font-bold text-[#0F2233]">
                 Today's Community Impact
               </h3>
-              <p className="text-xs text-[#4A5B4F] mt-0.5">
+              <p className="text-xs text-[#526B66] mt-0.5">
                 Real collective impact of clean energy sharing & storage buffering today
               </p>
             </div>
             <button
               type="button"
               onClick={() => navigate('/marketplace')}
-              className="text-xs font-bold text-[#012F13] hover:text-[#8BC53D] hover:underline"
+              className="text-xs font-bold text-[#0F2233] hover:text-[#156B5C] hover:underline"
             >
               Market Ledger →
             </button>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center py-2">
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F4F9EB]/90 border border-[#E2F0CC]">
-              <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-white/85 border border-white shadow-2xs">
+              <div className="w-9 h-9 rounded-full bg-[#E8F3F1] text-[#156B5C] flex items-center justify-center text-sm mb-1.5 shadow-xs">
                 <FaIcon name="leaf" />
               </div>
-              <div className="font-mono text-lg sm:text-xl font-bold text-[#011207]">84%</div>
-              <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Renewable Self-Consumption</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#0F2233]">84%</div>
+              <div className="text-[11px] text-[#526B66] font-medium leading-tight mt-0.5">Self-Consumption</div>
             </div>
 
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F4F9EB]/90 border border-[#E2F0CC]">
-              <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-white/85 border border-white shadow-2xs">
+              <div className="w-9 h-9 rounded-full bg-[#E8F3F1] text-[#156B5C] flex items-center justify-center text-sm mb-1.5 shadow-xs">
                 <FaIcon name="users" />
               </div>
-              <div className="font-mono text-lg sm:text-xl font-bold text-[#8BC53D]">2.0 kWh</div>
-              <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Shared Locally</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#156B5C]">2.0 kWh</div>
+              <div className="text-[11px] text-[#526B66] font-medium leading-tight mt-0.5">Shared Locally</div>
             </div>
 
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F4F9EB]/90 border border-[#E2F0CC]">
-              <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-white/85 border border-white shadow-2xs">
+              <div className="w-9 h-9 rounded-full bg-[#FAF4E8] text-[#D99A1F] flex items-center justify-center text-sm mb-1.5 shadow-xs">
                 <FaIcon name="rupee" />
               </div>
-              <div className="font-mono text-lg sm:text-xl font-bold text-[#011207]">₹4.48</div>
-              <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Estimated Savings</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#0F2233]">₹4.48</div>
+              <div className="text-[11px] text-[#526B66] font-medium leading-tight mt-0.5">Est. Savings</div>
             </div>
 
-            <div className="flex flex-col items-center p-2 rounded-xl bg-[#F4F9EB]/90 border border-[#E2F0CC]">
-              <div className="w-9 h-9 rounded-xl bg-[#E2F0CC] text-[#012F13] flex items-center justify-center text-sm mb-1.5">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-white/85 border border-white shadow-2xs">
+              <div className="w-9 h-9 rounded-full bg-white text-[#0F2233] flex items-center justify-center text-sm mb-1.5 shadow-xs border border-[rgba(15,34,51,0.06)]">
                 <FaIcon name="shield" />
               </div>
-              <div className="font-mono text-lg sm:text-xl font-bold text-[#011207]">32%</div>
-              <div className="text-[11px] text-[#4A5B4F] font-medium leading-tight mt-0.5">Peak Grid Strain Reduction</div>
+              <div className="font-mono text-lg sm:text-xl font-bold text-[#0F2233]">32%</div>
+              <div className="text-[11px] text-[#526B66] font-medium leading-tight mt-0.5">Grid Strain Cut</div>
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#F4F9EB] border border-[#E2F0CC] flex items-center justify-between text-xs text-[#012F13]">
+          <div className="p-3.5 rounded-2xl bg-white/90 border border-white flex items-center justify-between text-xs text-[#0F2233] shadow-xs">
             <span className="font-medium">Recent bilateral trade settled at ₹4.50/kWh between Anjali & Prince.</span>
             <button
               type="button"
               onClick={() => navigate('/marketplace')}
-              className="font-bold text-[#8BC53D] hover:underline whitespace-nowrap ml-2"
+              className="font-bold text-[#156B5C] hover:underline whitespace-nowrap ml-2"
             >
               View Order Book →
             </button>

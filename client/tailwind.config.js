@@ -8,62 +8,63 @@ export default {
     extend: {
       colors: {
         gs: {
-          canvas: '#F9FAF6',
-          canvasSoft: '#F3F6EC',
+          // Warm Ivory Canvas
+          canvas: '#F7F4EA',
+          canvasSoft: '#FAF8F2',
           surface: '#FFFFFF',
           surfaceElevated: '#FBFCFA',
           
-          // Typography (Near-Black Green palette)
-          graphite: '#011207',
-          forestInk: '#012F13',
-          secondary: '#4A5B4F',
-          muted: '#7A8C7F',
+          // Typography (Deep Navy Ink & Muted Gray-Green)
+          ink: '#0F2233',
+          navy: '#0F2233',
+          graphite: '#0F2233',
+          forestInk: '#0F2233',
+          secondary: '#3A4C40',
+          muted: '#747A6C',
           
-          // Borders
-          border: '#D5E6BE',
-          borderSoft: '#E2F0CC',
-          borderStrong: '#BED69E',
+          // Borders (Warm Neutral)
+          border: '#D6D1BE',
+          borderSoft: '#E8E4D5',
+          borderStrong: '#C4BEA9',
           
-          // Palette from user image
-          sageMint: '#E2F0CC',
-          appleGreen: '#8BC53D',
-          darkForest: '#012F13',
-          nearBlack: '#011207',
+          // GridShare v5 Semantic Palette
+          teal: '#156B5C',
+          tealSoft: '#E8F3F1',
+          tealHover: '#105347',
           
-          // Brand & Energy Accents
-          deepForest: '#012F13',
-          forest: '#0B3E1D',
-          emerald: '#8BC53D',
-          brightEnergy: '#8BC53D',
-          softEmerald: '#E2F0CC',
+          // Solar (Sun / Generation)
+          solar: '#D99A1F',
+          solarSoft: '#FAF4E8',
+          solarGold: '#D99A1F',
+          softSolar: '#FAF4E8',
           
-          // Solar
-          solarGold: '#8BC53D',
-          softSolar: '#E2F0CC',
+          // Restrained Terracotta (Deficit / Exception / Reserve)
+          terra: '#C2571F',
+          terraSoft: '#F9ECE6',
+          deficitCoral: '#C2571F',
+          softCoral: '#F9ECE6',
           
           // Battery
-          batteryAmber: '#8BC53D',
+          battery: '#156B5C',
+          batteryAmber: '#D99A1F',
           
-          // Grid
-          gridBlue: '#012F13',
-          softGrid: '#E2F0CC',
+          // Grid & Infrastructure
+          gridBlue: '#0F2233',
+          softGrid: '#FAF4E8',
           
-          // Deficit / Alert
-          deficitCoral: '#D45C5C',
-          softCoral: '#FDECEC',
-          
-          // AI Intelligence Layer
-          aiViolet: '#012F13',
-          softAi: '#E2F0CC',
+          // AI Intelligence Layer (Integrated Navy + Teal)
+          ai: '#156B5C',
+          aiViolet: '#0F2233',
+          softAi: '#E8F3F1',
         },
         brand: {
-          50: '#F4F9EB',
-          100: '#E2F0CC',
-          500: '#8BC53D',
-          600: '#75AA2F',
-          700: '#0B3E1D',
-          800: '#012F13',
-          900: '#011207',
+          50: '#FAF8F2',
+          100: '#E8F3F1',
+          500: '#156B5C',
+          600: '#105347',
+          700: '#0F2233',
+          800: '#0F2233',
+          900: '#07131D',
         },
       },
       fontFamily: {

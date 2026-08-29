@@ -39,7 +39,7 @@ export default function NavPill({
   return (
     <nav
       aria-label="Main Navigation"
-      className="relative inline-flex items-center rounded-full bg-white/95 backdrop-blur-xl border border-[#BED69E] p-1.5 shadow-sm select-none"
+      className="relative inline-flex items-center rounded-full bg-white/80 backdrop-blur-2xl border border-white/90 p-1.5 shadow-[0_8px_30px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,1)] select-none"
     >
       <div className="flex items-center space-x-1 sm:space-x-1.5">
         {navItems.map((item) => {
@@ -50,8 +50,8 @@ export default function NavPill({
               to={item.path}
               className={`px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 active
-                  ? 'bg-[#012F13] text-white shadow-xs font-bold'
-                  : 'text-[#4A5B4F] hover:text-[#011207] hover:bg-[#E2F0CC]/40'
+                  ? 'bg-gradient-to-r from-[#156B5C] to-[#0E5246] text-white shadow-[0_4px_12px_rgba(21,107,92,0.35)] font-bold'
+                  : 'text-[#526B66] hover:text-[#0F2233] hover:bg-white/70 hover:backdrop-blur-md'
               }`}
             >
               {item.name}
@@ -65,9 +65,9 @@ export default function NavPill({
             type="button"
             onClick={onOpenDemoModal}
             title="Launch guided storm, outage & high-solar demo scenarios"
-            className="px-3 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap text-[#012F13] bg-[#E2F0CC] hover:bg-[#D5E6BE] flex items-center gap-1.5 shadow-2xs"
+            className="px-3 sm:px-3.5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap text-[#0F2233] bg-white/90 hover:bg-white border border-[#D99A1F]/30 flex items-center gap-1.5 shadow-2xs hover:shadow-xs"
           >
-            <span>⚡</span>
+            <span className="text-[#D99A1F]">⚡</span>
             <span className="hidden xl:inline">Scenarios</span>
           </button>
         )}

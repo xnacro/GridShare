@@ -7,79 +7,75 @@
 @layer base {
   :root {
     /* =======================================================================
-       REVERTIBLE COLOR SCHEME CONFIGURATION
-       To revert to the previous color scheme, swap the active tokens below
-       with the commented PREVIOUS PALETTE block.
+       GRIDSHARE V5 ULTRA-MODERN LUXURY GLASSMORPHISM SYSTEM
        ======================================================================= */
+    --gs-bg: #F8FAFC;                 /* Sophisticated Pearl Glass Canvas */
+    --gs-surface: rgba(255, 255, 255, 0.85); /* Frosted Crystal Surface */
+    --gs-surface-subtle: rgba(255, 255, 255, 0.70);
+    
+    --gs-ink: #0F172A;                /* Deep Slate Ink */
+    --gs-muted: #64748B;              /* Muted Slate Text */
+    --gs-border: rgba(15, 23, 42, 0.06); /* Ultra-Subtle Frame */
+    --gs-border-subtle: rgba(255, 255, 255, 0.95);
+    
+    --gs-teal: #0D9488;               /* Modern Teal */
+    --gs-teal-soft: rgba(13, 148, 136, 0.10);
+    --gs-teal-hover: #0F766E;
 
-    /* --- CURRENT REFINED PALETTE --- */
-    --canvas: #F8FAF6;
-    --canvas-subtle: #F1F5EB;
-    --surface: #FFFFFF;
-    --surface-elevated: #FBFCFA;
+    --gs-solar: #D97706;              /* Solar Amber */
+    --gs-solar-soft: rgba(217, 119, 6, 0.12);
     
-    --text-primary: #041D0D;
-    --text-secondary: #3F5346;
-    --text-muted: #6E8174;
-    --border-soft: #E2EED7;
-    --border-strong: #CDDFC0;
-    
-    --sage-mint: #E2F0CC;
-    --apple-green: #8BC53D;
-    --dark-forest: #012F13;
-    --near-black: #041D0D;
-    
-    --forest-deep: #012F13;
-    --forest-mid: #0B3E1D;
-    --forest-light: #16532A;
-    
-    --emerald-primary: #8BC53D;
-    --emerald-bright: #8BC53D;
-    --emerald-light: #9ED64F;
-    --emerald-soft: #E2F0CC;
-    
-    --solar-amber: #8BC53D;
-    --solar-soft: #E2F0CC;
-    --battery-amber: #8BC53D;
-    --grid-blue: #012F13;
-    --grid-soft: #E2F0CC;
-    --deficit-coral: #D45C5C;
-    --deficit-soft: #FDECEC;
-    --ai-violet: #012F13;
-    --ai-soft: #E2F0CC;
+    --gs-terra: #E11D48;              /* Restrained Alert Rose/Coral */
+    --gs-terra-soft: rgba(225, 29, 72, 0.10);
 
-    /* --- PREVIOUS PALETTE (For Instant Reversion if desired) ---
-    --canvas: #F9FAF6;
-    --canvas-subtle: #F3F6EC;
+    /* Standard variable aliases */
+    --canvas: #F8FAFC;
+    --canvas-subtle: #F1F5F9;
     --surface: #FFFFFF;
-    --surface-elevated: #FBFCFA;
-    --text-primary: #011207;
-    --text-secondary: #4A5B4F;
-    --text-muted: #7A8C7F;
-    --border-soft: #E2F0CC;
-    --border-strong: #D5E6BE;
-    ----------------------------------------------------------- */
+    --text-primary: var(--gs-ink);
+    --text-secondary: #334155;
+    --text-muted: var(--gs-muted);
+    --border-soft: rgba(255, 255, 255, 0.9);
+    --border-strong: rgba(15, 23, 42, 0.10);
+    
+    --emerald-primary: var(--gs-teal);
+    --solar-amber: var(--gs-solar);
+    --deficit-coral: var(--gs-terra);
   }
 
   body {
-    background-color: var(--canvas);
-    color: var(--text-primary);
+    background-color: #F8FAFC;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(186, 230, 253, 0.55) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(204, 251, 241, 0.5) 0px, transparent 50%),
+      radial-gradient(at 50% 40%, rgba(241, 245, 249, 0.8) 0px, transparent 60%),
+      radial-gradient(at 100% 100%, rgba(254, 243, 199, 0.35) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(224, 231, 255, 0.45) 0px, transparent 50%);
+    background-attachment: fixed;
+    color: var(--gs-ink);
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    min-height: 100vh;
   }
 
-  /* All Headings default to Main Display Font (Outfit) */
-  h1, h2, h3, h4, h5, h6 {
+  /* All Headings default to Main Display Font (Outfit in Deep Navy) */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--text-primary);
+    color: var(--gs-ink);
   }
 
   /* Sleek Modern Display Font (Outfit) */
-  .font-display, .font-heading {
+  .font-display,
+  .font-heading {
     font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.015em;
   }
@@ -91,40 +87,43 @@
   }
 
   /* Smooth aliases for legacy font utility classes */
-  .font-changa, .font-fjalla {
+  .font-changa,
+  .font-fjalla {
     font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.015em;
   }
 }
 
 @layer utilities {
-  /* Climate-Tech Glassmorphism with Luminous Elevation */
+
+  /* 🌟 High-End Frosted Glassmorphism */
   .glass-card {
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.78);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(226, 238, 215, 0.85);
-    box-shadow: 0 4px 20px -2px rgba(1, 47, 19, 0.04), 0 1px 3px 0 rgba(1, 47, 19, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 12px 36px rgba(15, 34, 51, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.95);
   }
 
   .glass-card:hover {
-    box-shadow: 0 8px 30px -4px rgba(1, 47, 19, 0.07), 0 2px 6px 0 rgba(1, 47, 19, 0.03);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 18px 45px rgba(15, 34, 51, 0.08), inset 0 1px 1px rgba(255, 255, 255, 1);
   }
 
   .glass-card-subtle {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(226, 238, 215, 0.7);
-    box-shadow: 0 2px 12px -2px rgba(1, 47, 19, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: 0 4px 16px rgba(15, 34, 51, 0.03);
   }
 
   .gs-glass-badge {
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(205, 223, 192, 0.9);
-    box-shadow: 0 2px 8px -1px rgba(1, 47, 19, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(15, 34, 51, 0.04);
   }
 
   /* Micro-animation transitions */
@@ -137,6 +136,7 @@
       opacity: 0;
       transform: translateY(6px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -151,7 +151,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--canvas);
+  background: var(--gs-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 34, 51, 0.16);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 34, 51, 0.3);
 }
 
 ::-webkit-scrollbar-thumb {
