@@ -290,65 +290,65 @@ export default function DashboardView({ onOpenDemoModal }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-4.5 items-stretch">
 
         {/* Tile 1: Net Community Balance */}
-        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
-          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+        <div className="rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.03)] hover:shadow-[0_15px_35px_rgba(15,23,42,0.06)] hover:border-white transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
             Net Balance
           </div>
-          <div className={`font-display text-2xl sm:text-3xl font-bold ${netCommunity >= 0 ? 'text-[#156B5C]' : 'text-[#C2571F]'}`}>
+          <div className={`font-display text-2xl sm:text-3xl font-bold ${netCommunity >= 0 ? 'text-[#0D9488]' : 'text-[#E11D48]'}`}>
             {netCommunity >= 0 ? `+${netCommunity.toFixed(1)}` : `${netCommunity.toFixed(1)}`} kW
           </div>
-          <div className="text-xs text-[#526B66] font-medium">
+          <div className="text-xs text-[#64748B] font-medium">
             {netCommunity >= 0 ? 'Clean surplus' : 'Net deficit'}
           </div>
         </div>
 
         {/* Tile 2: Total Generation */}
-        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
-          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+        <div className="rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.03)] hover:shadow-[0_15px_35px_rgba(15,23,42,0.06)] hover:border-white transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
             Solar Gen
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-[#D99A1F]">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#D97706]">
             {totalGen.toFixed(1)} kW
           </div>
-          <div className="text-xs text-[#156B5C] font-bold flex items-center gap-1">
+          <div className="text-xs text-[#0D9488] font-bold flex items-center gap-1">
             <span>↑ 12%</span>
-            <span className="text-[#526B66] font-normal">vs yesterday</span>
+            <span className="text-[#64748B] font-normal">vs yesterday</span>
           </div>
         </div>
 
         {/* Tile 3: Total Demand */}
-        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
-          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+        <div className="rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.03)] hover:shadow-[0_15px_35px_rgba(15,23,42,0.06)] hover:border-white transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
             Community Demand
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-[#0F2233]">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#0F172A]">
             {totalCon.toFixed(1)} kW
           </div>
-          <div className="text-xs text-[#526B66] font-bold flex items-center gap-1">
+          <div className="text-xs text-[#64748B] font-bold flex items-center gap-1">
             <span>↑ 8%</span>
-            <span className="text-[#526B66] font-normal">vs yesterday</span>
+            <span className="text-[#64748B] font-normal">vs yesterday</span>
           </div>
         </div>
 
         {/* Tile 4: Battery Storage */}
-        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
-          <div className="text-[11px] font-bold text-[#526B66] uppercase tracking-wider">
+        <div className="rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.03)] hover:shadow-[0_15px_35px_rgba(15,23,42,0.06)] hover:border-white transition-all duration-300 hover:-translate-y-0.5 space-y-1.5">
+          <div className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
             Battery Reserve
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-[#156B5C]">
+          <div className="font-display text-2xl sm:text-3xl font-bold text-[#0D9488]">
             {battery?.soc ? battery.soc.toFixed(0) : '40'}%
           </div>
-          <div className="text-xs text-[#526B66] font-medium">
+          <div className="text-xs text-[#64748B] font-medium">
             8.0 / 20 kWh usable
           </div>
         </div>
 
         {/* Tile 5: Mini Sparkline & Quick Link */}
-        <div className="rounded-2xl bg-white/75 backdrop-blur-xl border border-white/90 p-5 shadow-[0_4px_20px_rgba(15,34,51,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] hover:bg-white/90 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between space-y-2">
+        <div className="rounded-3xl bg-white/80 backdrop-blur-2xl border border-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.03)] hover:shadow-[0_15px_35px_rgba(15,23,42,0.06)] hover:border-white transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between space-y-2">
           <svg className="w-full h-8 overflow-visible" viewBox="0 0 100 24" fill="none">
             <path
               d="M0 16 Q 15 8, 30 14 T 60 8 T 85 15 T 100 6"
-              stroke="#156B5C"
+              stroke="#0D9488"
               strokeWidth="2.2"
               fill="none"
               strokeLinecap="round"
@@ -360,8 +360,8 @@ export default function DashboardView({ onOpenDemoModal }) {
             />
             <defs>
               <linearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#156B5C" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#156B5C" stopOpacity="0" />
+                <stop offset="0%" stopColor="#0D9488" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#0D9488" stopOpacity="0" />
               </linearGradient>
             </defs>
           </svg>
@@ -369,7 +369,7 @@ export default function DashboardView({ onOpenDemoModal }) {
           <button
             type="button"
             onClick={() => navigate('/network')}
-            className="text-xs font-bold text-[#0F2233] hover:text-[#156B5C] hover:underline flex items-center justify-between"
+            className="text-xs font-bold text-[#0F172A] hover:text-[#0D9488] hover:underline flex items-center justify-between"
           >
             <span>Energy Flow</span>
             <span>→</span>
