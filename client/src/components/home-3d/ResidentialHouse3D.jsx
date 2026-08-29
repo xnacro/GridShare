@@ -255,21 +255,21 @@ export default function ResidentialHouse3D({
         )}
 
         {/* Minimal Glassmorphic Label (Offset upward away from panels) */}
-        <Html position={[0, 1.45, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
+        <Html position={[0, 1.35, 0]} center distanceFactor={9.5} zIndexRange={[12, 0]}>
           <div
             onClick={(e) => {
               e.stopPropagation();
               onSelectElement('solar');
             }}
-            className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all text-center flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
+            className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all text-center flex items-center gap-1 shadow-xs ${
               selectedElement === 'solar'
-                ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
-                : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
+                ? 'bg-[#0F172A] text-white border-[#0D9488] ring-1 ring-[#0D9488]/50 scale-105 shadow-md'
+                : 'bg-white/90 text-[#0F172A] border-white/90 hover:bg-white hover:border-[#0D9488]/40 hover:shadow-sm'
             }`}
           >
-            <FaIcon name="solar" className="text-amber-500 text-xs" />
-            <span className="font-extrabold text-[10.5px] whitespace-nowrap tracking-tight">
-              Solar PV • {solarKw.toFixed(1)} kW {cloudCover ? '(Clouded)' : ''}
+            <FaIcon name="solar" className="text-amber-500 text-[10px]" />
+            <span className="font-bold text-[8.5px] whitespace-nowrap tracking-tight">
+              Solar PV • {solarKw.toFixed(1)} kW
             </span>
           </div>
         </Html>
@@ -301,7 +301,7 @@ export default function ResidentialHouse3D({
 
         <mesh position={[0, 0, 0.155]}>
           <boxGeometry args={[0.48, 1.05, 0.02]} />
-          <meshStandardMaterial color="#012F13" roughness={0.3} />
+          <meshStandardMaterial color="#0F172A" roughness={0.3} />
         </mesh>
 
         {/* Vertical Glowing SOC LED Strip */}
@@ -315,20 +315,20 @@ export default function ResidentialHouse3D({
         </mesh>
 
         {/* Minimal Glassmorphic Label (Offset upward & outward) */}
-        <Html position={[-0.6, 0.95, 0.4]} center distanceFactor={15} zIndexRange={[12, 0]}>
+        <Html position={[-0.6, 0.95, 0.4]} center distanceFactor={9.5} zIndexRange={[12, 0]}>
           <div
             onClick={(e) => {
               e.stopPropagation();
               onSelectElement('battery');
             }}
-            className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all text-center flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
+            className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all text-center flex items-center gap-1 shadow-xs ${
               selectedElement === 'battery'
-                ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
-                : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
+                ? 'bg-[#0F172A] text-white border-[#0D9488] ring-1 ring-[#0D9488]/50 scale-105 shadow-md'
+                : 'bg-white/90 text-[#0F172A] border-white/90 hover:bg-white hover:border-[#0D9488]/40 hover:shadow-sm'
             }`}
           >
-            <FaIcon name="battery" className="text-emerald-600 text-xs" />
-            <span className="font-extrabold text-[10px] whitespace-nowrap tracking-tight">
+            <FaIcon name="battery" className="text-emerald-600 text-[10px]" />
+            <span className="font-bold text-[8.5px] whitespace-nowrap tracking-tight">
               Home Battery • {batterySoc.toFixed(0)}%
               {isBatteryCharging ? ` (+${batteryPowerKw.toFixed(1)}kW)` : isBatteryDischarging ? ` (${batteryPowerKw.toFixed(1)}kW)` : ''}
             </span>
@@ -361,20 +361,20 @@ export default function ResidentialHouse3D({
         </mesh>
 
         {/* Minimal Glassmorphic Label */}
-        <Html position={[0.6, 0.7, 0.3]} center distanceFactor={15} zIndexRange={[12, 0]}>
+        <Html position={[0.6, 0.7, 0.3]} center distanceFactor={9.5} zIndexRange={[12, 0]}>
           <div
             onClick={(e) => {
               e.stopPropagation();
               onSelectElement('meter');
             }}
-            className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all text-center flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
+            className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all text-center flex items-center gap-1 shadow-xs ${
               selectedElement === 'meter'
-                ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
-                : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
+                ? 'bg-[#0F172A] text-white border-[#0D9488] ring-1 ring-[#0D9488]/50 scale-105 shadow-md'
+                : 'bg-white/90 text-[#0F172A] border-white/90 hover:bg-white hover:border-[#0D9488]/40 hover:shadow-sm'
             }`}
           >
-            <FaIcon name="overview" className="text-blue-600 text-xs" />
-            <span className="font-extrabold text-[10px] whitespace-nowrap tracking-tight">
+            <FaIcon name="overview" className="text-blue-600 text-[10px]" />
+            <span className="font-bold text-[8.5px] whitespace-nowrap tracking-tight">
               Smart Meter • {isGridExporting ? `EXP +${gridPowerKw.toFixed(1)}kW` : isGridImporting ? `IMP ${Math.abs(gridPowerKw).toFixed(1)}kW` : '230V OK'}
             </span>
           </div>
@@ -384,20 +384,20 @@ export default function ResidentialHouse3D({
       {/* ==================== 6. APPLIANCES & INTERIOR VISUALS (WITHOUT CLUTTER) ==================== */}
 
       {/* Unified Minimalist House Load Badge */}
-      <Html position={[POS.livingRoom[0] + 0.3, 0.4, POS.livingRoom[2] + 1.1]} center distanceFactor={15} zIndexRange={[12, 0]}>
+      <Html position={[POS.livingRoom[0] + 0.3, 0.4, POS.livingRoom[2] + 1.1]} center distanceFactor={9.5} zIndexRange={[12, 0]}>
         <div
           onClick={(e) => {
             e.stopPropagation();
             onSelectElement('load');
           }}
-          className={`cursor-pointer select-none rounded-full px-3 py-1 backdrop-blur-xl border transition-all flex items-center gap-1.5 shadow-[0_4px_16px_rgba(1,47,19,0.12)] ${
+          className={`cursor-pointer select-none rounded-full px-2.5 py-0.5 backdrop-blur-md border transition-all flex items-center gap-1 shadow-xs ${
             selectedElement === 'load'
-              ? 'bg-[#012F13] text-white border-[#8BC53D] ring-2 ring-[#8BC53D]/50 scale-105 shadow-xl'
-              : 'bg-white/95 text-[#012F13] border-[#BED69E] hover:bg-white hover:border-[#8BC53D] hover:shadow-lg'
+              ? 'bg-[#0F172A] text-white border-[#0D9488] ring-1 ring-[#0D9488]/50 scale-105 shadow-md'
+              : 'bg-white/90 text-[#0F172A] border-white/90 hover:bg-white hover:border-[#0D9488]/40 hover:shadow-sm'
           }`}
         >
-          <FaIcon name="home" className="text-[#1E9B68] text-xs" />
-          <span className="font-extrabold text-[10px] whitespace-nowrap tracking-tight">
+          <FaIcon name="home" className="text-[#0D9488] text-[10px]" />
+          <span className="font-bold text-[8.5px] whitespace-nowrap tracking-tight">
             Home Load • {loadKw.toFixed(1)} kW
           </span>
         </div>
@@ -561,9 +561,9 @@ export default function ResidentialHouse3D({
           </mesh>
         ))}
 
-        <Html position={[0, 1.5, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
-          <div className="select-none rounded-full px-3 py-1 backdrop-blur-xl bg-white/95 border border-[#BED69E] text-[9.5px] font-extrabold text-[#012F13] shadow-[0_4px_16px_rgba(1,47,19,0.12)] flex items-center gap-1.5">
-            <FaIcon name="grid" className="text-[#475569] text-xs" />
+        <Html position={[0, 1.4, 0]} center distanceFactor={9.5} zIndexRange={[12, 0]}>
+          <div className="select-none rounded-full px-2.5 py-0.5 backdrop-blur-md bg-white/90 border border-white/90 text-[8.5px] font-bold text-[#0F172A] shadow-xs flex items-center gap-1">
+            <FaIcon name="grid" className="text-[#475569] text-[10px]" />
             <span>Utility Grid (₹6.10/kWh)</span>
           </div>
         </Html>
@@ -580,9 +580,9 @@ export default function ResidentialHouse3D({
           <meshStandardMaterial color="#8b5cf6" emissive="#7c3aed" emissiveIntensity={1.0} />
         </mesh>
 
-        <Html position={[0, 1.5, 0]} center distanceFactor={15} zIndexRange={[12, 0]}>
-          <div className="select-none rounded-full px-3 py-1 backdrop-blur-xl bg-white/95 border border-purple-300 text-[9.5px] font-extrabold text-[#012F13] shadow-[0_4px_16px_rgba(124,58,237,0.14)] flex items-center gap-1.5">
-            <FaIcon name="trade" className="text-[#7C3AED] text-xs" />
+        <Html position={[0, 1.4, 0]} center distanceFactor={9.5} zIndexRange={[12, 0]}>
+          <div className="select-none rounded-full px-2.5 py-0.5 backdrop-blur-md bg-white/90 border border-purple-200 text-[8.5px] font-bold text-[#0F172A] shadow-xs flex items-center gap-1">
+            <FaIcon name="trade" className="text-[#7C3AED] text-[10px]" />
             <span>P2P Microgrid (₹4.50/kWh)</span>
           </div>
         </Html>
